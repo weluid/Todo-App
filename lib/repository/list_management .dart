@@ -4,29 +4,35 @@ import 'package:flutter/material.dart';
 
 class ListManagement {
   static int groupIndex = 2;
-  List<Group> groupList = [
-    Group(index: 0, title: 'My Day', tasks: []),
-    Group(index: 1, title: 'Important', tasks: [])
-  ];
+  List<Group> groupList = [Group( title: 'My Day', tasks: []), Group( title: 'Important', tasks: [])];
 
   // get the list of groups
-  List<Group> getGroupList (){
+  List<Group> getGroupList() {
     return groupList;
   }
 
   // add a group
-  void addGroup(String title, int index) {
-    Group newList = Group(index: index, title: title, tasks: []);
+  Future<void> addGroup(String title) async {
+    Group newList = Group( title: title, tasks: []);
     groupList.add(newList);
-    // debugPrint(index.toString());
+    print('HELLO$groupList');
+
   }
 
   //add a task to group
-  void addTask(int id, String titleTask) {
+  void addTask({required String groupName, required String titleTask}) {
+
+    // find cur group
+    Group relevantGroup = groupList.firstWhere((group) => group.title == groupName);
+    //create new task
     Task newTask = Task(title: titleTask);
-    groupList[id].tasks.add(newTask);
+    //add task to cur group
+    relevantGroup.tasks.add(newTask);
   }
 
+// String genIDByDatetimeNow() {
+//     return DateFormat('yyyyMMddHHmmss').format(DateTime.now());
+//   }
   @override
   String toString() {
     return 'ListManagement{groupList: $groupList}';

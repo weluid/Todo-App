@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo/bloc/todo_bloc.dart';
 import 'package:todo/components/add_list_dialog.dart';
 import 'package:todo/components/bottom_button.dart';
 import 'package:todo/components/list_tile.dart';
+import 'package:todo/main.dart';
 import 'package:todo/repository/list_management%20.dart';
+import 'package:todo/screens/test_screen.dart';
 import 'package:todo/utilities/constants.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,27 +21,65 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider<TodoBloc>(
+      create: (BuildContext context) {
+        TodoBloc bloc = TodoBloc();
+        bloc.add(ToDoStartEvent());
+
+        return bloc;
+      },
+      child: BlocBuilder<TodoBloc, TodoState>(
+        builder: (context, state) {
+          if (state is StartApp) {
+            return _buildParentWidget(context, state);
+          } else {
+            return const StartPage();
+          }
+        },
+      ),
+    );
+  }
+
+  _buildParentWidget(BuildContext context, StartApp state) {
     return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
             ListView.builder(
-              itemCount: taskManager.groupList.length,
+              itemCount:state.groups.length,
               itemBuilder: (BuildContext context, int index) {
-                return drawLists(context, index, taskManager.groupList[index].title);
+                return  drawLists(context, index, state.groups[index].title);
               },
             ),
             MyBottomButton(
               text: 'Add list',
               icon: Icons.add,
-              onTap: () {
-                _showDialog();
+              onTap: () async {
+                // _showDialog();
+                final groupName = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SearchPage(),
+                  ),
+                );
+
+                if (groupName != null) {
+                  if (!mounted) return;
+                  setState(() {
+                    BlocProvider.of<TodoBloc>(context).add(
+                      AddGroupEvent(title: groupName),
+                    );
+                  });
+
+                }
+                debugPrint('nAME gROUP after: $groupName'); //test city
+
               },
             ),
             TextButton(
               onPressed: () {
-                taskManager.addTask(0, 'Нова таска 1');
-                print(taskManager.groupList[0].tasks[0].title);
+                // taskManager.addTask(= 'Нова таска 1');
+                // print(taskManager.groupList[0].tasks[0].title);
               },
               child: Text("Add Task"),
             )
@@ -83,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       debugPrint(index.toString());
 
                       setState(() {
-                        taskManager.addGroup(valueText, index);
+                        taskManager.addGroup(valueText);
                       });
                       debugPrint(taskManager.groupList.toString());
                       Navigator.of(context).pop();
