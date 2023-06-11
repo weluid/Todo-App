@@ -7,10 +7,9 @@ class ToDoInitial extends TodoState {}
 
 class StartApp extends TodoState {
   final List<Group> groups;
-
   StartApp(this.groups);
-}
 
+}
 
 // Add group to list
 class AddGroup extends TodoState {}
@@ -19,4 +18,3 @@ class AddGroup extends TodoState {}
 class AddTask extends TodoState {}
 
 
-class AddGroupSuccess extends TodoState {}

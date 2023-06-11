@@ -1,12 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/bloc/todo_bloc.dart';
-import 'package:todo/components/add_list_dialog.dart';
 import 'package:todo/components/bottom_button.dart';
 import 'package:todo/components/list_tile.dart';
 import 'package:todo/main.dart';
 import 'package:todo/repository/list_management%20.dart';
-import 'package:todo/screens/test_screen.dart';
 import 'package:todo/utilities/constants.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,13 +17,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  ListManagement taskManager = ListManagement();
+  TodoRepository listManagement = TodoRepository();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TodoBloc>(
       create: (BuildContext context) {
-        TodoBloc bloc = TodoBloc();
+        TodoBloc bloc = TodoBloc(listManagement);
         bloc.add(ToDoStartEvent());
 
         return bloc;
@@ -41,14 +41,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _buildParentWidget(BuildContext context, StartApp state) {
+    print(state.groups.length);
     return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
             ListView.builder(
-              itemCount:state.groups.length,
+              itemCount: state.groups.length,
               itemBuilder: (BuildContext context, int index) {
-                return  drawLists(context, index, state.groups[index].title);
+                return drawLists(context, index, state.groups[index].title);
               },
             ),
             MyBottomButton(
@@ -56,24 +57,22 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icons.add,
               onTap: () async {
                 // _showDialog();
-                final groupName = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SearchPage(),
-                  ),
-                );
+                final groupName = await _showDialog();
+                // await Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => const SearchPage(),
+                //   ),
+                // );
 
                 if (groupName != null) {
                   if (!mounted) return;
-                  setState(() {
-                    BlocProvider.of<TodoBloc>(context).add(
-                      AddGroupEvent(title: groupName),
-                    );
-                  });
 
+                  BlocProvider.of<TodoBloc>(context).add(
+                    AddGroupEvent(title: groupName),
+                  );
                 }
                 debugPrint('nAME gROUP after: $groupName'); //test city
-
               },
             ),
             TextButton(
@@ -89,19 +88,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _showDialog() {
+   Future<String?>_showDialog() async {
+    Completer<String?> completer = Completer<String>();
+
     showDialog(
         context: context,
         builder: (context) {
-          String valueText = 'Untitled List';
+          String inputText = 'Untitled List';
           return AlertDialog(
             title: const Text('New List'),
             content: TextFormField(
               initialValue: 'Untitled List',
               onChanged: (value) {
-                setState(() {
-                  valueText = value;
-                });
+                inputText = value;
               },
               decoration: const InputDecoration(hintText: "Enter list title"),
             ),
@@ -115,20 +114,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(color: ColorSelect.primaryColor),
                     ),
                     onTap: () {
-                      Navigator.of(context).pop();
+                      Navigator.pop(context);
                     },
                   ),
                   const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {
-                      int index = ListManagement.groupIndex++;
-                      debugPrint(index.toString());
-
-                      setState(() {
-                        taskManager.addGroup(valueText);
-                      });
-                      debugPrint(taskManager.groupList.toString());
-                      Navigator.of(context).pop();
+                      Navigator.pop(context, inputText);
+                      completer.complete(inputText);
                     },
                     child: Container(
                       width: 108,
@@ -158,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           );
         });
+    return await completer.future;
   }
 }
 
