@@ -1,13 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/bloc/todo_bloc.dart';
-import 'package:todo/components/add_list_dialog.dart';
 import 'package:todo/components/bottom_button.dart';
 import 'package:todo/components/list_tile.dart';
 import 'package:todo/main.dart';
 import 'package:todo/repository/list_management%20.dart';
-import 'package:todo/screens/test_screen.dart';
 import 'package:todo/utilities/constants.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -17,13 +18,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  ListManagement taskManager = ListManagement();
+  TodoRepository listManagement = TodoRepository();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TodoBloc>(
       create: (BuildContext context) {
-        TodoBloc bloc = TodoBloc();
+        TodoBloc bloc = TodoBloc(listManagement);
         bloc.add(ToDoStartEvent());
 
         return bloc;
@@ -41,69 +42,55 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _buildParentWidget(BuildContext context, StartApp state) {
+    print(state.groups.length);
     return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
             ListView.builder(
-              itemCount:state.groups.length,
+              itemCount: state.groups.length,
               itemBuilder: (BuildContext context, int index) {
-                return  drawLists(context, index, state.groups[index].title);
+                return drawLists(context, index, state.groups[index].title);
               },
             ),
             MyBottomButton(
-              text: 'Add list',
+              text: AppLocalizations.of(context).addList,
               icon: Icons.add,
               onTap: () async {
-                // _showDialog();
-                final groupName = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SearchPage(),
-                  ),
-                );
+                final groupName = await _showDialog();
 
                 if (groupName != null) {
                   if (!mounted) return;
-                  setState(() {
-                    BlocProvider.of<TodoBloc>(context).add(
-                      AddGroupEvent(title: groupName),
-                    );
-                  });
 
+                  BlocProvider.of<TodoBloc>(context).add(
+                    AddGroupEvent(title: groupName),
+                  );
                 }
-                debugPrint('nAME gROUP after: $groupName'); //test city
-
+                debugPrint('Group name: $groupName'); //test city
               },
             ),
-            TextButton(
-              onPressed: () {
-                // taskManager.addTask(= 'Нова таска 1');
-                // print(taskManager.groupList[0].tasks[0].title);
-              },
-              child: Text("Add Task"),
-            )
+
           ],
         ),
       ),
     );
   }
 
-  _showDialog() {
+   Future<String?>_showDialog() async {
+    Completer<String?> completer = Completer<String>();
+
     showDialog(
         context: context,
         builder: (context) {
-          String valueText = 'Untitled List';
+          String inputText = AppLocalizations.of(context).initialValue;
           return AlertDialog(
-            title: const Text('New List'),
+            title:  Text(AppLocalizations.of(context).newList),
             content: TextFormField(
-              initialValue: 'Untitled List',
+              initialValue: AppLocalizations.of(context).initialValue,
               onChanged: (value) {
-                setState(() {
-                  valueText = value;
-                });
+                inputText = value;
               },
-              decoration: const InputDecoration(hintText: "Enter list title"),
+              decoration:  InputDecoration(hintText: AppLocalizations.of(context).enterGroupTitle),
             ),
             actions: [
               Row(
@@ -111,24 +98,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   GestureDetector(
                     child: Text(
-                      'Cancel',
+                      AppLocalizations.of(context).cancel,
                       style: TextStyle(color: ColorSelect.primaryColor),
                     ),
                     onTap: () {
-                      Navigator.of(context).pop();
+                      Navigator.pop(context);
                     },
                   ),
                   const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {
-                      int index = ListManagement.groupIndex++;
-                      debugPrint(index.toString());
-
-                      setState(() {
-                        taskManager.addGroup(valueText);
-                      });
-                      debugPrint(taskManager.groupList.toString());
-                      Navigator.of(context).pop();
+                      Navigator.pop(context, inputText);
+                      completer.complete(inputText);
                     },
                     child: Container(
                       width: 108,
@@ -137,17 +118,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: const BorderRadius.all(Radius.circular(20)),
                         color: ColorSelect.primaryColor,
                       ),
-                      child: const Row(
+                      child:  Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.add,
                             color: Colors.white,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
-                            'Create ',
-                            style: TextStyle(color: Colors.white),
+                            AppLocalizations.of(context).create,
+                            style: const TextStyle(color: Colors.white),
                           )
                         ],
                       ),
@@ -158,6 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           );
         });
+    return await completer.future;
   }
 }
 

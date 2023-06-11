@@ -1,10 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:todo/models/task_model.dart';
 import 'package:todo/models/group_model.dart';
-import 'package:flutter/material.dart';
+import 'package:todo/repository/get_id.dart';
 
-class ListManagement {
-  static int groupIndex = 2;
-  List<Group> groupList = [Group( title: 'My Day', tasks: []), Group( title: 'Important', tasks: [])];
+class TodoRepository {
+  final List<Group> groupList = [
+    Group(title: 'My Day', tasks: [], id: GetId().genIDByDatetimeNow()),
+    Group(title: 'Important', tasks: [], id: GetId().genIDByDatetimeNow())
+  ];
 
   // get the list of groups
   List<Group> getGroupList() {
@@ -12,16 +15,14 @@ class ListManagement {
   }
 
   // add a group
-  Future<void> addGroup(String title) async {
-    Group newList = Group( title: title, tasks: []);
+  void addGroup(String title, String id) {
+    Group newList = Group(title: title, tasks: [], id: id);
     groupList.add(newList);
-    print('HELLO$groupList');
-
+    debugPrint(groupList.toString());
   }
 
   //add a task to group
   void addTask({required String groupName, required String titleTask}) {
-
     // find cur group
     Group relevantGroup = groupList.firstWhere((group) => group.title == groupName);
     //create new task
@@ -30,9 +31,6 @@ class ListManagement {
     relevantGroup.tasks.add(newTask);
   }
 
-// String genIDByDatetimeNow() {
-//     return DateFormat('yyyyMMddHHmmss').format(DateTime.now());
-//   }
   @override
   String toString() {
     return 'ListManagement{groupList: $groupList}';
