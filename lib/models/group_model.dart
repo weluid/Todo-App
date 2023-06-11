@@ -1,18 +1,18 @@
 import 'package:todo/models/task_model.dart';
 
 class Group {
-  // String id;
+  String id;
   String title;
   List<Task> tasks;
 
   Group({
-
     required this.title,
     required this.tasks,
+    required this.id
   });
 
   @override
   String toString() {
-    return 'GroupList{title: $title, tasks: $tasks}';
+    return 'Group{id: $id, title: $title, tasks: $tasks}';
   }
 }

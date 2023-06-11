@@ -7,7 +7,7 @@ class LocalDB extends BaseDatabase {
 
   @override
   void addGroup(String title) {
-    Group newList = Group(title: title, tasks: []);
+    Group newList = Group(title: title, tasks: [], id: '');
     groupList.add(newList);
     print('HELLO$groupList');
   }

@@ -8,6 +8,7 @@ import 'package:todo/components/list_tile.dart';
 import 'package:todo/main.dart';
 import 'package:todo/repository/list_management%20.dart';
 import 'package:todo/utilities/constants.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -53,17 +54,10 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             MyBottomButton(
-              text: 'Add list',
+              text: AppLocalizations.of(context).addList,
               icon: Icons.add,
               onTap: () async {
-                // _showDialog();
                 final groupName = await _showDialog();
-                // await Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => const SearchPage(),
-                //   ),
-                // );
 
                 if (groupName != null) {
                   if (!mounted) return;
@@ -72,16 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     AddGroupEvent(title: groupName),
                   );
                 }
-                debugPrint('nAME gROUP after: $groupName'); //test city
+                debugPrint('Group name: $groupName'); //test city
               },
             ),
-            TextButton(
-              onPressed: () {
-                // taskManager.addTask(= 'Нова таска 1');
-                // print(taskManager.groupList[0].tasks[0].title);
-              },
-              child: Text("Add Task"),
-            )
+
           ],
         ),
       ),
@@ -94,15 +82,15 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
         context: context,
         builder: (context) {
-          String inputText = 'Untitled List';
+          String inputText = AppLocalizations.of(context).initialValue;
           return AlertDialog(
-            title: const Text('New List'),
+            title:  Text(AppLocalizations.of(context).newList),
             content: TextFormField(
-              initialValue: 'Untitled List',
+              initialValue: AppLocalizations.of(context).initialValue,
               onChanged: (value) {
                 inputText = value;
               },
-              decoration: const InputDecoration(hintText: "Enter list title"),
+              decoration:  InputDecoration(hintText: AppLocalizations.of(context).enterGroupTitle),
             ),
             actions: [
               Row(
@@ -110,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   GestureDetector(
                     child: Text(
-                      'Cancel',
+                      AppLocalizations.of(context).cancel,
                       style: TextStyle(color: ColorSelect.primaryColor),
                     ),
                     onTap: () {
@@ -130,17 +118,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: const BorderRadius.all(Radius.circular(20)),
                         color: ColorSelect.primaryColor,
                       ),
-                      child: const Row(
+                      child:  Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.add,
                             color: Colors.white,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
-                            'Create ',
-                            style: TextStyle(color: Colors.white),
+                            AppLocalizations.of(context).create,
+                            style: const TextStyle(color: Colors.white),
                           )
                         ],
                       ),
