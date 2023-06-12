@@ -4,5 +4,7 @@
   "newList": "Нова Група",
    "enterGroupTitle": "Введіть назву групи",
    "create": "Створити",
-   "cancel": "Скасувати"
+   "cancel": "Скасувати",
+  "myDay": "Мій день",
+  "important": "Важливо"
 }

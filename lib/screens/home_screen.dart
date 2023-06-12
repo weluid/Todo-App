@@ -49,14 +49,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: [
                 HomeTiles(
-                  listName: 'My Day',
+                  listName: AppLocalizations.of(context).myDay,
                   iconValue: Icon(
                     Icons.sunny,
                     color: ColorSelect.primaryColor,
                   ),
                 ),
                 HomeTiles(
-                  listName: 'Important',
+                  listName: AppLocalizations.of(context).important,
                   iconValue: Icon(
                     Icons.star,
                     color: ColorSelect.importantColor,

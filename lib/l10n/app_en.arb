@@ -4,5 +4,7 @@
   "newList": "New Group",
   "enterGroupTitle": "Enter group title",
   "create": "Create",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "myDay": "My Day",
+  "important": "Important"
 }

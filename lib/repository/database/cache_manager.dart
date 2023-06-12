@@ -5,7 +5,7 @@ import 'package:todo/repository/get_id.dart';
 
 class CacheManager extends BaseDatabase {
   List<Group> groupList = [
-    Group(title: 'Test1', tasks: [], id: GetId().genIDByDatetimeNow()),
+    Group(title: 'Test', tasks: [], id: GetId().genIDByDatetimeNow()),
   ];
 
   @override
