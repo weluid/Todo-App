@@ -6,7 +6,8 @@ import 'package:todo/bloc/todo_bloc.dart';
 import 'package:todo/components/bottom_button.dart';
 import 'package:todo/components/list_tile.dart';
 import 'package:todo/main.dart';
-import 'package:todo/repository/list_management%20.dart';
+import 'package:todo/repository/database/cache_manager.dart';
+import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -18,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  TodoRepository listManagement = TodoRepository();
+  TodoRepository listManagement = TodoRepository(CacheManager());
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +43,49 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _buildParentWidget(BuildContext context, StartApp state) {
-    print(state.groups.length);
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            ListView.builder(
-              itemCount: state.groups.length,
-              itemBuilder: (BuildContext context, int index) {
-                return drawLists(context, index, state.groups[index].title);
-              },
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                HomeTiles(
+                  listName: 'My Day',
+                  iconValue: Icon(
+                    Icons.sunny,
+                    color: ColorSelect.primaryColor,
+                  ),
+                ),
+                HomeTiles(
+                  listName: 'Important',
+                  iconValue: Icon(
+                    Icons.star,
+                    color: ColorSelect.importantColor,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5, bottom: 5),
+                  child: Divider(
+                    color: ColorSelect.grayColor,
+                    indent: 20, //spacing at the start of divider
+                    endIndent: 30, //spacing at the end of divider
+                  ),
+                ),
+                ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: state.groups.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return HomeTiles(listName: state.groups[index].title);
+                  },
+                ),
+              ],
             ),
-            MyBottomButton(
+          ),
+        ),
+        bottomNavigationBar: SizedBox(
+          height: 40,
+          child: Center(
+            child: MyBottomButton(
               text: AppLocalizations.of(context).addList,
               icon: Icons.add,
               onTap: () async {
@@ -69,14 +101,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 debugPrint('Group name: $groupName'); //test city
               },
             ),
-
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 
-   Future<String?>_showDialog() async {
+  Future<String?> _showDialog() async {
     Completer<String?> completer = Completer<String>();
 
     showDialog(
@@ -84,13 +113,13 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context) {
           String inputText = AppLocalizations.of(context).initialValue;
           return AlertDialog(
-            title:  Text(AppLocalizations.of(context).newList),
+            title: Text(AppLocalizations.of(context).newList),
             content: TextFormField(
               initialValue: AppLocalizations.of(context).initialValue,
               onChanged: (value) {
                 inputText = value;
               },
-              decoration:  InputDecoration(hintText: AppLocalizations.of(context).enterGroupTitle),
+              decoration: InputDecoration(hintText: AppLocalizations.of(context).enterGroupTitle),
             ),
             actions: [
               Row(
@@ -118,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: const BorderRadius.all(Radius.circular(20)),
                         color: ColorSelect.primaryColor,
                       ),
-                      child:  Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Icon(
@@ -140,41 +169,5 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         });
     return await completer.future;
-  }
-}
-
-Widget drawLists(BuildContext context, int index, String listTitle) {
-  if (index == 0) {
-    return HomeTiles(
-      listName: 'My Day',
-      iconValue: Icon(
-        Icons.sunny,
-        color: ColorSelect.primaryColor,
-      ),
-    );
-  } else if (index == 1) {
-    return Column(
-      children: [
-        HomeTiles(
-          listName: 'Important',
-          iconValue: Icon(
-            Icons.star,
-            color: ColorSelect.importantColor,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10, bottom: 10),
-          child: Divider(
-            color: ColorSelect.grayColor,
-            indent: 20, //spacing at the start of divider
-            endIndent: 30, //spacing at the end of divider
-          ),
-        ),
-      ],
-    );
-  } else {
-    return HomeTiles(
-      listName: listTitle,
-    );
   }
 }

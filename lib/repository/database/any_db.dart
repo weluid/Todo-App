@@ -3,7 +3,7 @@ import 'package:todo/repository/database/base_database.dart';
 
 class AnyDB extends BaseDatabase {
   @override
-  void addGroup(String title) {
+  void addGroup(String title, String id) {
     // TODO: implement addGroup
   }
 
