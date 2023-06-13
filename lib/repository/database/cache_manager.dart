@@ -12,7 +12,7 @@ class CacheManager extends BaseDatabase {
   void addGroup(String title, String id) {
     Group newList = Group(title: title, tasks: [], id: id);
     groupList.add(newList);
-    print('HELLO$groupList');
+    print(groupList);
   }
 
   @override

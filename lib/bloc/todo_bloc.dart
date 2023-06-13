@@ -10,21 +10,21 @@ part 'todo_event.dart';
 
 part 'todo_state.dart';
 
-class TodoBloc extends Bloc<TodoEvent, TodoState> {
-  final TodoRepository todoRepository;
+class ToDoBloc extends Bloc<ToDoEvent, ToDoState> {
+  final ToDoRepository toDoRepository;
 
-  TodoBloc(this.todoRepository) : super(ToDoInitial()) {
+  ToDoBloc(this.toDoRepository) : super(ToDoInitial()) {
     on<ToDoStartEvent>(_eventHandler);
     on<AddGroupEvent>(_eventAddGroup);
   }
 
-  Future<void> _eventHandler(TodoEvent e, Emitter emit) async {
-    emit(StartApp(todoRepository.getGroupList()));
+  Future<void> _eventHandler(ToDoEvent e, Emitter emit) async {
+    emit(StartApp(toDoRepository.getGroupList()));
   }
 
   void _eventAddGroup(AddGroupEvent e, Emitter emit) {
-    todoRepository.addGroup(e.title, GetId().genIDByDatetimeNow());
+    toDoRepository.addGroup(e.title, GetId().genIDByDatetimeNow());
 
-    emit(StartApp(todoRepository.getGroupList()));
+    emit(StartApp(toDoRepository.getGroupList()));
   }
 }

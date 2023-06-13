@@ -1,20 +1,20 @@
 part of 'todo_bloc.dart';
 
 @immutable
-abstract class TodoState {}
+abstract class ToDoState {}
 
-class ToDoInitial extends TodoState {}
+class ToDoInitial extends ToDoState {}
 
-class StartApp extends TodoState {
+class StartApp extends ToDoState {
   final List<Group> groups;
   StartApp(this.groups);
 
 }
 
 // Add group to list
-class AddGroup extends TodoState {}
+class AddGroup extends ToDoState {}
 
 //Add task to list
-class AddTask extends TodoState {}
+class AddTask extends ToDoState {}
 
 

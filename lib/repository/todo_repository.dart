@@ -4,11 +4,11 @@ import 'package:todo/models/group_model.dart';
 import 'package:todo/repository/database/base_database.dart';
 
 
-class TodoRepository {
+class ToDoRepository {
 
   final BaseDatabase _localDb;
 
-  TodoRepository(this._localDb);
+  ToDoRepository(this._localDb);
 
   // get the list of groups
   List<Group> getGroupList() {

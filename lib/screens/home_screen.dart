@@ -19,18 +19,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  TodoRepository listManagement = TodoRepository(CacheManager());
+  ToDoRepository toDoRepository = ToDoRepository(CacheManager());
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<TodoBloc>(
+    return BlocProvider<ToDoBloc>(
       create: (BuildContext context) {
-        TodoBloc bloc = TodoBloc(listManagement);
+        ToDoBloc bloc = ToDoBloc(toDoRepository);
         bloc.add(ToDoStartEvent());
 
         return bloc;
       },
-      child: BlocBuilder<TodoBloc, TodoState>(
+      child: BlocBuilder<ToDoBloc, ToDoState>(
         builder: (context, state) {
           if (state is StartApp) {
             return _buildParentWidget(context, state);
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (groupName != null) {
                   if (!mounted) return;
 
-                  BlocProvider.of<TodoBloc>(context).add(
+                  BlocProvider.of<ToDoBloc>(context).add(
                     AddGroupEvent(title: groupName),
                   );
                 }
@@ -106,9 +106,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<String?> _showDialog() async {
-    Completer<String?> completer = Completer<String>();
-
-    showDialog(
+    String? title;
+    title = await showDialog(
         context: context,
         builder: (context) {
           String inputText = AppLocalizations.of(context).initialValue;
@@ -131,14 +130,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(color: ColorSelect.primaryColor),
                     ),
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context, null);
                     },
                   ),
                   const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {
+                      title = inputText;
                       Navigator.pop(context, inputText);
-                      completer.complete(inputText);
+
                     },
                     child: Container(
                       width: 108,
@@ -168,6 +168,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           );
         });
-    return await completer.future;
+    return title;
   }
 }

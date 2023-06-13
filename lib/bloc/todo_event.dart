@@ -1,15 +1,15 @@
 part of 'todo_bloc.dart';
 
 @immutable
-abstract class TodoEvent {}
+abstract class ToDoEvent {}
 
-class ToDoStartEvent extends TodoEvent {}
+class ToDoStartEvent extends ToDoEvent {}
 
 // Add group to list
-class AddGroupEvent extends TodoEvent {
+class AddGroupEvent extends ToDoEvent {
   final String title;
   AddGroupEvent({required this.title});
 }
 
 //Add task to list
-class AddTaskEvent extends TodoEvent {}
+class AddTaskEvent extends ToDoEvent {}
