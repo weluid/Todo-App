@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:todo/models/group_model.dart';
 import 'package:todo/models/task_model.dart';
 import 'package:todo/repository/database/base_database.dart';
@@ -12,7 +13,7 @@ class CacheManager extends BaseDatabase {
   void addGroup(String title, String id) {
     Group newList = Group(title: title, tasks: [], id: id);
     groupList.add(newList);
-    print(groupList);
+    debugPrint(groupList.toString());
   }
 
   @override

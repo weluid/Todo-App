@@ -106,8 +106,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<String?> _showDialog() async {
-    String? title;
-    title = await showDialog(
+    Completer<String?> completer = Completer<String>();
+
+    showDialog(
         context: context,
         builder: (context) {
           String inputText = AppLocalizations.of(context).initialValue;
@@ -130,15 +131,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(color: ColorSelect.primaryColor),
                     ),
                     onTap: () {
-                      Navigator.pop(context, null);
+                      Navigator.pop(context);
                     },
                   ),
                   const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {
-                      title = inputText;
-                      Navigator.pop(context, inputText);
-
+                      completer.complete(inputText);
+                      Navigator.pop(context);
                     },
                     child: Container(
                       width: 108,
@@ -168,6 +168,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           );
         });
-    return title;
+    return await completer.future;
   }
 }

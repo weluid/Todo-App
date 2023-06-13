@@ -14,11 +14,11 @@ class ToDoBloc extends Bloc<ToDoEvent, ToDoState> {
   final ToDoRepository toDoRepository;
 
   ToDoBloc(this.toDoRepository) : super(ToDoInitial()) {
-    on<ToDoStartEvent>(_eventHandler);
+    on<ToDoStartEvent>(_eventStartApp);
     on<AddGroupEvent>(_eventAddGroup);
   }
 
-  Future<void> _eventHandler(ToDoEvent e, Emitter emit) async {
+  Future<void> _eventStartApp(ToDoEvent e, Emitter emit) async {
     emit(StartApp(toDoRepository.getGroupList()));
   }
 
