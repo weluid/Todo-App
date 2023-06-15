@@ -20,7 +20,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  ToDoRepository toDoRepository = ToDoRepository(CacheManager());
+  ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
 
   @override
   Widget build(BuildContext context) {

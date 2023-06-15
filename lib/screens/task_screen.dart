@@ -18,7 +18,8 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  ToDoRepository toDoRepository = ToDoRepository(CacheManager());
+
+  ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
 
   @override
   Widget build(BuildContext context) {
