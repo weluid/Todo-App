@@ -2,12 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo/bloc/todo_bloc.dart';
+import 'package:todo/bloc/group_bloc/group_bloc.dart';
 import 'package:todo/components/bottom_button.dart';
-import 'package:todo/components/list_tile.dart';
+import 'package:todo/components/group_tile.dart';
 import 'package:todo/main.dart';
 import 'package:todo/repository/database/cache_manager.dart';
 import 'package:todo/repository/todo_repository.dart';
+import 'package:todo/screens/task_screen.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -23,14 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ToDoBloc>(
+    return BlocProvider<GroupBloc>(
       create: (BuildContext context) {
-        ToDoBloc bloc = ToDoBloc(toDoRepository);
+        GroupBloc bloc = GroupBloc(toDoRepository);
         bloc.add(ToDoStartEvent());
 
         return bloc;
       },
-      child: BlocBuilder<ToDoBloc, ToDoState>(
+      child: BlocBuilder<GroupBloc, GroupState>(
         builder: (context, state) {
           if (state is StartApp) {
             return _buildParentWidget(context, state);
@@ -48,19 +49,21 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                HomeTiles(
+                GroupTile(
                   listName: AppLocalizations.of(context).myDay,
                   iconValue: Icon(
                     Icons.sunny,
                     color: ColorSelect.primaryColor,
                   ),
+                  onPressed: () {},
                 ),
-                HomeTiles(
+                GroupTile(
                   listName: AppLocalizations.of(context).important,
                   iconValue: Icon(
                     Icons.star,
                     color: ColorSelect.importantColor,
                   ),
+                  onPressed: () {},
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 5, bottom: 5),
@@ -75,7 +78,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   shrinkWrap: true,
                   itemCount: state.groups.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return HomeTiles(listName: state.groups[index].title);
+                    return GroupTile(
+                      listName: state.groups[index].title,
+                      onPressed: () => _goToTaskPage(state.groups[index].title),
+                    );
                   },
                 ),
               ],
@@ -86,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 40,
           child: Center(
             child: MyBottomButton(
-              text: AppLocalizations.of(context).addList,
+              text: AppLocalizations.of(context).addGroup,
               icon: Icons.add,
               onTap: () async {
                 final groupName = await _showDialog();
@@ -94,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (groupName != null) {
                   if (!mounted) return;
 
-                  BlocProvider.of<ToDoBloc>(context).add(
+                  BlocProvider.of<GroupBloc>(context).add(
                     AddGroupEvent(title: groupName),
                   );
                 }
@@ -103,6 +109,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ));
+  }
+
+  _goToTaskPage(String groupName) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => TaskScreen(groupName: groupName)));
   }
 
   Future<String?> _showDialog() async {

@@ -20,7 +20,6 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       localizationsDelegates: const [
-
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -31,7 +30,7 @@ class MyApp extends StatelessWidget {
         Locale('en'), // English
         Locale('uk'), // Spanish
       ],
-      home: const StartPage(),
+      home: const HomeScreen(),
     );
   }
 }
