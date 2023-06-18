@@ -6,7 +6,10 @@ import 'package:todo/repository/get_id.dart';
 
 class CacheManager extends BaseDatabase {
   List<Group> groupList = [
-    Group(title: 'Test', tasks: [], id: GetId().genIDByDatetimeNow()),
+    Group(
+        title: 'Test',
+        tasks: [Task(title: 'Fap fap', isCompleted: false), Task(title: 'Wash hand', isCompleted: false)],
+        id: GetId().genIDByDatetimeNow()),
   ];
 
   @override
@@ -17,17 +20,24 @@ class CacheManager extends BaseDatabase {
   }
 
   @override
-  void addTask({required String groupName, required String titleTask}) {
-    // find cur group
-    Group relevantGroup = groupList.firstWhere((group) => group.title == groupName);
-    //create new task
-    Task newTask = Task(title: titleTask);
-    //add task to cur group
-    relevantGroup.tasks.add(newTask);
-  }
+  void addTask({required String groupName, required String titleTask}) {}
 
   @override
   List<Group> getGroupList() {
     return groupList;
+  }
+
+// get length of a tasks in group
+  @override
+  List<Task> getTaskList(String groupName) {
+    Group relevantGroup = getRelevantGroup(groupName);
+    return relevantGroup.tasks;
+  }
+
+  // return relevant object
+  Group getRelevantGroup(String groupName) {
+    Group relevantGroup = groupList.firstWhere((group) => group.title == groupName);
+
+    return relevantGroup;
   }
 }
