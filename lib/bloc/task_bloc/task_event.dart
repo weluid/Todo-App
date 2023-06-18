@@ -11,5 +11,10 @@ class GetTaskListEvent extends TaskEvent {
 }
 
 //Add task to list
-class AddTaskEvent extends TaskEvent {}
+class AddTaskEvent extends TaskEvent {
+  final String groupName;
+  final String taskTitle;
+
+  AddTaskEvent({required this.groupName, required this.taskTitle});
+}
 

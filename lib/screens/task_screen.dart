@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo/bloc/task_group/task_bloc.dart';
+import 'package:todo/bloc/task_bloc/task_bloc.dart';
 import 'package:todo/components/task_tile.dart';
 import 'package:todo/repository/database/cache_manager.dart';
 import 'package:todo/repository/todo_repository.dart';
@@ -133,15 +133,15 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  _addTask(BuildContext context) {
+  _addTask(BuildContext blocContext) {
     TextEditingController titleController = TextEditingController();
 
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(0),
       ),
-      context: context,
-      builder: (context) => Padding(
+      context: blocContext,
+      builder: (context2) => Padding(
         padding: const EdgeInsets.all(20),
         child: SizedBox(
           height: 50,
@@ -154,20 +154,26 @@ class _TaskScreenState extends State<TaskScreen> {
                 },
                 controller: titleController,
                 decoration: InputDecoration(
-                  icon: const Icon(Icons.check_box_outline_blank),
-                  hintText: AppLocalizations.of(context).addTask,
-                  border: InputBorder.none
-                ),
-                onSubmitted: (String value){
-                  if(value.isNotEmpty){
+                    icon: const Icon(Icons.check_box_outline_blank),
+                    hintText: AppLocalizations.of(context2).addTask,
+                    border: InputBorder.none),
+                onSubmitted: (String value) {
+                  if (value.isNotEmpty) {
                     debugPrint(value);
-                  } else{
+
+                    BlocProvider.of<TaskBloc>(blocContext).add(
+                      AddTaskEvent(groupName: widget.groupName, taskTitle: value),
+                    );
+                  } else {
                     debugPrint('Empty value');
                   }
-                  Navigator.pop(context);
+                  Navigator.pop(blocContext);
                 },
               ),
-               Divider(height: 2, color: ColorSelect.grayColor,),
+              Divider(
+                height: 2,
+                color: ColorSelect.grayColor,
+              ),
             ],
           ),
         ),

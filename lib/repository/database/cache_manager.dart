@@ -20,7 +20,10 @@ class CacheManager extends BaseDatabase {
   }
 
   @override
-  void addTask({required String groupName, required String titleTask}) {}
+  void addTask({required String groupName, required String titleTask}) {
+    Group relevantGroup = getRelevantGroup(groupName);
+    relevantGroup.tasks.add(Task(title: titleTask, isCompleted: false));
+  }
 
   @override
   List<Group> getGroupList() {

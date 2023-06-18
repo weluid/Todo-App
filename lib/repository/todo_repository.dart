@@ -30,4 +30,9 @@ class ToDoRepository {
     _manager.addGroup(title, id);
     debugPrint(title.toString());
   }
+
+  // add task to group
+  void addTask(String groupName, String taskTitle) {
+    _manager.addTask(groupName: groupName, titleTask: taskTitle);
+  }
 }
