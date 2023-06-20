@@ -12,3 +12,8 @@ class AddGroupEvent extends GroupEvent {
   AddGroupEvent({required this.title});
 }
 
+class RemoveGroup extends GroupEvent{
+  final String id;
+
+  RemoveGroup(this.id);
+}

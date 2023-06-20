@@ -8,7 +8,10 @@ class CacheManager extends BaseDatabase {
   List<Group> groupList = [
     Group(
         title: 'Test',
-        tasks: [Task(title: 'Fap fap', isCompleted: false), Task(title: 'Wash hand', isCompleted: false)],
+        tasks: [
+          Task(title: 'Fap fap', isCompleted: false, id: GetId().genIDByDatetimeNow()),
+          Task(title: 'Wash hand', isCompleted: false, id: GetId().genIDByDatetimeNow())
+        ],
         id: GetId().genIDByDatetimeNow()),
   ];
 
@@ -20,9 +23,10 @@ class CacheManager extends BaseDatabase {
   }
 
   @override
-  void addTask({required String groupName, required String titleTask}) {
-    Group relevantGroup = getRelevantGroup(groupName);
-    relevantGroup.tasks.add(Task(title: titleTask, isCompleted: false));
+  void addTask({required String titleTask, required String groupId, required String taskId}) {
+    Group relevantGroup = getRelevantGroup(groupId);
+
+    relevantGroup.tasks.add(Task(title: titleTask, isCompleted: false, id: taskId));
   }
 
   @override
@@ -32,15 +36,43 @@ class CacheManager extends BaseDatabase {
 
 // get length of a tasks in group
   @override
-  List<Task> getTaskList(String groupName) {
-    Group relevantGroup = getRelevantGroup(groupName);
+  List<Task> getTaskList(String groupId) {
+    Group relevantGroup = getRelevantGroup(groupId);
     return relevantGroup.tasks;
   }
 
-  // return relevant object
-  Group getRelevantGroup(String groupName) {
-    Group relevantGroup = groupList.firstWhere((group) => group.title == groupName);
+  @override
+  void removeGroup(String id) {
+    Group relevantGroup = getRelevantGroup(id);
+    groupList.remove(relevantGroup);
+  }
+
+  @override
+  void markCompleted(String groupID, String taskId) {
+    Group relevantGroup = getRelevantGroup(groupID);
+
+    Task relevantTask = getRelevantTask(taskId, relevantGroup);
+  }
+
+  @override
+  void removeTask(String groupID, String taskId) {
+    Group relevantGroup = getRelevantGroup(groupID);
+    Task relevantTask = getRelevantTask(taskId, relevantGroup);
+
+    relevantGroup.tasks.remove(relevantTask);
+  }
+
+  // return relevant group
+  Group getRelevantGroup(String id) {
+    Group relevantGroup = groupList.singleWhere((group) => group.id == id);
 
     return relevantGroup;
+  }
+
+  // return relevant group
+  Task getRelevantTask(String taskId, Group relevantGroup) {
+    Task relevantTask = relevantGroup.tasks.firstWhere((task) => task.id == taskId);
+
+    return relevantTask;
   }
 }

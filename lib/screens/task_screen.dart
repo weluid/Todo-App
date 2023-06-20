@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo/bloc/group_bloc/group_bloc.dart';
 import 'package:todo/bloc/task_bloc/task_bloc.dart';
 import 'package:todo/components/task_tile.dart';
 import 'package:todo/repository/database/cache_manager.dart';
+import 'package:todo/repository/get_id.dart';
 import 'package:todo/repository/todo_repository.dart';
 
 import 'package:todo/utilities/constants.dart';
@@ -10,15 +12,16 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskScreen extends StatefulWidget {
   final String groupName;
+  final GroupBloc groupBloc;
+  final String id;
 
-  const TaskScreen({super.key, required this.groupName});
+  const TaskScreen({required this.groupName, required this.groupBloc, required this.id, super.key});
 
   @override
   State<TaskScreen> createState() => _TaskScreenState();
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-
   ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
 
   @override
@@ -26,14 +29,14 @@ class _TaskScreenState extends State<TaskScreen> {
     return BlocProvider<TaskBloc>(
       create: (BuildContext context) {
         TaskBloc bloc = TaskBloc(toDoRepository);
-        bloc.add(GetTaskListEvent(widget.groupName));
+        bloc.add(GetTaskListEvent(widget.id));
 
         return bloc;
       },
       child: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is GetTaskList) {
-            return _buildParentWidget(context, state);
+            return _buildParentWidget(context, state, widget.groupBloc);
           } else {
             return _buildEmptyWidget(context);
           }
@@ -42,7 +45,7 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  _buildParentWidget(BuildContext context, GetTaskList state) {
+  _buildParentWidget(BuildContext context, GetTaskList state, GroupBloc groupBloc) {
     return Scaffold(
       backgroundColor: ColorSelect.lightPurpleBackground,
       appBar: AppBar(
@@ -52,7 +55,10 @@ class _TaskScreenState extends State<TaskScreen> {
             icon: const Icon(Icons.drive_file_rename_outline),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              groupBloc.add(RemoveGroup(widget.id));
+              Navigator.pop(context, true);
+            },
             icon: const Icon(Icons.delete_outline),
           )
         ],
@@ -64,18 +70,32 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: state.taskList.length,
-            itemBuilder: (context, index) => ListTile(
-              title: TaskTile(
-                title: state.taskList[index].title,
-                taskCompleted: false,
-              ),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            SingleChildScrollView(
+              child: ListView.builder(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: state.taskList.length,
+                  itemBuilder: (context, index) {
+                    return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      key: Key(index.toString()),
+                      background: deleteBackground(),
+                      onDismissed: (direction) {
+                        BlocProvider.of<TaskBloc>(context)
+                            .add(RemoveTask(widget.id, state.taskList[index].id));
+                      },
+                      child: TaskTile(
+                        title: state.taskList[index].title,
+                        taskCompleted: false,
+                      ),
+                    );
+                  }),
             ),
-          ),
+          ],
         ),
       ),
       bottomNavigationBar: bottomButton(context),
@@ -103,7 +123,9 @@ class _TaskScreenState extends State<TaskScreen> {
           style: const TextStyle(color: Colors.white),
         ),
       ),
-      bottomNavigationBar: bottomButton(context),
+      bottomNavigationBar: bottomButton(
+        context,
+      ),
     );
   }
 
@@ -161,9 +183,9 @@ class _TaskScreenState extends State<TaskScreen> {
                   if (value.isNotEmpty) {
                     debugPrint(value);
 
-                    BlocProvider.of<TaskBloc>(blocContext).add(
-                      AddTaskEvent(groupName: widget.groupName, taskTitle: value),
-                    );
+                    print(widget.id);
+                    BlocProvider.of<TaskBloc>(blocContext)
+                        .add(AddTaskEvent(taskTitle: value, groupId: widget.id, taskId: GetId().genIDByDatetimeNow()));
                   } else {
                     debugPrint('Empty value');
                   }

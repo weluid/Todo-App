@@ -21,12 +21,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
+  late GroupBloc bloc;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<GroupBloc>(
       create: (BuildContext context) {
-        GroupBloc bloc = GroupBloc(toDoRepository);
+        bloc = GroupBloc(toDoRepository);
         bloc.add(ToDoStartEvent());
 
         return bloc;
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: BlocBuilder<GroupBloc, GroupState>(
         builder: (context, state) {
           if (state is StartApp) {
-            return _buildParentWidget(context, state);
+            return _buildParentWidget(context, state, bloc);
           } else {
             return const StartPage();
           }
@@ -43,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _buildParentWidget(BuildContext context, StartApp state) {
+  _buildParentWidget(BuildContext context, StartApp state, GroupBloc bloc) {
     return Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
@@ -80,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (BuildContext context, int index) {
                     return GroupTile(
                       listName: state.groups[index].title,
-                      onPressed: () => _goToTaskPage(state.groups[index].title),
+                      onPressed: () => _goToTaskPage(state.groups[index].title, bloc, state.groups[index].id),
                     );
                   },
                 ),
@@ -111,8 +112,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
   }
 
-  _goToTaskPage(String groupName) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => TaskScreen(groupName: groupName)));
+  _goToTaskPage(String groupName, GroupBloc bloc, String id) async {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => TaskScreen(
+                  groupName: groupName,
+                  groupBloc: bloc, id: id,
+                )));
   }
 
   Future<String?> _showDialog() async {

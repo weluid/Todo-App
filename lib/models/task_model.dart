@@ -1,11 +1,11 @@
 class Task{
   String title;
   String? description;
-  String? id;
+  String id;
   bool? isImportant;
   bool isCompleted;
 
-  Task({required this.title, this.description, this.id, this.isImportant, required this.isCompleted});
+  Task({required this.title, this.description, required this.id, this.isImportant, required this.isCompleted});
 
   @override
   String toString() {
