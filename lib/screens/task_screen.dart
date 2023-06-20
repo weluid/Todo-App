@@ -90,7 +90,7 @@ class _TaskScreenState extends State<TaskScreen> {
                       },
                       child: TaskTile(
                         title: state.taskList[index].title,
-                        taskCompleted: false,
+                        taskCompleted: state.taskList[index].isCompleted,
                       ),
                     );
                   }),

@@ -5,7 +5,7 @@ class TaskTile extends StatefulWidget {
   final String title;
   final bool taskCompleted;
 
-  const TaskTile({super.key, required this.title, required this.taskCompleted});
+  const TaskTile({super.key, required this.title, required this.taskCompleted,});
 
   @override
   State<TaskTile> createState() => _TaskTileState();
@@ -21,7 +21,7 @@ class _TaskTileState extends State<TaskTile> {
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
       child: Row(
         children: [
-          Checkbox(value: widget.taskCompleted, onChanged: null),
+          Checkbox(value: widget.taskCompleted, onChanged: (bool? value) {  }, ),
           const SizedBox(width: 24),
           Text(
             widget.title,

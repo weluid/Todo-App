@@ -52,6 +52,7 @@ class CacheManager extends BaseDatabase {
     Group relevantGroup = getRelevantGroup(groupID);
 
     Task relevantTask = getRelevantTask(taskId, relevantGroup);
+    relevantTask.isCompleted = !relevantTask.isCompleted;
   }
 
   @override

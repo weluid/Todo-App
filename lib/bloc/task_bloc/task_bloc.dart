@@ -17,6 +17,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<GetTaskListEvent>(_eventGetTaskList);
     on<AddTaskEvent>(_eventAddTask);
     on<RemoveTask>(_eventRemoveTask);
+
   }
 
   void _eventGetTaskList(GetTaskListEvent e, Emitter emit) {
@@ -32,4 +33,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     toDoRepository.removeTask(e.groupId, e.taskId);
     emit(GetTaskList(toDoRepository.getTaskList(e.groupId)));
   }
+
+
 }
