@@ -8,19 +8,3 @@ class ColorSelect {
   static Color darkPurple = const Color(0xFF988CD0);
   static Color grayColor = const Color(0xFF777679);
 }
-
-deleteBackground() {
-  return Container(
-    alignment: Alignment.centerRight,
-    margin: EdgeInsets.all(4),
-    padding: const EdgeInsets.only(right: 20),
-    decoration: BoxDecoration(
-      color: ColorSelect.importantColor,
-      borderRadius: const BorderRadius.only(
-        topRight: Radius.circular(10),
-        bottomRight: Radius.circular(10),
-      ),
-    ),
-    child: const Icon(Icons.delete_outline, color: Colors.white),
-  );
-}

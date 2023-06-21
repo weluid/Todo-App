@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo/bloc/group_bloc/group_bloc.dart';
 import 'package:todo/bloc/task_bloc/task_bloc.dart';
 import 'package:todo/components/task_tile.dart';
@@ -80,14 +81,28 @@ class _TaskScreenState extends State<TaskScreen> {
                   shrinkWrap: true,
                   itemCount: state.taskList.length,
                   itemBuilder: (context, index) {
-                    return Dismissible(
-                      direction: DismissDirection.endToStart,
+                    return Slidable(
+                      direction: Axis.horizontal,
                       key: Key(index.toString()),
-                      background: deleteBackground(),
-                      onDismissed: (direction) {
-                        BlocProvider.of<TaskBloc>(context)
-                            .add(RemoveTask(widget.id, state.taskList[index].id));
-                      },
+
+                      // BlocProvider.of<TaskBloc>(context)
+                      //     .add(RemoveTask(widget.id, state.taskList[index].id));
+                      endActionPane: ActionPane(
+
+                        extentRatio: 0.25,
+                        motion: const ScrollMotion(),
+                        children: [
+                          const SizedBox(width: 10),
+                          SlidableAction(
+                            onPressed: (context) =>
+                                BlocProvider.of<TaskBloc>(context).add(RemoveTask(widget.id, state.taskList[index].id)),
+                            backgroundColor: ColorSelect.importantColor,
+                            foregroundColor: Colors.white,
+                            borderRadius: const BorderRadius.all(Radius.circular(10)),
+                            icon: Icons.delete_outline,
+                          ),
+                        ],
+                      ),
                       child: TaskTile(
                         title: state.taskList[index].title,
                         taskCompleted: state.taskList[index].isCompleted,
@@ -183,7 +198,6 @@ class _TaskScreenState extends State<TaskScreen> {
                   if (value.isNotEmpty) {
                     debugPrint(value);
 
-                    print(widget.id);
                     BlocProvider.of<TaskBloc>(blocContext)
                         .add(AddTaskEvent(taskTitle: value, groupId: widget.id, taskId: GetId().genIDByDatetimeNow()));
                   } else {
