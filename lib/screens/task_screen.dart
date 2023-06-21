@@ -84,23 +84,12 @@ class _TaskScreenState extends State<TaskScreen> {
                     return Slidable(
                       direction: Axis.horizontal,
                       key: Key(index.toString()),
-
-                      // BlocProvider.of<TaskBloc>(context)
-                      //     .add(RemoveTask(widget.id, state.taskList[index].id));
                       endActionPane: ActionPane(
-
                         extentRatio: 0.25,
                         motion: const ScrollMotion(),
                         children: [
                           const SizedBox(width: 10),
-                          SlidableAction(
-                            onPressed: (context) =>
-                                BlocProvider.of<TaskBloc>(context).add(RemoveTask(widget.id, state.taskList[index].id)),
-                            backgroundColor: ColorSelect.importantColor,
-                            foregroundColor: Colors.white,
-                            borderRadius: const BorderRadius.all(Radius.circular(10)),
-                            icon: Icons.delete_outline,
-                          ),
+                          deletionCard(context, state, index),
                         ],
                       ),
                       child: TaskTile(
@@ -114,6 +103,32 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
       ),
       bottomNavigationBar: bottomButton(context),
+    );
+  }
+
+  // deletion card by left swipe
+  Expanded deletionCard(BuildContext context, GetTaskList state, int index) {
+    return Expanded(
+      flex: 1,
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 4, top: 4),
+        elevation: 0,
+        child: GestureDetector(
+          child: Container(
+            decoration: BoxDecoration(
+              color: ColorSelect.importantColor,
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+            ),
+            width: double.infinity,
+            child: const Center(
+                child: Icon(
+              Icons.delete_outline,
+              color: Colors.white,
+            )),
+          ),
+          onTap: () => BlocProvider.of<TaskBloc>(context).add(RemoveTask(widget.id, state.taskList[index].id)),
+        ),
+      ),
     );
   }
 
@@ -144,6 +159,7 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
+  // bottom button for add task
   Padding bottomButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -170,6 +186,7 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
+  // field for adding task
   _addTask(BuildContext blocContext) {
     TextEditingController titleController = TextEditingController();
 
