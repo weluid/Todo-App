@@ -9,7 +9,7 @@ class AnyDB extends BaseDatabase {
   }
 
   @override
-  void addTask({ required String titleTask, required String groupId, required String taskId}) {
+  void addTask({required String titleTask, required String groupId, required String taskId}) {
     // TODO: implement addTask
   }
 
@@ -20,7 +20,7 @@ class AnyDB extends BaseDatabase {
   }
 
   @override
-  List<Task> getTaskList( String groupId) {
+  List<Task> getTaskList(String groupId) {
     // TODO: implement getTaskList
     throw UnimplementedError();
   }
@@ -39,5 +39,4 @@ class AnyDB extends BaseDatabase {
   void removeTask(String groupID, String taskId) {
     // TODO: implement removeTask
   }
- 
-  }
+}

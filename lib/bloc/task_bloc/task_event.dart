@@ -9,7 +9,7 @@ class GetTaskListEvent extends TaskEvent {
   GetTaskListEvent(this.groupId);
 }
 
-//Add task to list
+// Add task to list
 class AddTaskEvent extends TaskEvent {
   final String taskTitle;
   final String groupId;
@@ -18,6 +18,7 @@ class AddTaskEvent extends TaskEvent {
   AddTaskEvent({required this.taskTitle, required this.groupId, required this.taskId});
 }
 
+// Remove task
 class RemoveTask extends TaskEvent {
   final String groupId;
   final String taskId;

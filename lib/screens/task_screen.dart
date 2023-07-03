@@ -207,17 +207,19 @@ class _TaskScreenState extends State<TaskScreen> {
                 },
                 controller: titleController,
                 decoration: InputDecoration(
-                  icon: const Icon(Icons.check_box_outline_blank),
-                  hintText: AppLocalizations.of(context).addTask,
-                  border: InputBorder.none
-                ),
-                onSubmitted: (String value){
-                  if(value.isNotEmpty){
+                    icon: const Icon(Icons.check_box_outline_blank),
+                    hintText: AppLocalizations.of(context).addTask,
+                    border: InputBorder.none),
+                onSubmitted: (String value) {
+                  if (value.isNotEmpty) {
                     debugPrint(value);
-                  } else{
+                    BlocProvider.of<TaskBloc>(blocContext)
+                        .add(AddTaskEvent(taskTitle: value, groupId: widget.id, taskId: GetId().genIDByDatetimeNow()));
+                    Navigator.pop(blocContext);
+                  } else {
                     debugPrint('Empty value');
+                    Navigator.pop(blocContext);
                   }
-                  Navigator.pop(blocContext);
                 },
               ),
               Divider(

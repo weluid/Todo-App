@@ -5,7 +5,11 @@ class TaskTile extends StatefulWidget {
   final String title;
   final bool taskCompleted;
 
-  const TaskTile({super.key, required this.title, required this.taskCompleted,});
+  const TaskTile({
+    super.key,
+    required this.title,
+    required this.taskCompleted,
+  });
 
   @override
   State<TaskTile> createState() => _TaskTileState();
@@ -17,11 +21,14 @@ class _TaskTileState extends State<TaskTile> {
     return Container(
       height: 60,
       margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
       child: Row(
         children: [
-          Checkbox(value: widget.taskCompleted, onChanged: (bool? value) {  }, ),
+          Checkbox(
+            value: widget.taskCompleted,
+            onChanged: (bool? value) {},
+          ),
           const SizedBox(width: 24),
           Text(
             widget.title,
@@ -29,7 +36,7 @@ class _TaskTileState extends State<TaskTile> {
           ),
           const Spacer(),
           GestureDetector(
-            child:Icon(Icons.star_border, color: ColorSelect.grayColor),
+            child: Icon(Icons.star_border, color: ColorSelect.grayColor),
           )
         ],
       ),

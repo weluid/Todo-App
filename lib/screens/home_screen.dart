@@ -118,7 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
         MaterialPageRoute(
             builder: (context) => TaskScreen(
                   groupName: groupName,
-                  groupBloc: bloc, id: id,
+                  groupBloc: bloc,
+                  id: id,
                 )));
   }
 

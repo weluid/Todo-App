@@ -62,7 +62,6 @@ class CacheManager extends BaseDatabase {
 
     relevantGroup.tasks.remove(relevantTask);
     debugPrint(relevantGroup.toString());
-
   }
 
   // return relevant group

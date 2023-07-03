@@ -14,11 +14,12 @@ abstract class BaseDatabase {
   // add task to group
   void addTask({required String titleTask, required String groupId, required String taskId});
 
-  /**
-   * remove group remove Task edit, important
-   */
+  // remove group
   void removeGroup(String id);
+
+  // remove task
   void removeTask(String groupID, String taskId);
 
+  // mark task completed
   void markCompleted(String groupID, String taskId);
 }
