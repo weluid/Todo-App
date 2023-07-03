@@ -1,10 +1,11 @@
 {
-  "addList": "Додати групу",
+  "addGroup": "Додати групу",
   "initialValue": "Група без назви",
   "newList": "Нова Група",
-   "enterGroupTitle": "Введіть назву групи",
-   "create": "Створити",
-   "cancel": "Скасувати",
+  "enterGroupTitle": "Введіть назву групи",
+  "create": "Створити",
+  "cancel": "Скасувати",
   "myDay": "Мій день",
-  "important": "Важливо"
+  "important": "Важливо",
+  "addTask": "Додайте завдання"
 }

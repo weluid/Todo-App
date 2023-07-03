@@ -1,10 +1,11 @@
 {
-  "addList": "Add group",
+  "addGroup": "Add group",
   "initialValue": "Untitled Group",
   "newList": "New Group",
   "enterGroupTitle": "Enter group title",
   "create": "Create",
   "cancel": "Cancel",
   "myDay": "My Day",
-  "important": "Important"
+  "important": "Important",
+  "addTask": "Add a task"
 }

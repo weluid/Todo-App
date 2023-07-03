@@ -6,19 +6,19 @@ import 'package:todo/models/group_model.dart';
 import 'package:todo/repository/get_id.dart';
 import 'package:todo/repository/todo_repository.dart';
 
-part 'todo_event.dart';
+part 'group_event.dart';
 
-part 'todo_state.dart';
+part 'group_state.dart';
 
-class ToDoBloc extends Bloc<ToDoEvent, ToDoState> {
+class GroupBloc extends Bloc<GroupEvent, GroupState> {
   final ToDoRepository toDoRepository;
 
-  ToDoBloc(this.toDoRepository) : super(ToDoInitial()) {
+  GroupBloc(this.toDoRepository) : super(GroupInitial()) {
     on<ToDoStartEvent>(_eventStartApp);
     on<AddGroupEvent>(_eventAddGroup);
   }
 
-  Future<void> _eventStartApp(ToDoEvent e, Emitter emit) async {
+  Future<void> _eventStartApp(GroupEvent e, Emitter emit) async {
     emit(StartApp(toDoRepository.getGroupList()));
   }
 
