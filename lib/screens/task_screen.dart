@@ -7,7 +7,6 @@ import 'package:todo/components/task_tile.dart';
 import 'package:todo/repository/database/cache_manager.dart';
 import 'package:todo/repository/get_id.dart';
 import 'package:todo/repository/todo_repository.dart';
-
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -208,16 +207,14 @@ class _TaskScreenState extends State<TaskScreen> {
                 },
                 controller: titleController,
                 decoration: InputDecoration(
-                    icon: const Icon(Icons.check_box_outline_blank),
-                    hintText: AppLocalizations.of(context2).addTask,
-                    border: InputBorder.none),
-                onSubmitted: (String value) {
-                  if (value.isNotEmpty) {
+                  icon: const Icon(Icons.check_box_outline_blank),
+                  hintText: AppLocalizations.of(context).addTask,
+                  border: InputBorder.none
+                ),
+                onSubmitted: (String value){
+                  if(value.isNotEmpty){
                     debugPrint(value);
-
-                    BlocProvider.of<TaskBloc>(blocContext)
-                        .add(AddTaskEvent(taskTitle: value, groupId: widget.id, taskId: GetId().genIDByDatetimeNow()));
-                  } else {
+                  } else{
                     debugPrint('Empty value');
                   }
                   Navigator.pop(blocContext);

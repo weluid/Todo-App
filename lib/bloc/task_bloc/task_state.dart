@@ -8,10 +8,9 @@ class TaskInitial extends TaskState {}
 //Add task to list
 class AddTask extends TaskState {}
 
-//Add task to list
+//Get task to list
 class GetTaskList extends TaskState {
-  final  List<Task> taskList;
+  final List<Task> taskList;
 
   GetTaskList(this.taskList);
 }
-
