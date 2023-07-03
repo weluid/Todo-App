@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:todo/bloc/group_bloc/group_bloc.dart';
 import 'package:todo/bloc/task_bloc/task_bloc.dart';
 import 'package:todo/components/task_tile.dart';
 import 'package:todo/repository/database/cache_manager.dart';
+import 'package:todo/repository/get_id.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskScreen extends StatefulWidget {
   final String groupName;
+  final GroupBloc groupBloc;
+  final String id;
 
-  const TaskScreen({super.key, required this.groupName});
+  const TaskScreen({required this.groupName, required this.groupBloc, required this.id, super.key});
 
   @override
   State<TaskScreen> createState() => _TaskScreenState();
@@ -24,14 +29,14 @@ class _TaskScreenState extends State<TaskScreen> {
     return BlocProvider<TaskBloc>(
       create: (BuildContext context) {
         TaskBloc bloc = TaskBloc(toDoRepository);
-        bloc.add(GetTaskListEvent(widget.groupName));
+        bloc.add(GetTaskListEvent(widget.id));
 
         return bloc;
       },
       child: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is GetTaskList) {
-            return _buildParentWidget(context, state);
+            return _buildParentWidget(context, state, widget.groupBloc);
           } else {
             return _buildEmptyWidget(context);
           }
@@ -40,7 +45,7 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  _buildParentWidget(BuildContext context, GetTaskList state) {
+  _buildParentWidget(BuildContext context, GetTaskList state, GroupBloc groupBloc) {
     return Scaffold(
       backgroundColor: ColorSelect.lightPurpleBackground,
       appBar: AppBar(
@@ -50,7 +55,10 @@ class _TaskScreenState extends State<TaskScreen> {
             icon: const Icon(Icons.drive_file_rename_outline),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              groupBloc.add(RemoveGroup(widget.id));
+              Navigator.pop(context, true);
+            },
             icon: const Icon(Icons.delete_outline),
           )
         ],
@@ -62,21 +70,64 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: state.taskList.length,
-            itemBuilder: (context, index) => ListTile(
-              title: TaskTile(
-                title: state.taskList[index].title,
-                taskCompleted: false,
-              ),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            SingleChildScrollView(
+              child: ListView.builder(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: state.taskList.length,
+                  itemBuilder: (context, index) {
+                    return Slidable(
+                      direction: Axis.horizontal,
+                      key: Key(index.toString()),
+                      endActionPane: ActionPane(
+                        extentRatio: 0.25,
+                        motion: const ScrollMotion(),
+                        children: [
+                          const SizedBox(width: 10),
+                          deletionCard(context, state, index),
+                        ],
+                      ),
+                      child: TaskTile(
+                        title: state.taskList[index].title,
+                        taskCompleted: state.taskList[index].isCompleted,
+                      ),
+                    );
+                  }),
             ),
-          ),
+          ],
         ),
       ),
       bottomNavigationBar: bottomButton(context),
+    );
+  }
+
+  // deletion card by left swipe
+  Expanded deletionCard(BuildContext context, GetTaskList state, int index) {
+    return Expanded(
+      flex: 1,
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 4, top: 4),
+        elevation: 0,
+        child: GestureDetector(
+          child: Container(
+            decoration: BoxDecoration(
+              color: ColorSelect.importantColor,
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+            ),
+            width: double.infinity,
+            child: const Center(
+                child: Icon(
+              Icons.delete_outline,
+              color: Colors.white,
+            )),
+          ),
+          onTap: () => BlocProvider.of<TaskBloc>(context).add(RemoveTask(widget.id, state.taskList[index].id)),
+        ),
+      ),
     );
   }
 
@@ -101,10 +152,13 @@ class _TaskScreenState extends State<TaskScreen> {
           style: const TextStyle(color: Colors.white),
         ),
       ),
-      bottomNavigationBar: bottomButton(context),
+      bottomNavigationBar: bottomButton(
+        context,
+      ),
     );
   }
 
+  // bottom button for add task
   Padding bottomButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -131,15 +185,16 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  _addTask(BuildContext context) {
+  // field for adding task
+  _addTask(BuildContext blocContext) {
     TextEditingController titleController = TextEditingController();
 
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(0),
       ),
-      context: context,
-      builder: (context) => Padding(
+      context: blocContext,
+      builder: (context2) => Padding(
         padding: const EdgeInsets.all(20),
         child: SizedBox(
           height: 50,
@@ -158,10 +213,13 @@ class _TaskScreenState extends State<TaskScreen> {
                 onSubmitted: (String value) {
                   if (value.isNotEmpty) {
                     debugPrint(value);
+                    BlocProvider.of<TaskBloc>(blocContext)
+                        .add(AddTaskEvent(taskTitle: value, groupId: widget.id, taskId: GetId().genIDByDatetimeNow()));
+                    Navigator.pop(blocContext);
                   } else {
                     debugPrint('Empty value');
+                    Navigator.pop(blocContext);
                   }
-                  Navigator.pop(context);
                 },
               ),
               Divider(

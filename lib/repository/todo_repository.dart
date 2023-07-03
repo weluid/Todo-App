@@ -20,14 +20,27 @@ class ToDoRepository {
     return _manager.getGroupList();
   }
 
+  void removeGroup(String groupId) {
+    _manager.removeGroup(groupId);
+  }
+
 // get the list of groups
-  List<Task> getTaskList(String groupName) {
-    return _manager.getTaskList(groupName);
+  List<Task> getTaskList(String id) {
+    return _manager.getTaskList(id);
   }
 
   // add a group
-  void addGroup(String title, String id) {
-    _manager.addGroup(title, id);
+  void addGroup(String title, String groupId) {
+    _manager.addGroup(title, groupId);
     debugPrint(title.toString());
+  }
+
+  // add task to group
+  void addTask(String taskTitle, String groupId, String taskId) {
+    _manager.addTask(titleTask: taskTitle, groupId: groupId, taskId: taskId);
+  }
+
+  void removeTask(String groupID, String taskId) {
+    _manager.removeTask(groupID, taskId);
   }
 }

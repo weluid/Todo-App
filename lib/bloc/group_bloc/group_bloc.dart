@@ -16,6 +16,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   GroupBloc(this.toDoRepository) : super(GroupInitial()) {
     on<ToDoStartEvent>(_eventStartApp);
     on<AddGroupEvent>(_eventAddGroup);
+    on<RemoveGroup>(_eventRemoveGroup);
   }
 
   Future<void> _eventStartApp(GroupEvent e, Emitter emit) async {
@@ -25,6 +26,11 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   void _eventAddGroup(AddGroupEvent e, Emitter emit) {
     toDoRepository.addGroup(e.title, GetId().genIDByDatetimeNow());
 
+    emit(StartApp(toDoRepository.getGroupList()));
+  }
+
+  FutureOr<void> _eventRemoveGroup(RemoveGroup e, Emitter emit) {
+    toDoRepository.removeGroup(e.id);
     emit(StartApp(toDoRepository.getGroupList()));
   }
 }

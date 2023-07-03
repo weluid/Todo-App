@@ -4,10 +4,24 @@ part of 'task_bloc.dart';
 abstract class TaskEvent {}
 
 class GetTaskListEvent extends TaskEvent {
-  final String groupName;
+  final String groupId;
 
-  GetTaskListEvent(this.groupName);
+  GetTaskListEvent(this.groupId);
 }
 
-//Add task to list
-class AddTaskEvent extends TaskEvent {}
+// Add task to list
+class AddTaskEvent extends TaskEvent {
+  final String taskTitle;
+  final String groupId;
+  final String taskId;
+
+  AddTaskEvent({required this.taskTitle, required this.groupId, required this.taskId});
+}
+
+// Remove task
+class RemoveTask extends TaskEvent {
+  final String groupId;
+  final String taskId;
+
+  RemoveTask(this.groupId, this.taskId);
+}

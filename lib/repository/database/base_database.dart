@@ -6,14 +6,20 @@ abstract class BaseDatabase {
   List<Group> getGroupList();
 
   // get task list
-  List<Task> getTaskList(String groupName);
+  List<Task> getTaskList(String groupId);
 
   // add group
   void addGroup(String title, String id);
 
   // add task to group
-  void addTask({required String groupName, required String titleTask});
-/**
- * remove group remove Task edit, important
- */
+  void addTask({required String titleTask, required String groupId, required String taskId});
+
+  // remove group
+  void removeGroup(String id);
+
+  // remove task
+  void removeTask(String groupID, String taskId);
+
+  // mark task completed
+  void markCompleted(String groupID, String taskId);
 }
