@@ -18,7 +18,10 @@ class _TaskTileState extends State<TaskTile> {
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: Container(
         padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Row(
           children: [
             Checkbox(value: widget.taskCompleted, onChanged: null),
@@ -30,7 +33,10 @@ class _TaskTileState extends State<TaskTile> {
             const Spacer(),
             IconButton(
               onPressed: () {},
-              icon:  Icon(Icons.star_border, color: ColorSelect.grayColor,),
+              icon: Icon(
+                Icons.star_border,
+                color: ColorSelect.grayColor,
+              ),
             ),
           ],
         ),

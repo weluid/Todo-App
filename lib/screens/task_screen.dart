@@ -18,7 +18,6 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-
   ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
 
   @override
@@ -154,20 +153,22 @@ class _TaskScreenState extends State<TaskScreen> {
                 },
                 controller: titleController,
                 decoration: InputDecoration(
-                  icon: const Icon(Icons.check_box_outline_blank),
-                  hintText: AppLocalizations.of(context).addTask,
-                  border: InputBorder.none
-                ),
-                onSubmitted: (String value){
-                  if(value.isNotEmpty){
+                    icon: const Icon(Icons.check_box_outline_blank),
+                    hintText: AppLocalizations.of(context).addTask,
+                    border: InputBorder.none),
+                onSubmitted: (String value) {
+                  if (value.isNotEmpty) {
                     debugPrint(value);
-                  } else{
+                  } else {
                     debugPrint('Empty value');
                   }
                   Navigator.pop(context);
                 },
               ),
-               Divider(height: 2, color: ColorSelect.grayColor,),
+              Divider(
+                height: 2,
+                color: ColorSelect.grayColor,
+              ),
             ],
           ),
         ),

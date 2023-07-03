@@ -16,7 +16,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   GroupBloc(this.toDoRepository) : super(GroupInitial()) {
     on<ToDoStartEvent>(_eventStartApp);
     on<AddGroupEvent>(_eventAddGroup);
-
   }
 
   Future<void> _eventStartApp(GroupEvent e, Emitter emit) async {

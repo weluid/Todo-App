@@ -3,7 +3,6 @@ part of 'task_bloc.dart';
 @immutable
 abstract class TaskEvent {}
 
-
 class GetTaskListEvent extends TaskEvent {
   final String groupName;
 
@@ -12,4 +11,3 @@ class GetTaskListEvent extends TaskEvent {
 
 //Add task to list
 class AddTaskEvent extends TaskEvent {}
-

@@ -24,5 +24,4 @@ class AnyDB extends BaseDatabase {
     // TODO: implement getTaskList
     throw UnimplementedError();
   }
- 
-  }
+}

@@ -11,4 +11,3 @@ class AddGroupEvent extends GroupEvent {
 
   AddGroupEvent({required this.title});
 }
-
