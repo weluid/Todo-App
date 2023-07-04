@@ -1,5 +1,5 @@
-import 'package:todo/models/group_model.dart';
-import 'package:todo/models/task_model.dart';
+import 'package:todo/models/group.dart';
+import 'package:todo/models/task.dart';
 
 abstract class BaseDatabase {
   // get group list
@@ -9,17 +9,17 @@ abstract class BaseDatabase {
   List<Task> getTaskList(String groupId);
 
   // add group
-  void addGroup(String title, String id);
+  void addGroup(String title);
 
   // add task to group
-  void addTask({required String titleTask, required String groupId, required String taskId});
+  void addTask(Task task);
 
   // remove group
   void removeGroup(String id);
 
   // remove task
-  void removeTask(String groupID, String taskId);
+  void removeTask(String taskId);
 
   // mark task completed
-  void markCompleted(String groupID, String taskId);
+  void toggleMark(String taskID);
 }

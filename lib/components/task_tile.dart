@@ -4,11 +4,13 @@ import 'package:todo/utilities/constants.dart';
 class TaskTile extends StatefulWidget {
   final String title;
   final bool taskCompleted;
+  final VoidCallback onTap;
 
   const TaskTile({
     super.key,
     required this.title,
     required this.taskCompleted,
+    required this.onTap,
   });
 
   @override
@@ -25,9 +27,12 @@ class _TaskTileState extends State<TaskTile> {
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
       child: Row(
         children: [
-          Checkbox(
-            value: widget.taskCompleted,
-            onChanged: (bool? value) {},
+          GestureDetector(
+            onTap: widget.onTap,
+            child: Checkbox(
+              value: widget.taskCompleted,
+              onChanged: (bool? value) {},
+            ),
           ),
           const SizedBox(width: 24),
           Text(

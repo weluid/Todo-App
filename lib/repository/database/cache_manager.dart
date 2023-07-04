@@ -1,32 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:todo/models/group_model.dart';
-import 'package:todo/models/task_model.dart';
+import 'package:todo/models/group.dart';
+import 'package:todo/models/task.dart';
 import 'package:todo/repository/database/base_database.dart';
 import 'package:todo/repository/get_id.dart';
 
 class CacheManager extends BaseDatabase {
+  // List with groups
   List<Group> groupList = [
-    Group(
-        title: 'Test',
-        tasks: [
-          Task(title: 'Fap fap', isCompleted: false, id: GetId().genIDByDatetimeNow()),
-          Task(title: 'Wash hand', isCompleted: false, id: GetId().genIDByDatetimeNow())
-        ],
-        id: GetId().genIDByDatetimeNow()),
+    Group(id: 'Test', groupName: 'Test'),
+  ];
+
+  // List with tasks
+  List<Task> tasks = [
+    Task(id: '1', title: 'Read Holly Bible', isCompleted: false, groupId: 'Test'),
+    Task(id: '2', title: 'Call Verka', isCompleted: false, groupId: 'Test'),
+    Task(id: '3', title: 'See Pornhub', isCompleted: false, groupId: 'Test'),
   ];
 
   @override
-  void addGroup(String title, String id) {
-    Group newList = Group(title: title, tasks: [], id: id);
-    groupList.add(newList);
+  void addGroup(String title) {
+    groupList.add(
+      Group(id: GetId().genIDByDatetimeNow(), groupName: title),
+    );
     debugPrint(groupList.toString());
   }
 
   @override
-  void addTask({required String titleTask, required String groupId, required String taskId}) {
-    Group relevantGroup = getRelevantGroup(groupId);
-
-    relevantGroup.tasks.add(Task(title: titleTask, isCompleted: false, id: taskId));
+  void addTask(Task task) {
+    tasks.add(task);
   }
 
   @override
@@ -37,44 +38,23 @@ class CacheManager extends BaseDatabase {
 // get length of a tasks in group
   @override
   List<Task> getTaskList(String groupId) {
-    Group relevantGroup = getRelevantGroup(groupId);
-    return relevantGroup.tasks;
+    return tasks.where((element) => element.groupId == groupId).toList();
   }
 
   @override
   void removeGroup(String id) {
-    Group relevantGroup = getRelevantGroup(id);
-    groupList.remove(relevantGroup);
+    groupList.removeWhere((element) => element.id == id);
   }
 
   @override
-  void markCompleted(String groupID, String taskId) {
-    Group relevantGroup = getRelevantGroup(groupID);
-
-    Task relevantTask = getRelevantTask(taskId, relevantGroup);
-    relevantTask.isCompleted = !relevantTask.isCompleted;
+  void toggleMark(String taskID) {
+    debugPrint('Toggle Mark');
+    Task currentTask = tasks.firstWhere((element) => element.id == taskID);
+    currentTask.isCompleted = !currentTask.isCompleted;
   }
 
   @override
-  void removeTask(String groupID, String taskId) {
-    Group relevantGroup = getRelevantGroup(groupID);
-    Task relevantTask = getRelevantTask(taskId, relevantGroup);
-
-    relevantGroup.tasks.remove(relevantTask);
-    debugPrint(relevantGroup.toString());
-  }
-
-  // return relevant group
-  Group getRelevantGroup(String id) {
-    Group relevantGroup = groupList.singleWhere((group) => group.id == id);
-
-    return relevantGroup;
-  }
-
-  // return relevant group
-  Task getRelevantTask(String taskId, Group relevantGroup) {
-    Task relevantTask = relevantGroup.tasks.firstWhere((task) => task.id == taskId);
-
-    return relevantTask;
+  void removeTask(String taskId) {
+    tasks.removeWhere((element) => element.id == taskId);
   }
 }

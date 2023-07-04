@@ -80,8 +80,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: state.groups.length,
                   itemBuilder: (BuildContext context, int index) {
                     return GroupTile(
-                      listName: state.groups[index].title,
-                      onPressed: () => _goToTaskPage(state.groups[index].title, bloc, state.groups[index].id),
+                      listName: state.groups[index].groupName,
+                      onPressed: () => _goToTaskPage(
+                        state.groups[index].groupName,
+                        bloc,
+                        state.groups[index].id,
+                      ),
                     );
                   },
                 ),
