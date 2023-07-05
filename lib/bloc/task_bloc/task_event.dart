@@ -28,7 +28,6 @@ class RemoveTask extends TaskEvent {
 // Mark Completed
 class ToggleMark extends TaskEvent {
   final String taskId;
-  final String groupId;
 
-  ToggleMark(this.taskId, this.groupId);
+  ToggleMark(this.taskId);
 }

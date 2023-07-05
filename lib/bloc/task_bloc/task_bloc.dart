@@ -26,8 +26,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   FutureOr<void> _eventAddTask(AddTaskEvent e, Emitter<TaskState> emit) {
     toDoRepository.addTask(
-      Task(id: GetId().genIDByDatetimeNow(),
-          title: e.taskTitle, groupId: e.groupId),
+      Task(id: GetId().genIDByDatetimeNow(), title: e.taskTitle, groupId: e.groupId),
     );
     emit(GetTaskList(toDoRepository.getTaskList(e.groupId)));
   }
@@ -39,6 +38,5 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   FutureOr<void> _eventToggleMark(ToggleMark e, Emitter<TaskState> emit) {
     toDoRepository.toggleMark(e.taskId);
-    emit(GetTaskList(toDoRepository.getTaskList(e.groupId)));
   }
 }

@@ -92,12 +92,11 @@ class _TaskScreenState extends State<TaskScreen> {
                         ],
                       ),
                       child: TaskTile(
-                        title: state.taskList[index].title,
-                        taskCompleted: state.taskList[index].isCompleted,
-                        onTap: () {
-                          () => BlocProvider.of<TaskBloc>(context).add(
-                                ToggleMark(state.taskList[index].id, widget.id),
-                              );
+                        task: state.taskList[index],
+                        onTap: (id) {
+                          BlocProvider.of<TaskBloc>(context).add(
+                            ToggleMark(id),
+                          );
                         },
                       ),
                     );
@@ -132,8 +131,6 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
           onTap: () => BlocProvider.of<TaskBloc>(context).add(
             RemoveTask(widget.id, state.taskList[index].id),
-            // TODO   () => BlocProvider.of<TaskBloc>(context).add(
-            // TODO   ToggleMark(state.taskList[index].id, widget.id),
           ),
         ),
       ),
