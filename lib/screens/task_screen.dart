@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo/bloc/group_bloc/group_bloc.dart';
@@ -23,7 +24,7 @@ class TaskScreen extends StatefulWidget {
 class _TaskScreenState extends State<TaskScreen> {
   ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
   late TaskBloc taskBloc;
-
+ late GroupBloc groupBloc = widget.groupBloc;
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TaskBloc>(
@@ -36,7 +37,7 @@ class _TaskScreenState extends State<TaskScreen> {
       child: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is GetTaskList) {
-            return _buildParentWidget(context, state, widget.groupBloc, taskBloc);
+            return _buildParentWidget(context, state, groupBloc, taskBloc);
           } else {
             return _buildEmptyWidget(context);
           }
@@ -56,8 +57,9 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
           IconButton(
             onPressed: () {
-              groupBloc.add(RemoveGroup(widget.id));
-              Navigator.pop(context, true);
+              _showDialog(context);
+              // groupBloc.add(RemoveGroup(widget.id));
+              // Navigator.pop(context, true);
             },
             icon: const Icon(Icons.delete_outline),
           )
@@ -233,5 +235,52 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
       ),
     );
+  }
+
+  _showDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Are you sure?',
+              style: TextStyle(fontSize: 22),
+            ),
+            content: const Text('Group will be permanently deleted'),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: (){
+                  groupBloc.add(RemoveGroup(widget.id));
+                  Navigator.pop(context, true);
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                child: Container(
+                  height: 40,
+                  width: 89,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: ColorSelect.importantColor,
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Delete',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          );
+        });
   }
 }
