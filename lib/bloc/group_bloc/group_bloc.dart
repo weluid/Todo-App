@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:todo/models/group_model.dart';
-import 'package:todo/repository/get_id.dart';
+import 'package:todo/models/group.dart';
 import 'package:todo/repository/todo_repository.dart';
 
 part 'group_event.dart';
@@ -24,7 +23,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   }
 
   void _eventAddGroup(AddGroupEvent e, Emitter emit) {
-    toDoRepository.addGroup(e.title, GetId().genIDByDatetimeNow());
+    toDoRepository.addGroup(e.title);
 
     emit(StartApp(toDoRepository.getGroupList()));
   }

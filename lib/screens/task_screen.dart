@@ -5,7 +5,6 @@ import 'package:todo/bloc/group_bloc/group_bloc.dart';
 import 'package:todo/bloc/task_bloc/task_bloc.dart';
 import 'package:todo/components/task_tile.dart';
 import 'package:todo/repository/database/cache_manager.dart';
-import 'package:todo/repository/get_id.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -23,20 +22,21 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> {
   ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
+  late TaskBloc taskBloc;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TaskBloc>(
       create: (BuildContext context) {
-        TaskBloc bloc = TaskBloc(toDoRepository);
-        bloc.add(GetTaskListEvent(widget.id));
+        taskBloc = TaskBloc(toDoRepository);
+        taskBloc.add(GetTaskListEvent(widget.id));
 
-        return bloc;
+        return taskBloc;
       },
       child: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is GetTaskList) {
-            return _buildParentWidget(context, state, widget.groupBloc);
+            return _buildParentWidget(context, state, widget.groupBloc, taskBloc);
           } else {
             return _buildEmptyWidget(context);
           }
@@ -45,7 +45,7 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  _buildParentWidget(BuildContext context, GetTaskList state, GroupBloc groupBloc) {
+  _buildParentWidget(BuildContext context, GetTaskList state, GroupBloc groupBloc, TaskBloc taskBloc) {
     return Scaffold(
       backgroundColor: ColorSelect.lightPurpleBackground,
       appBar: AppBar(
@@ -82,7 +82,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   itemBuilder: (context, index) {
                     return Slidable(
                       direction: Axis.horizontal,
-                      key: Key(index.toString()),
+                      key: Key(state.taskList[index].toString()),
                       endActionPane: ActionPane(
                         extentRatio: 0.25,
                         motion: const ScrollMotion(),
@@ -92,8 +92,12 @@ class _TaskScreenState extends State<TaskScreen> {
                         ],
                       ),
                       child: TaskTile(
-                        title: state.taskList[index].title,
-                        taskCompleted: state.taskList[index].isCompleted,
+                        task: state.taskList[index],
+                        onTap: (id) {
+                          BlocProvider.of<TaskBloc>(context).add(
+                            ToggleMark(id),
+                          );
+                        },
                       ),
                     );
                   }),
@@ -125,7 +129,9 @@ class _TaskScreenState extends State<TaskScreen> {
               color: Colors.white,
             )),
           ),
-          onTap: () => BlocProvider.of<TaskBloc>(context).add(RemoveTask(widget.id, state.taskList[index].id)),
+          onTap: () => BlocProvider.of<TaskBloc>(context).add(
+            RemoveTask(widget.id, state.taskList[index].id),
+          ),
         ),
       ),
     );
@@ -202,9 +208,6 @@ class _TaskScreenState extends State<TaskScreen> {
             children: [
               TextField(
                 autofocus: true,
-                onChanged: (value) {
-                  value = value;
-                },
                 controller: titleController,
                 decoration: InputDecoration(
                     icon: const Icon(Icons.check_box_outline_blank),
@@ -213,8 +216,7 @@ class _TaskScreenState extends State<TaskScreen> {
                 onSubmitted: (String value) {
                   if (value.isNotEmpty) {
                     debugPrint(value);
-                    BlocProvider.of<TaskBloc>(blocContext)
-                        .add(AddTaskEvent(taskTitle: value, groupId: widget.id, taskId: GetId().genIDByDatetimeNow()));
+                    BlocProvider.of<TaskBloc>(blocContext).add(AddTaskEvent(taskTitle: value, groupId: widget.id));
                     Navigator.pop(blocContext);
                   } else {
                     debugPrint('Empty value');
