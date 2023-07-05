@@ -22,4 +22,7 @@ abstract class BaseDatabase {
 
   // mark task completed
   void toggleMark(String taskID);
+
+  // rename group
+  void renameGroup(String id, String newName);
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo/bloc/group_bloc/group_bloc.dart';
@@ -24,7 +23,9 @@ class TaskScreen extends StatefulWidget {
 class _TaskScreenState extends State<TaskScreen> {
   ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
   late TaskBloc taskBloc;
- late GroupBloc groupBloc = widget.groupBloc;
+  late GroupBloc groupBloc = widget.groupBloc;
+  late String groupNameTitle = widget.groupName;
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TaskBloc>(
@@ -52,14 +53,14 @@ class _TaskScreenState extends State<TaskScreen> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              _showRenameDialog(context);
+            },
             icon: const Icon(Icons.drive_file_rename_outline),
           ),
           IconButton(
             onPressed: () {
-              _showDialog(context);
-              // groupBloc.add(RemoveGroup(widget.id));
-              // Navigator.pop(context, true);
+              _showDeleteDialog(context);
             },
             icon: const Icon(Icons.delete_outline),
           )
@@ -67,7 +68,7 @@ class _TaskScreenState extends State<TaskScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: ColorSelect.lightPurpleBackground,
         title: Text(
-          widget.groupName,
+          groupNameTitle,
           style: const TextStyle(color: Colors.white),
         ),
       ),
@@ -156,7 +157,7 @@ class _TaskScreenState extends State<TaskScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: ColorSelect.lightPurpleBackground,
         title: Text(
-          widget.groupName,
+          groupNameTitle,
           style: const TextStyle(color: Colors.white),
         ),
       ),
@@ -237,7 +238,8 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  _showDialog(BuildContext context) {
+  // Delete group pop-up
+  _showDeleteDialog(BuildContext context) {
     showDialog(
         context: context,
         builder: (context) {
@@ -274,6 +276,66 @@ class _TaskScreenState extends State<TaskScreen> {
                   child: const Center(
                     child: Text(
                       'Delete',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          );
+        });
+  }
+
+  // Rename group pop-up
+  _showRenameDialog(BuildContext context) {
+    late String inputText;
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Rename list',
+              style: TextStyle(fontSize: 22),
+            ),
+            content: TextField(
+              onChanged: (value) {
+                inputText = value;
+              },
+              decoration: const InputDecoration(
+                hintText: "Rename Group",
+              ),
+            ),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
+                  if (inputText.isNotEmpty) {
+                    groupBloc.add(RenameGroup(id: widget.id, newName: inputText.trim()));
+                    setState(() {
+                      groupNameTitle = inputText.trim();
+                    });
+                    Navigator.pop(context);
+                  }
+                },
+                child: Container(
+                  height: 40,
+                  width: 89,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: ColorSelect.primaryColor,
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Rename',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

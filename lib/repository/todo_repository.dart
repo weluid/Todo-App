@@ -40,11 +40,18 @@ class ToDoRepository {
     _manager.addTask(task);
   }
 
+  // remove task
   void removeTask(String taskId) {
     _manager.removeTask(taskId);
   }
 
+  // toggle the task checkbox
   void toggleMark(String taskID) {
     _manager.toggleMark(taskID);
+  }
+
+  // rename group
+  void renameGroup(String id, String newName) {
+    _manager.renameGroup(id, newName);
   }
 }
