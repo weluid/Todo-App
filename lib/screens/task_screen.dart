@@ -23,6 +23,8 @@ class TaskScreen extends StatefulWidget {
 class _TaskScreenState extends State<TaskScreen> {
   ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
   late TaskBloc taskBloc;
+  late GroupBloc groupBloc = widget.groupBloc;
+  late String groupNameTitle = widget.groupName;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,7 @@ class _TaskScreenState extends State<TaskScreen> {
       child: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is GetTaskList) {
-            return _buildParentWidget(context, state, widget.groupBloc, taskBloc);
+            return _buildParentWidget(context, state, groupBloc, taskBloc);
           } else {
             return _buildEmptyWidget(context);
           }
@@ -51,13 +53,14 @@ class _TaskScreenState extends State<TaskScreen> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              _showRenameDialog(context);
+            },
             icon: const Icon(Icons.drive_file_rename_outline),
           ),
           IconButton(
             onPressed: () {
-              groupBloc.add(RemoveGroup(widget.id));
-              Navigator.pop(context, true);
+              _showDeleteDialog(context);
             },
             icon: const Icon(Icons.delete_outline),
           )
@@ -65,7 +68,7 @@ class _TaskScreenState extends State<TaskScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: ColorSelect.lightPurpleBackground,
         title: Text(
-          widget.groupName,
+          groupNameTitle,
           style: const TextStyle(color: Colors.white),
         ),
       ),
@@ -154,7 +157,7 @@ class _TaskScreenState extends State<TaskScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: ColorSelect.lightPurpleBackground,
         title: Text(
-          widget.groupName,
+          groupNameTitle,
           style: const TextStyle(color: Colors.white),
         ),
       ),
@@ -233,5 +236,113 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
       ),
     );
+  }
+
+  // Delete group pop-up
+  _showDeleteDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              AppLocalizations.of(context).youSure,
+              style: const TextStyle(fontSize: 22),
+            ),
+            content: Text(AppLocalizations.of(context).groupDelete),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  AppLocalizations.of(context).cancel,
+                  style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
+                  groupBloc.add(RemoveGroup(widget.id));
+                  Navigator.pop(context, true);
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                child: Container(
+                  height: 40,
+                  width: 89,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: ColorSelect.importantColor,
+                  ),
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context).delete,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          );
+        });
+  }
+
+  // Rename group pop-up
+  _showRenameDialog(BuildContext context) {
+    String inputText = '';
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              AppLocalizations.of(context).renameGroup,
+              style: const TextStyle(fontSize: 22),
+            ),
+            content: TextField(
+              onChanged: (value) {
+                inputText = value;
+              },
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context).renameGroup,
+              ),
+            ),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  AppLocalizations.of(context).cancel,
+                  style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
+                  if (inputText.isNotEmpty) {
+                    groupBloc.add(RenameGroup(id: widget.id, newName: inputText.trim()));
+                    setState(() {
+                      groupNameTitle = inputText.trim();
+                    });
+                    Navigator.pop(context);
+                  }
+                },
+                child: Container(
+                  height: 40,
+                  width: 110,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: ColorSelect.primaryColor,
+                  ),
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context).rename,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          );
+        });
   }
 }

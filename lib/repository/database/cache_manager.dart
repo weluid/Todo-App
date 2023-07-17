@@ -47,6 +47,12 @@ class CacheManager extends BaseDatabase {
   }
 
   @override
+  void renameGroup(String id, String newName) {
+    Group relevantGroup = groupList.firstWhere((element) => element.id == id);
+    relevantGroup.groupName = newName;
+  }
+
+  @override
   void toggleMark(String taskID) {
     debugPrint('Toggle Mark');
     Task currentTask = tasks.firstWhere((element) => element.id == taskID);
