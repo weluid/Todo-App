@@ -244,24 +244,24 @@ class _TaskScreenState extends State<TaskScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text(
-              'Are you sure?',
-              style: TextStyle(fontSize: 22),
+            title: Text(
+              AppLocalizations.of(context).youSure,
+              style: const TextStyle(fontSize: 22),
             ),
-            content: const Text('Group will be permanently deleted'),
+            content: Text(AppLocalizations.of(context).groupDelete),
             actions: [
               GestureDetector(
                 onTap: () {
                   Navigator.pop(context);
                 },
                 child: Text(
-                  'Cancel',
+                  AppLocalizations.of(context).cancel,
                   style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
                 ),
               ),
               const SizedBox(width: 10),
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   groupBloc.add(RemoveGroup(widget.id));
                   Navigator.pop(context, true);
                   Navigator.of(context).popUntil((route) => route.isFirst);
@@ -273,10 +273,10 @@ class _TaskScreenState extends State<TaskScreen> {
                     borderRadius: BorderRadius.circular(50),
                     color: ColorSelect.importantColor,
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Delete',
-                      style: TextStyle(color: Colors.white),
+                      AppLocalizations.of(context).delete,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
@@ -288,21 +288,21 @@ class _TaskScreenState extends State<TaskScreen> {
 
   // Rename group pop-up
   _showRenameDialog(BuildContext context) {
-    late String inputText;
+    String inputText = '';
     showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text(
-              'Rename list',
-              style: TextStyle(fontSize: 22),
+            title: Text(
+              AppLocalizations.of(context).renameGroup,
+              style: const TextStyle(fontSize: 22),
             ),
             content: TextField(
               onChanged: (value) {
                 inputText = value;
               },
-              decoration: const InputDecoration(
-                hintText: "Rename Group",
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context).renameGroup,
               ),
             ),
             actions: [
@@ -311,7 +311,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   Navigator.pop(context);
                 },
                 child: Text(
-                  'Cancel',
+                  AppLocalizations.of(context).cancel,
                   style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
                 ),
               ),
@@ -328,15 +328,15 @@ class _TaskScreenState extends State<TaskScreen> {
                 },
                 child: Container(
                   height: 40,
-                  width: 89,
+                  width: 110,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
                     color: ColorSelect.primaryColor,
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Rename',
-                      style: TextStyle(color: Colors.white),
+                      AppLocalizations.of(context).rename,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
