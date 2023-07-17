@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       listName: state.groups[index].groupName,
                       onPressed: () => _goToTaskPage(
                         state.groups[index].groupName,
-                        bloc,
+                        context,
                         state.groups[index].id,
                       ),
                     );
@@ -116,15 +116,21 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
   }
 
-  _goToTaskPage(String groupName, GroupBloc bloc, String id) async {
-    Navigator.push(
+  _goToTaskPage(String groupName, BuildContext context, String id) async {
+    final changeFlag = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => TaskScreen(
                   groupName: groupName,
-                  groupBloc: bloc,
                   id: id,
                 )));
+
+    if (changeFlag == true) {
+      if (!mounted) return;
+      BlocProvider.of<GroupBloc>(context).add(
+        ToDoStartEvent(),
+      );
+    }
   }
 
   Future<String?> _showDialog() async {

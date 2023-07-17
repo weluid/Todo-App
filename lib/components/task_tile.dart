@@ -41,9 +41,14 @@ class _TaskTileState extends State<TaskTile> {
             },
           ),
           const SizedBox(width: 24),
-          Text(
-            widget.task.title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          Expanded(
+            child: Text(
+              widget.task.title,
+              overflow: TextOverflow.fade,
+              maxLines: 1,
+              softWrap: false,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
           const Spacer(),
           GestureDetector(

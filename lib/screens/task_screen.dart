@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:todo/bloc/group_bloc/group_bloc.dart';
 import 'package:todo/bloc/task_bloc/task_bloc.dart';
 import 'package:todo/components/task_tile.dart';
 import 'package:todo/repository/database/cache_manager.dart';
@@ -11,10 +10,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskScreen extends StatefulWidget {
   final String groupName;
-  final GroupBloc groupBloc;
   final String id;
 
-  const TaskScreen({required this.groupName, required this.groupBloc, required this.id, super.key});
+  const TaskScreen({required this.groupName, required this.id, super.key});
 
   @override
   State<TaskScreen> createState() => _TaskScreenState();
@@ -23,7 +21,6 @@ class TaskScreen extends StatefulWidget {
 class _TaskScreenState extends State<TaskScreen> {
   ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
   late TaskBloc taskBloc;
-  late GroupBloc groupBloc = widget.groupBloc;
   late String groupNameTitle = widget.groupName;
 
   @override
@@ -38,7 +35,7 @@ class _TaskScreenState extends State<TaskScreen> {
       child: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is GetTaskList) {
-            return _buildParentWidget(context, state, groupBloc, taskBloc);
+            return _buildParentWidget(context, state, taskBloc);
           } else {
             return _buildEmptyWidget(context);
           }
@@ -47,10 +44,17 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  _buildParentWidget(BuildContext context, GetTaskList state, GroupBloc groupBloc, TaskBloc taskBloc) {
+  _buildParentWidget(BuildContext context, GetTaskList state, TaskBloc taskBloc) {
     return Scaffold(
       backgroundColor: ColorSelect.lightPurpleBackground,
       appBar: AppBar(
+        // leading - back to home page button
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -239,7 +243,7 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   // Delete group pop-up
-  _showDeleteDialog(BuildContext context) {
+  _showDeleteDialog(BuildContext blocContext) {
     showDialog(
         context: context,
         builder: (context) {
@@ -262,9 +266,9 @@ class _TaskScreenState extends State<TaskScreen> {
               const SizedBox(width: 10),
               GestureDetector(
                 onTap: () {
-                  groupBloc.add(RemoveGroup(widget.id));
+                  BlocProvider.of<TaskBloc>(blocContext).add(RemoveGroup(widget.id));
+                  Navigator.pop(context);
                   Navigator.pop(context, true);
-                  Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 child: Container(
                   height: 40,
@@ -287,7 +291,7 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   // Rename group pop-up
-  _showRenameDialog(BuildContext context) {
+  _showRenameDialog(BuildContext blocContext) {
     String inputText = '';
     showDialog(
         context: context,
@@ -319,7 +323,7 @@ class _TaskScreenState extends State<TaskScreen> {
               GestureDetector(
                 onTap: () {
                   if (inputText.isNotEmpty) {
-                    groupBloc.add(RenameGroup(id: widget.id, newName: inputText.trim()));
+                    BlocProvider.of<TaskBloc>(blocContext).add(RenameGroup(id: widget.id, newName: inputText.trim()));
                     setState(() {
                       groupNameTitle = inputText.trim();
                     });
