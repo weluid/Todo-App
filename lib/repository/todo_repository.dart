@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:todo/models/group_model.dart';
-import 'package:todo/models/task_model.dart';
+import 'package:todo/models/group.dart';
+import 'package:todo/models/task.dart';
 import 'package:todo/repository/database/base_database.dart';
 
 class ToDoRepository {
@@ -30,17 +30,28 @@ class ToDoRepository {
   }
 
   // add a group
-  void addGroup(String title, String groupId) {
-    _manager.addGroup(title, groupId);
+  void addGroup(String title) {
+    _manager.addGroup(title);
     debugPrint(title.toString());
   }
 
   // add task to group
-  void addTask(String taskTitle, String groupId, String taskId) {
-    _manager.addTask(titleTask: taskTitle, groupId: groupId, taskId: taskId);
+  void addTask(Task task) {
+    _manager.addTask(task);
   }
 
-  void removeTask(String groupID, String taskId) {
-    _manager.removeTask(groupID, taskId);
+  // remove task
+  void removeTask(String taskId) {
+    _manager.removeTask(taskId);
+  }
+
+  // toggle the task checkbox
+  void toggleMark(String taskID) {
+    _manager.toggleMark(taskID);
+  }
+
+  // rename group
+  void renameGroup(String id, String newName) {
+    _manager.renameGroup(id, newName);
   }
 }

@@ -3,7 +3,7 @@ part of 'group_bloc.dart';
 @immutable
 abstract class GroupEvent {}
 
-class ToDoStartEvent extends GroupEvent {}
+class InitializationEvent extends GroupEvent {}
 
 // Add group to list
 class AddGroupEvent extends GroupEvent {
@@ -17,4 +17,12 @@ class RemoveGroup extends GroupEvent {
   final String id;
 
   RemoveGroup(this.id);
+}
+
+// Rename group
+class RenameGroup extends GroupEvent {
+  final String id;
+  final String newName;
+
+  RenameGroup({required this.id, required this.newName});
 }

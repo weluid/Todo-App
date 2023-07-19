@@ -2,10 +2,15 @@
   "addGroup": "Add group",
   "initialValue": "Untitled Group",
   "newList": "New Group",
-  "enterGroupTitle": "Enter group title",
+  "enterGroupTitle": "Enter group name",
   "create": "Create",
   "cancel": "Cancel",
   "myDay": "My Day",
   "important": "Important",
-  "addTask": "Add a task"
+  "addTask": "Add a task",
+  "youSure": "Are you sure?",
+  "groupDelete": "Group will be permanently deleted",
+  "delete": "Deleted",
+  "renameGroup": "Rename group",
+  "rename": "Rename"
 }

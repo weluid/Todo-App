@@ -13,15 +13,33 @@ class GetTaskListEvent extends TaskEvent {
 class AddTaskEvent extends TaskEvent {
   final String taskTitle;
   final String groupId;
-  final String taskId;
 
-  AddTaskEvent({required this.taskTitle, required this.groupId, required this.taskId});
+  AddTaskEvent({required this.taskTitle, required this.groupId});
 }
 
-// Remove task
 class RemoveTask extends TaskEvent {
   final String groupId;
   final String taskId;
 
   RemoveTask(this.groupId, this.taskId);
 }
+
+class ToggleMark extends TaskEvent {
+  final String taskId;
+
+  ToggleMark(this.taskId);
+}
+
+class RemoveGroup extends TaskEvent {
+  final String id;
+
+  RemoveGroup(this.id);
+}
+
+class RenameGroup extends TaskEvent {
+  final String id;
+  final String newName;
+
+  RenameGroup({required this.id, required this.newName});
+}
+

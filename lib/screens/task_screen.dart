@@ -1,42 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:todo/bloc/group_bloc/group_bloc.dart';
 import 'package:todo/bloc/task_bloc/task_bloc.dart';
 import 'package:todo/components/task_tile.dart';
-import 'package:todo/repository/database/cache_manager.dart';
-import 'package:todo/repository/get_id.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskScreen extends StatefulWidget {
   final String groupName;
-  final GroupBloc groupBloc;
   final String id;
 
-  const TaskScreen({required this.groupName, required this.groupBloc, required this.id, super.key});
+  const TaskScreen({required this.groupName, required this.id, super.key});
 
   @override
   State<TaskScreen> createState() => _TaskScreenState();
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
+  late TaskBloc taskBloc;
+  late String groupNameTitle = widget.groupName;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TaskBloc>(
       create: (BuildContext context) {
-        TaskBloc bloc = TaskBloc(toDoRepository);
-        bloc.add(GetTaskListEvent(widget.id));
+        taskBloc = TaskBloc(context.read<ToDoRepository>());
+        taskBloc.add(GetTaskListEvent(widget.id));
 
-        return bloc;
+        return taskBloc;
       },
       child: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is GetTaskList) {
-            return _buildParentWidget(context, state, widget.groupBloc);
+            return _buildParentWidget(context, state);
           } else {
             return _buildEmptyWidget(context);
           }
@@ -45,19 +42,27 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  _buildParentWidget(BuildContext context, GetTaskList state, GroupBloc groupBloc) {
+  _buildParentWidget(BuildContext context, GetTaskList state) {
     return Scaffold(
       backgroundColor: ColorSelect.lightPurpleBackground,
       appBar: AppBar(
+        // leading - back to home page button
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              _showRenameDialog(context);
+            },
             icon: const Icon(Icons.drive_file_rename_outline),
           ),
           IconButton(
             onPressed: () {
-              groupBloc.add(RemoveGroup(widget.id));
-              Navigator.pop(context, true);
+              _showDeleteDialog(context);
             },
             icon: const Icon(Icons.delete_outline),
           )
@@ -65,7 +70,7 @@ class _TaskScreenState extends State<TaskScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: ColorSelect.lightPurpleBackground,
         title: Text(
-          widget.groupName,
+          groupNameTitle,
           style: const TextStyle(color: Colors.white),
         ),
       ),
@@ -82,7 +87,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   itemBuilder: (context, index) {
                     return Slidable(
                       direction: Axis.horizontal,
-                      key: Key(index.toString()),
+                      key: Key(state.taskList[index].toString()),
                       endActionPane: ActionPane(
                         extentRatio: 0.25,
                         motion: const ScrollMotion(),
@@ -92,8 +97,12 @@ class _TaskScreenState extends State<TaskScreen> {
                         ],
                       ),
                       child: TaskTile(
-                        title: state.taskList[index].title,
-                        taskCompleted: state.taskList[index].isCompleted,
+                        task: state.taskList[index],
+                        onTap: (id) {
+                          BlocProvider.of<TaskBloc>(context).add(
+                            ToggleMark(id),
+                          );
+                        },
                       ),
                     );
                   }),
@@ -125,7 +134,9 @@ class _TaskScreenState extends State<TaskScreen> {
               color: Colors.white,
             )),
           ),
-          onTap: () => BlocProvider.of<TaskBloc>(context).add(RemoveTask(widget.id, state.taskList[index].id)),
+          onTap: () => BlocProvider.of<TaskBloc>(context).add(
+            RemoveTask(widget.id, state.taskList[index].id),
+          ),
         ),
       ),
     );
@@ -148,7 +159,7 @@ class _TaskScreenState extends State<TaskScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: ColorSelect.lightPurpleBackground,
         title: Text(
-          widget.groupName,
+          groupNameTitle,
           style: const TextStyle(color: Colors.white),
         ),
       ),
@@ -202,19 +213,15 @@ class _TaskScreenState extends State<TaskScreen> {
             children: [
               TextField(
                 autofocus: true,
-                onChanged: (value) {
-                  value = value;
-                },
                 controller: titleController,
                 decoration: InputDecoration(
                     icon: const Icon(Icons.check_box_outline_blank),
                     hintText: AppLocalizations.of(context).addTask,
                     border: InputBorder.none),
                 onSubmitted: (String value) {
-                  if (value.isNotEmpty) {
+                  if (value.trim().isNotEmpty) {
                     debugPrint(value);
-                    BlocProvider.of<TaskBloc>(blocContext)
-                        .add(AddTaskEvent(taskTitle: value, groupId: widget.id, taskId: GetId().genIDByDatetimeNow()));
+                    BlocProvider.of<TaskBloc>(blocContext).add(AddTaskEvent(taskTitle: value, groupId: widget.id));
                     Navigator.pop(blocContext);
                   } else {
                     debugPrint('Empty value');
@@ -231,5 +238,113 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
       ),
     );
+  }
+
+  // Delete group pop-up
+  _showDeleteDialog(BuildContext blocContext) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              AppLocalizations.of(context).youSure,
+              style: const TextStyle(fontSize: 22),
+            ),
+            content: Text(AppLocalizations.of(context).groupDelete),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  AppLocalizations.of(context).cancel,
+                  style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
+                  BlocProvider.of<TaskBloc>(blocContext).add(RemoveGroup(widget.id));
+                  Navigator.pop(context);
+                  Navigator.pop(context, true);
+                },
+                child: Container(
+                  height: 40,
+                  width: 89,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: ColorSelect.importantColor,
+                  ),
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context).delete,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          );
+        });
+  }
+
+  // Rename group pop-up
+  _showRenameDialog(BuildContext blocContext) {
+    String inputText = '';
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              AppLocalizations.of(context).renameGroup,
+              style: const TextStyle(fontSize: 22),
+            ),
+            content: TextField(
+              onChanged: (value) {
+                inputText = value;
+              },
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context).renameGroup,
+              ),
+            ),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  AppLocalizations.of(context).cancel,
+                  style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
+                  if (inputText.trim().isNotEmpty) {
+                    BlocProvider.of<TaskBloc>(blocContext).add(RenameGroup(id: widget.id, newName: inputText.trim()));
+                    setState(() {
+                      groupNameTitle = inputText.trim();
+                    });
+                    Navigator.pop(context);
+                  }
+                },
+                child: Container(
+                  height: 40,
+                  width: 110,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: ColorSelect.primaryColor,
+                  ),
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context).rename,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          );
+        });
   }
 }

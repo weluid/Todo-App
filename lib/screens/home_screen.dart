@@ -6,7 +6,6 @@ import 'package:todo/bloc/group_bloc/group_bloc.dart';
 import 'package:todo/components/bottom_button.dart';
 import 'package:todo/components/group_tile.dart';
 import 'package:todo/main.dart';
-import 'package:todo/repository/database/cache_manager.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/task_screen.dart';
 import 'package:todo/utilities/constants.dart';
@@ -20,21 +19,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
   late GroupBloc bloc;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<GroupBloc>(
       create: (BuildContext context) {
-        bloc = GroupBloc(toDoRepository);
-        bloc.add(ToDoStartEvent());
+        bloc = GroupBloc(context.read<ToDoRepository>());
+        bloc.add(InitializationEvent());
 
         return bloc;
       },
       child: BlocBuilder<GroupBloc, GroupState>(
         builder: (context, state) {
-          if (state is StartApp) {
+          if (state is InitializationApp) {
             return _buildParentWidget(context, state, bloc);
           } else {
             return const StartPage();
@@ -44,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _buildParentWidget(BuildContext context, StartApp state, GroupBloc bloc) {
+  _buildParentWidget(BuildContext context, InitializationApp state, GroupBloc bloc) {
     return Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
@@ -80,8 +78,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: state.groups.length,
                   itemBuilder: (BuildContext context, int index) {
                     return GroupTile(
-                      listName: state.groups[index].title,
-                      onPressed: () => _goToTaskPage(state.groups[index].title, bloc, state.groups[index].id),
+                      listName: state.groups[index].groupName,
+                      onPressed: () => _goToTaskPage(
+                        state.groups[index].groupName,
+                        context,
+                        state.groups[index].id,
+                      ),
                     );
                   },
                 ),
@@ -96,11 +98,10 @@ class _HomeScreenState extends State<HomeScreen> {
               text: AppLocalizations.of(context).addGroup,
               icon: Icons.add,
               onTap: () async {
-                final groupName = await _showDialog();
+                final String? groupName = await _showDialog();
 
-                if (groupName != null) {
+                if (groupName!.trim().isNotEmpty) {
                   if (!mounted) return;
-
                   BlocProvider.of<GroupBloc>(context).add(
                     AddGroupEvent(title: groupName),
                   );
@@ -112,19 +113,26 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
   }
 
-  _goToTaskPage(String groupName, GroupBloc bloc, String id) async {
-    Navigator.push(
+  _goToTaskPage(String groupName, BuildContext context, String id) async {
+    final changeFlag = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => TaskScreen(
                   groupName: groupName,
-                  groupBloc: bloc,
                   id: id,
                 )));
+
+    if (changeFlag == true) {
+      if (!mounted) return;
+      BlocProvider.of<GroupBloc>(context).add(
+        InitializationEvent(),
+      );
+    }
   }
 
   Future<String?> _showDialog() async {
     Completer<String?> completer = Completer<String>();
+    final formKey = GlobalKey<FormState>();
 
     showDialog(
         context: context,
@@ -132,12 +140,22 @@ class _HomeScreenState extends State<HomeScreen> {
           String inputText = AppLocalizations.of(context).initialValue;
           return AlertDialog(
             title: Text(AppLocalizations.of(context).newList),
-            content: TextFormField(
-              initialValue: AppLocalizations.of(context).initialValue,
-              onChanged: (value) {
-                inputText = value;
-              },
-              decoration: InputDecoration(hintText: AppLocalizations.of(context).enterGroupTitle),
+            content: Form(
+              key: formKey,
+              child: TextFormField(
+                initialValue: AppLocalizations.of(context).initialValue,
+                onChanged: (value) {
+                  inputText = value;
+                },
+                decoration: InputDecoration(hintText: AppLocalizations.of(context).enterGroupTitle),
+                validator: (value){
+                  if (value!.trim().isEmpty) {
+                    return AppLocalizations.of(context).enterGroupTitle;
+                  } else{
+                    return null;
+                  }
+                },
+              ),
             ),
             actions: [
               Row(
@@ -155,8 +173,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {
-                      completer.complete(inputText);
-                      Navigator.pop(context);
+                      if (!formKey.currentState!.validate()) {
+                        return;
+                      }
+                        completer.complete(inputText);
+                        Navigator.pop(context);
+
                     },
                     child: Container(
                       width: 108,
