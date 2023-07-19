@@ -13,29 +13,29 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   final ToDoRepository toDoRepository;
 
   GroupBloc(this.toDoRepository) : super(GroupInitial()) {
-    on<ToDoStartEvent>(_eventStartApp);
+    on<InitializationEvent>(_eventStartApp);
     on<AddGroupEvent>(_eventAddGroup);
     on<RemoveGroup>(_eventRemoveGroup);
     on<RenameGroup>(_eventRenameGroup);
   }
 
   Future<void> _eventStartApp(GroupEvent e, Emitter emit) async {
-    emit(StartApp(toDoRepository.getGroupList()));
+    emit(InitializationApp(toDoRepository.getGroupList()));
   }
 
   void _eventAddGroup(AddGroupEvent e, Emitter emit) {
     toDoRepository.addGroup(e.title);
 
-    emit(StartApp(toDoRepository.getGroupList()));
+    emit(InitializationApp(toDoRepository.getGroupList()));
   }
 
   FutureOr<void> _eventRemoveGroup(RemoveGroup e, Emitter emit) {
     toDoRepository.removeGroup(e.id);
-    emit(StartApp(toDoRepository.getGroupList()));
+    emit(InitializationApp(toDoRepository.getGroupList()));
   }
 
   FutureOr<void> _eventRenameGroup(RenameGroup e, Emitter<GroupState> emit) {
     toDoRepository.renameGroup(e.id, e.newName);
-    emit(StartApp(toDoRepository.getGroupList()));
+    emit(InitializationApp(toDoRepository.getGroupList()));
   }
 }

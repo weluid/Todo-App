@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo/bloc/task_bloc/task_bloc.dart';
 import 'package:todo/components/task_tile.dart';
-import 'package:todo/repository/database/cache_manager.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -19,7 +18,6 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  ToDoRepository toDoRepository = ToDoRepository.getInstance(CacheManager());
   late TaskBloc taskBloc;
   late String groupNameTitle = widget.groupName;
 
@@ -27,7 +25,7 @@ class _TaskScreenState extends State<TaskScreen> {
   Widget build(BuildContext context) {
     return BlocProvider<TaskBloc>(
       create: (BuildContext context) {
-        taskBloc = TaskBloc(toDoRepository);
+        taskBloc = TaskBloc(context.read<ToDoRepository>());
         taskBloc.add(GetTaskListEvent(widget.id));
 
         return taskBloc;
@@ -35,7 +33,7 @@ class _TaskScreenState extends State<TaskScreen> {
       child: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state is GetTaskList) {
-            return _buildParentWidget(context, state, taskBloc);
+            return _buildParentWidget(context, state);
           } else {
             return _buildEmptyWidget(context);
           }
@@ -44,7 +42,7 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  _buildParentWidget(BuildContext context, GetTaskList state, TaskBloc taskBloc) {
+  _buildParentWidget(BuildContext context, GetTaskList state) {
     return Scaffold(
       backgroundColor: ColorSelect.lightPurpleBackground,
       appBar: AppBar(
@@ -221,7 +219,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     hintText: AppLocalizations.of(context).addTask,
                     border: InputBorder.none),
                 onSubmitted: (String value) {
-                  if (value.isNotEmpty) {
+                  if (value.trim().isNotEmpty) {
                     debugPrint(value);
                     BlocProvider.of<TaskBloc>(blocContext).add(AddTaskEvent(taskTitle: value, groupId: widget.id));
                     Navigator.pop(blocContext);
@@ -322,7 +320,7 @@ class _TaskScreenState extends State<TaskScreen> {
               const SizedBox(width: 10),
               GestureDetector(
                 onTap: () {
-                  if (inputText.isNotEmpty) {
+                  if (inputText.trim().isNotEmpty) {
                     BlocProvider.of<TaskBloc>(blocContext).add(RenameGroup(id: widget.id, newName: inputText.trim()));
                     setState(() {
                       groupNameTitle = inputText.trim();

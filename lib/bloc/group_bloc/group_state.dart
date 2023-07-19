@@ -5,10 +5,10 @@ abstract class GroupState {}
 
 class GroupInitial extends GroupState {}
 
-class StartApp extends GroupState {
+class InitializationApp extends GroupState {
   final List<Group> groups;
 
-  StartApp(this.groups);
+  InitializationApp(this.groups);
 }
 
 // Add group to list
