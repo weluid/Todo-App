@@ -12,5 +12,9 @@
   "groupDelete": "Group will be permanently deleted",
   "delete": "Deleted",
   "renameGroup": "Rename group",
-  "rename": "Rename"
+  "rename": "Rename",
+  "dueData": "Add Due Date",
+  "note": "Note",
+  "addNote": "Add Note"
+
 }
