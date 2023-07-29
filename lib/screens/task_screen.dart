@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo/bloc/task_bloc/task_bloc.dart';
+import 'package:todo/components/delete_dialog.dart';
 import 'package:todo/components/task_tile.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/task_info_screen.dart';
@@ -19,14 +20,13 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  late TaskBloc taskBloc;
   late String groupNameTitle = widget.groupName;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TaskBloc>(
       create: (BuildContext context) {
-        taskBloc = TaskBloc(context.read<ToDoRepository>());
+        TaskBloc taskBloc = TaskBloc(context.read<ToDoRepository>());
         taskBloc.add(GetTaskListEvent(widget.id));
 
         return taskBloc;
@@ -62,8 +62,21 @@ class _TaskScreenState extends State<TaskScreen> {
             icon: const Icon(Icons.drive_file_rename_outline),
           ),
           IconButton(
-            onPressed: () {
-              _showDeleteDialog(context);
+            onPressed: () async {
+              bool isDeleted =  await showDialog(
+                context: context,
+                builder: (dialogContext) => DeletedDialog(
+                  deleteObject: (groupId) {
+                    BlocProvider.of<TaskBloc>(context).add(RemoveGroup(widget.id));
+                  },
+                  id: widget.id, desc: AppLocalizations.of(context).groupDelete,
+                ),
+              );
+
+              if (isDeleted) {
+                if (!mounted) return;
+                Navigator.pop(context, true);
+              }
             },
             icon: const Icon(Icons.delete_outline),
           )
@@ -104,14 +117,23 @@ class _TaskScreenState extends State<TaskScreen> {
                             ToggleMark(id),
                           );
                         },
-                        onInfoScreen: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
+                        onInfoScreen: () async {
+                          // flag for updating task list on page
+                          bool changeFlag = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
                               builder: (context) => TaskInfoScreen(
-                                    task: state.taskList[index],
-                                    groupName: groupNameTitle,
-                                  )),
-                        ),
+                                task: state.taskList[index],
+                                groupName: groupNameTitle,
+                                groupId: widget.id,
+                              ),
+                            ),
+                          );
+                          if (changeFlag == true) {
+                            if (!mounted) return;
+                            BlocProvider.of<TaskBloc>(context).add(GetTaskListEvent(widget.id));
+                          }
+                        },
                       ),
                     );
                   }),
@@ -247,54 +269,6 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
       ),
     );
-  }
-
-  // Delete group pop-up
-  _showDeleteDialog(BuildContext blocContext) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              AppLocalizations.of(context).youSure,
-              style: const TextStyle(fontSize: 22),
-            ),
-            content: Text(AppLocalizations.of(context).groupDelete),
-            actions: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  AppLocalizations.of(context).cancel,
-                  style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
-                ),
-              ),
-              const SizedBox(width: 10),
-              GestureDetector(
-                onTap: () {
-                  BlocProvider.of<TaskBloc>(blocContext).add(RemoveGroup(widget.id));
-                  Navigator.pop(context);
-                  Navigator.pop(context, true);
-                },
-                child: Container(
-                  height: 40,
-                  width: 89,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: ColorSelect.importantColor,
-                  ),
-                  child: Center(
-                    child: Text(
-                      AppLocalizations.of(context).delete,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              )
-            ],
-          );
-        });
   }
 
   // Rename group pop-up
