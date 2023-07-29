@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo/components/delete_dialog.dart';
 import 'package:todo/models/task.dart';
+import 'package:todo/repository/todo_repository.dart';
+import 'package:todo/screens/splash_screen.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../bloc/task_extended_bloc/task_extended_bloc.dart';
 
 class TaskInfoScreen extends StatefulWidget {
   final Task task;
   final String groupName;
+  final String groupId;
 
-  const TaskInfoScreen({super.key, required this.task, required this.groupName});
+  const TaskInfoScreen({super.key, required this.task, required this.groupName, required this.groupId});
 
   @override
   State<TaskInfoScreen> createState() => _TaskInfoScreenState();
@@ -22,10 +29,14 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   final TextEditingController _controller = TextEditingController();
   bool _isTextFieldEmpty = true;
 
+
   @override
   void initState() {
     super.initState();
     _controller.addListener(_onTextFieldChange);
+    if (widget.task.description.isNotEmpty) {
+      _controller.text = widget.task.description;
+    }
   }
 
   @override
@@ -37,8 +48,35 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider<TaskExtendedBloc>(
+      create: (BuildContext context) {
+        TaskExtendedBloc taskExtendedBloc = TaskExtendedBloc(context.read<ToDoRepository>());
+        taskExtendedBloc.add(GetTaskListEvent(widget.groupId));
+
+        return taskExtendedBloc;
+      },
+      child: BlocBuilder<TaskExtendedBloc, TaskExtendedState>(
+        builder: (context, state) {
+          if (state is GetTaskList) {
+            return _buildParentWidget(context, state);
+          } else {
+            return const SplashScreen();
+          }
+        },
+      ),
+    );
+  }
+
+  _buildParentWidget(BuildContext context, GetTaskList state) {
+
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        ),
         title: Text(widget.groupName),
       ),
       body: SafeArea(
@@ -121,9 +159,18 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                           style: TextStyle(fontSize: 12, color: ColorSelect.primaryColor),
                         ),
                       ),
-                    TextField(
+                    TextFormField(
+
+                        textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (String value) {
+                        if (value.trim().isNotEmpty) {
+                          debugPrint(value);
+                          BlocProvider.of<TaskExtendedBloc>(context)
+                              .add(AddDescription(taskId: widget.task.id, description: value));
+                        }
+                      },
                       controller: _controller,
-                      maxLines: null,
+                      maxLines: 7,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: AppLocalizations.of(context).addNote,
@@ -149,6 +196,24 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         ),
                         const Spacer(),
                         GestureDetector(
+                          onTap: () async {
+                            bool isDeleted = await showDialog(
+                              context: context,
+                              builder: (dialogContext) => DeletedDialog(
+                                deleteObject: (taskId) {
+                                  BlocProvider.of<TaskExtendedBloc>(context)
+                                      .add(RemoveTask(groupId: widget.groupId, taskId: widget.task.id));
+                                },
+                                id: widget.task.id,
+                                desc: AppLocalizations.of(context).taskDelete,
+                              ),
+                            );
+
+                            if (isDeleted) {
+                              if (!mounted) return;
+                              Navigator.pop(context, true);
+                            }
+                          },
                           child: Icon(Icons.delete_outline, color: ColorSelect.grayColor, size: 24),
                         )
                       ],

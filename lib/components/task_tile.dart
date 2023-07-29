@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo/models/task.dart';
 import 'package:todo/utilities/constants.dart';
 
-typedef IdCallback = void Function(String id);
+typedef IdCallback = void Function(dynamic id);
 
 class TaskTile extends StatefulWidget {
   final IdCallback onCheckboxChanged;

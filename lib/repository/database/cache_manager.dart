@@ -63,4 +63,12 @@ class CacheManager extends BaseDatabase {
   void removeTask(String taskId) {
     tasks.removeWhere((element) => element.id == taskId);
   }
+
+  @override
+  void addTaskDescription(String taskId, String description) {
+    Task relevantTask = tasks.firstWhere((element) => element.id == taskId);
+    relevantTask.description = description;
+
+    print(tasks);
+  }
 }
