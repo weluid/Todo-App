@@ -7,4 +7,5 @@ class ColorSelect {
   static Color lightPurpleBackground = const Color(0xFFB0A2F2);
   static Color darkPurple = const Color(0xFF988CD0);
   static Color grayColor = const Color(0xFF777679);
+  static Color lightGrayColor = const Color(0xFFe3e3e4);
 }

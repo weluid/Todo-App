@@ -5,13 +5,15 @@ import 'package:todo/utilities/constants.dart';
 typedef IdCallback = void Function(String id);
 
 class TaskTile extends StatefulWidget {
-  final IdCallback onTap;
+  final IdCallback onCheckboxChanged;
+  final VoidCallback onInfoScreen;
   final Task task;
 
   const TaskTile({
     super.key,
     required this.task,
-    required this.onTap,
+    required this.onCheckboxChanged,
+    required this.onInfoScreen,
   });
 
   @override
@@ -33,7 +35,7 @@ class _TaskTileState extends State<TaskTile> {
           Checkbox(
             value: isCompleted,
             onChanged: (bool? value) {
-              widget.onTap.call(widget.task.id);
+              widget.onCheckboxChanged.call(widget.task.id);
 
               setState(() {
                 isCompleted = !isCompleted;
@@ -42,16 +44,21 @@ class _TaskTileState extends State<TaskTile> {
           ),
           const SizedBox(width: 24),
           Expanded(
-            child: Text(
-              widget.task.title,
-              overflow: TextOverflow.fade,
-              maxLines: 1,
-              softWrap: false,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            child: GestureDetector(
+              onTap: widget.onInfoScreen,
+              child: Text(
+                widget.task.title,
+                overflow: TextOverflow.fade,
+                maxLines: 1,
+                softWrap: false,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
             ),
           ),
-          const Spacer(),
           GestureDetector(
+            onTap: () {
+              debugPrint('Important');
+            },
             child: Icon(Icons.star_border, color: ColorSelect.grayColor),
           )
         ],

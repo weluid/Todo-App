@@ -148,10 +148,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   inputText = value;
                 },
                 decoration: InputDecoration(hintText: AppLocalizations.of(context).enterGroupTitle),
-                validator: (value){
+                validator: (value) {
                   if (value!.trim().isEmpty) {
                     return AppLocalizations.of(context).enterGroupTitle;
-                  } else{
+                  } else {
                     return null;
                   }
                 },
@@ -176,9 +176,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (!formKey.currentState!.validate()) {
                         return;
                       }
-                        completer.complete(inputText);
-                        Navigator.pop(context);
-
+                      completer.complete(inputText);
+                      Navigator.pop(context);
                     },
                     child: Container(
                       width: 108,

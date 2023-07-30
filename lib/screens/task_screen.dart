@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo/bloc/task_bloc/task_bloc.dart';
 import 'package:todo/components/task_tile.dart';
 import 'package:todo/repository/todo_repository.dart';
+import 'package:todo/screens/task_info_screen.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -98,11 +99,19 @@ class _TaskScreenState extends State<TaskScreen> {
                       ),
                       child: TaskTile(
                         task: state.taskList[index],
-                        onTap: (id) {
+                        onCheckboxChanged: (id) {
                           BlocProvider.of<TaskBloc>(context).add(
                             ToggleMark(id),
                           );
                         },
+                        onInfoScreen: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TaskInfoScreen(
+                                    task: state.taskList[index],
+                                    groupName: groupNameTitle,
+                                  )),
+                        ),
                       ),
                     );
                   }),
