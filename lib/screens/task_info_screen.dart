@@ -27,13 +27,12 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   Color dateTextColor = ColorSelect.grayColor; // date text color
 
   final TextEditingController _controller = TextEditingController();
-  bool _isTextFieldEmpty = true;
-
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _controller.addListener(_onTextFieldChange);
+    _focusNode.addListener(_onFocusChange);
     if (widget.task.description.isNotEmpty) {
       _controller.text = widget.task.description;
     }
@@ -41,11 +40,16 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
 
   @override
   void dispose() {
-    _controller.removeListener(_onTextFieldChange);
-    _controller.dispose();
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
     super.dispose();
   }
 
+  void _onFocusChange() {
+    setState(() {
+      debugPrint('Focused');
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TaskExtendedBloc>(
@@ -151,7 +155,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 height: 210,
                 child: Column(
                   children: [
-                    if (!_isTextFieldEmpty)
+                    if (_focusNode.hasFocus)
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -160,7 +164,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         ),
                       ),
                     TextFormField(
-
+                      focusNode: _focusNode,
                         textInputAction: TextInputAction.done,
                       onFieldSubmitted: (String value) {
                         if (value.trim().isNotEmpty) {
@@ -180,7 +184,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 ),
               ),
               Divider(
-                color: _isTextFieldEmpty ? ColorSelect.lightGrayColor : ColorSelect.primaryColor,
+                color: _focusNode.hasFocus ? ColorSelect.primaryColor : ColorSelect.lightGrayColor,
               ),
               Expanded(
                 child: Column(
@@ -238,13 +242,6 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   void toggleImportantIconColor() {
     setState(() {
       isImportant = !isImportant;
-    });
-  }
-
-  // Check if a text field is empty
-  void _onTextFieldChange() {
-    setState(() {
-      _isTextFieldEmpty = _controller.text.isEmpty;
     });
   }
 }
