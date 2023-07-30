@@ -16,6 +16,8 @@ class TaskExtendedBloc extends Bloc<TaskExtendedEvent, TaskExtendedState> {
     on<AddDescription>(_eventAddDescription);
     on<RemoveTask>(_eventRemoveTask);
     on<GetTaskListEvent>(_eventGetTaskList);
+    on<ToggleMark>(_eventToggleMark);
+    on<ToggleImportant>(_eventToggleImportant);
   }
 
   FutureOr<void> _eventRemoveTask(RemoveTask e, Emitter emit) {
@@ -29,5 +31,13 @@ class TaskExtendedBloc extends Bloc<TaskExtendedEvent, TaskExtendedState> {
 
   void _eventGetTaskList(GetTaskListEvent e, Emitter emit) {
     emit(GetTaskList(toDoRepository.getTaskList(e.groupId)));
+  }
+
+  FutureOr<void> _eventToggleMark(ToggleMark e, Emitter emit) {
+    toDoRepository.toggleMark(e.taskId);
+  }
+
+  FutureOr<void> _eventToggleImportant(ToggleImportant e, Emitter emit) {
+    toDoRepository.toggleImportant(e.taskId);
   }
 }

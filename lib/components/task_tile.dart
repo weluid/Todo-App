@@ -6,6 +6,7 @@ typedef IdCallback = void Function(dynamic id);
 
 class TaskTile extends StatefulWidget {
   final IdCallback onCheckboxChanged;
+  final IdCallback onImportantChanged;
   final VoidCallback onInfoScreen;
   final Task task;
 
@@ -14,6 +15,7 @@ class TaskTile extends StatefulWidget {
     required this.task,
     required this.onCheckboxChanged,
     required this.onInfoScreen,
+    required this.onImportantChanged,
   });
 
   @override
@@ -21,7 +23,9 @@ class TaskTile extends StatefulWidget {
 }
 
 class _TaskTileState extends State<TaskTile> {
-  bool isCompleted = false;
+  late bool isCompleted = widget.task.isCompleted;
+  late bool isImportant = widget.task.isImportant; // important flag
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +39,11 @@ class _TaskTileState extends State<TaskTile> {
           Checkbox(
             value: isCompleted,
             onChanged: (bool? value) {
-              widget.onCheckboxChanged.call(widget.task.id);
-
               setState(() {
                 isCompleted = !isCompleted;
               });
+
+              widget.onCheckboxChanged.call(widget.task.id);
             },
           ),
           const SizedBox(width: 24),
@@ -57,9 +61,13 @@ class _TaskTileState extends State<TaskTile> {
           ),
           GestureDetector(
             onTap: () {
-              debugPrint('Important');
+              setState(() {
+                isImportant = !isImportant;
+              });
+
+              widget.onImportantChanged.call(widget.task.id);
             },
-            child: Icon(Icons.star_border, color: ColorSelect.grayColor),
+            child: isImportant ? activeImportantIcon : disabledImportantIcon,
           )
         ],
       ),

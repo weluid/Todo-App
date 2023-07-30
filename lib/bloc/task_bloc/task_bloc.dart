@@ -20,6 +20,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<ToggleMark>(_eventToggleMark);
     on<RemoveGroup>(_eventRemoveGroup);
     on<RenameGroup>(_eventRenameGroup);
+    on<ToggleImportant>(_eventToggleImportant);
   }
 
   void _eventGetTaskList(GetTaskListEvent e, Emitter emit) {
@@ -48,5 +49,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   FutureOr<void> _eventRenameGroup(RenameGroup e, Emitter emit) {
     toDoRepository.renameGroup(e.id, e.newName);
+  }
+
+  FutureOr<void> _eventToggleImportant(ToggleImportant e, Emitter emit) {
+    toDoRepository.toggleImportant(e.taskId);
   }
 }

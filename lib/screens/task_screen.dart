@@ -116,6 +116,8 @@ class _TaskScreenState extends State<TaskScreen> {
                           BlocProvider.of<TaskBloc>(context).add(
                             ToggleMark(id),
                           );
+                          // BlocProvider.of<TaskBloc>(context).add(GetTaskListEvent(widget.id));
+
                         },
                         onInfoScreen: () async {
                           // flag for updating task list on page
@@ -133,6 +135,12 @@ class _TaskScreenState extends State<TaskScreen> {
                             if (!mounted) return;
                             BlocProvider.of<TaskBloc>(context).add(GetTaskListEvent(widget.id));
                           }
+                        },
+                        // important change
+                        onImportantChanged: (id) {
+                          BlocProvider.of<TaskBloc>(context).add(ToggleImportant(state.taskList[index].id));
+                          // BlocProvider.of<TaskBloc>(context).add(GetTaskListEvent(widget.id));
+
                         },
                       ),
                     );

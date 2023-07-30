@@ -53,10 +53,10 @@ class CacheManager extends BaseDatabase {
   }
 
   @override
-  void toggleMark(String taskID) {
-    debugPrint('Toggle Mark');
-    Task currentTask = tasks.firstWhere((element) => element.id == taskID);
-    currentTask.isCompleted = !currentTask.isCompleted;
+  void toggleMark(String taskId) {
+    Task relevantTask = findRelevantTask(taskId);
+    relevantTask.isCompleted = !relevantTask.isCompleted;
+    debugPrint('Toggle Mark${relevantTask.isCompleted}');
   }
 
   @override
@@ -66,9 +66,23 @@ class CacheManager extends BaseDatabase {
 
   @override
   void addTaskDescription(String taskId, String description) {
-    Task relevantTask = tasks.firstWhere((element) => element.id == taskId);
+    Task relevantTask = findRelevantTask(taskId);
     relevantTask.description = description;
 
-    print(tasks);
+    debugPrint(tasks.toString());
+
+  }
+
+  @override
+  void toggleImportant(String taskId) {
+    Task relevantTask = findRelevantTask(taskId);
+    relevantTask.isImportant = !relevantTask.isImportant;
+    debugPrint('Important Mark: ${relevantTask.isImportant}');
+
+  }
+
+  Task findRelevantTask(String taskId) {
+    Task relevantTask = tasks.firstWhere((element) => element.id == taskId);
+    return relevantTask;
   }
 }

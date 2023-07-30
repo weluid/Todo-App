@@ -22,13 +22,12 @@ class TaskInfoScreen extends StatefulWidget {
 
 class _TaskInfoScreenState extends State<TaskInfoScreen> {
   late bool isCompleted = widget.task.isCompleted; // checkbox flag
-  bool isImportant = false; // important flag
+  late bool isImportant = widget.task.isImportant; // important flag
   bool isDateActive = false; // date market flag
   Color dateTextColor = ColorSelect.grayColor; // date text color
 
   final TextEditingController _controller = TextEditingController();
   bool _isTextFieldEmpty = true;
-
 
   @override
   void initState() {
@@ -68,7 +67,6 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   }
 
   _buildParentWidget(BuildContext context, GetTaskList state) {
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -89,6 +87,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                   Checkbox(
                     value: isCompleted,
                     onChanged: (bool? value) {
+                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleMark(widget.task.id));
                       setState(() {
                         isCompleted = !isCompleted;
                       });
@@ -105,7 +104,13 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: toggleImportantIconColor,
+                    onTap: (){
+                      setState(() {
+                        isImportant = !isImportant;
+                      });
+
+                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleImportant(widget.task.id));
+                    },
                     child: isImportant ? activeImportantIcon : disabledImportantIcon,
                   )
                 ],
@@ -160,8 +165,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         ),
                       ),
                     TextFormField(
-
-                        textInputAction: TextInputAction.done,
+                      textInputAction: TextInputAction.done,
                       onFieldSubmitted: (String value) {
                         if (value.trim().isNotEmpty) {
                           debugPrint(value);
@@ -235,10 +239,9 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     });
   }
 
-  void toggleImportantIconColor() {
-    setState(() {
-      isImportant = !isImportant;
-    });
+   toggleImportant(String taskId, BuildContext context) {
+
+
   }
 
   // Check if a text field is empty

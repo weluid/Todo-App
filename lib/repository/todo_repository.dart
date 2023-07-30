@@ -58,4 +58,7 @@ class ToDoRepository {
   void addTaskDescription(String taskId, String description) {
     _manager.addTaskDescription(taskId, description);
   }
+  void toggleImportant(String taskId) {
+    _manager.toggleImportant(taskId);
+  }
 }
