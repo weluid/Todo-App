@@ -9,13 +9,3 @@ class ColorSelect {
   static Color grayColor = const Color(0xFF777679);
   static Color lightGrayColor = const Color(0xFFe3e3e4);
 }
-
-Icon disabledImportantIcon = Icon(
-  Icons.star_border,
-  color: ColorSelect.grayColor,
-);
-
-Icon activeImportantIcon = Icon(
-  Icons.star,
-  color: ColorSelect.importantColor,
-);
