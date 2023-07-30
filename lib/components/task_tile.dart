@@ -23,7 +23,6 @@ class TaskTile extends StatefulWidget {
 }
 
 class _TaskTileState extends State<TaskTile> {
-  late bool isCompleted = widget.task.isCompleted;
   late bool isImportant = widget.task.isImportant; // important flag
 
 
@@ -37,10 +36,10 @@ class _TaskTileState extends State<TaskTile> {
       child: Row(
         children: [
           Checkbox(
-            value: isCompleted,
+            value: widget.task.isCompleted,
             onChanged: (bool? value) {
               setState(() {
-                isCompleted = !isCompleted;
+                widget.task.isCompleted = !value!;
               });
 
               widget.onCheckboxChanged.call(widget.task.id);
