@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo/components/widgets.dart';
 import 'package:todo/models/task.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -14,10 +15,9 @@ class TaskInfoScreen extends StatefulWidget {
 }
 
 class _TaskInfoScreenState extends State<TaskInfoScreen> {
-  late bool isCompleted = widget.task.isCompleted; // checkbox flag
-  bool isImportant = false; // important flag
-  bool isDateActive = false; // date market flag
-  Color dateTextColor = ColorSelect.grayColor; // date text color
+  late bool _isCompleted = widget.task.isCompleted; // checkbox flag
+  bool _isImportant = false; // important flag
+  bool _isDateActive = false; // date market flag
 
   final TextEditingController _controller = TextEditingController();
   bool _isTextFieldEmpty = true;
@@ -49,10 +49,10 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
               Row(
                 children: [
                   Checkbox(
-                    value: isCompleted,
+                    value: _isCompleted,
                     onChanged: (bool? value) {
                       setState(() {
-                        isCompleted = !isCompleted;
+                        _isCompleted = !_isCompleted;
                       });
                     },
                   ),
@@ -67,8 +67,8 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: toggleImportantIconColor,
-                    child: isImportant ? activeImportantIcon : disabledImportantIcon,
+                    onTap: _toggleImportantIconColor,
+                    child: _isImportant ? activeImportantIcon : disabledImportantIcon,
                   )
                 ],
               ),
@@ -79,7 +79,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: toggleDateIconVisibility,
+                onTap: _toggleDateIconVisibility,
                 child: Row(
                   children: [
                     Icon(
@@ -96,12 +96,11 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         style: const TextStyle(fontSize: 16),
                       ),
                     ),
-                    // const Spacer(),
-                    if (isDateActive)
+                    if (_isDateActive)
                       GestureDetector(
                         onTap: () {
                           debugPrint('deleted date');
-                          toggleDateIconVisibility();
+                          _toggleDateIconVisibility();
                         },
                         child: Icon(Icons.close, color: ColorSelect.grayColor),
                       ),
@@ -164,15 +163,15 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   }
 
   // If a deadline is set - show deleted button
-  void toggleDateIconVisibility() {
+  void _toggleDateIconVisibility() {
     setState(() {
-      isDateActive = !isDateActive;
+      _isDateActive = !_isDateActive;
     });
   }
 
-  void toggleImportantIconColor() {
+  void _toggleImportantIconColor() {
     setState(() {
-      isImportant = !isImportant;
+      _isImportant = !_isImportant;
     });
   }
 
