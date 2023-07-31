@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class DueDate extends StatelessWidget {
-  const DueDate({Key? key}) : super(key: key);
+  final VoidCallback datePicker;
+
+  const DueDate({required this.datePicker, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +52,14 @@ class DueDate extends StatelessWidget {
             const SizedBox(height: 22),
             GestureDetector(
               onTap: () {
-                _showDatePicker(context);
+                datePicker();
               },
               child: const Row(
                 children: [
                   Icon(Icons.calendar_today, size: 20),
                   SizedBox(width: 18),
                   Text('Pick a Date', style: TextStyle(fontSize: 14)),
-                  // Spacer(),
+                  Spacer(),
                   Icon(Icons.chevron_right, size: 20),
                 ],
               ),
@@ -66,20 +68,5 @@ class DueDate extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _showDatePicker(BuildContext context) {
-
-    showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2102),
-      // builder: (context, child) {
-      //   return SingleChildScrollView(child: child);
-      // },
-    ).then((value) {
-      print(value);
-    });
   }
 }

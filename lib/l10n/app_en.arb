@@ -16,5 +16,6 @@
   "dueData": "Add Due Date",
   "note": "Note",
   "addNote": "Add Note",
-  "taskDelete": "Task will be permanently deleted"
+  "taskDelete": "Task will be permanently deleted",
+  "due": "Due"
 }

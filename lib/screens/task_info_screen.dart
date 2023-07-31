@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:todo/components/delete_dialog.dart';
 import 'package:todo/components/due_date_dialog.dart';
 import 'package:todo/components/widgets.dart';
@@ -26,6 +27,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   late bool _isCompleted = widget.task.isCompleted; // checkbox flag
   late bool _isImportant = widget.task.isImportant; // important flag
   bool _isDateActive = false; // date market flag
+  late DateTime dateTime;
 
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -129,7 +131,14 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: _toggleDateIconVisibility,
+                onTap: (){
+                  showDialog(
+                    context: context,
+                    builder: (dialogContext) {
+                      return DueDate(datePicker: () => _showDatePicker(context));
+                    },
+                  );
+                },
                 child: Row(
                   children: [
                     Icon(
@@ -137,33 +146,26 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                       color: ColorSelect.grayColor,
                     ),
                     const SizedBox(width: 18),
-                    GestureDetector(
-                      // onTap: () {
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (dialogContext) {
-                      //       return const DueDate();
-                      //     },
-                      //   );
-                      // },
-                      child: Expanded(
-                        child: Text(
-                          AppLocalizations.of(context).dueData,
-                          overflow: TextOverflow.fade,
-                          maxLines: 1,
-                          softWrap: false,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: _isDateActive ? ColorSelect.primaryColor : ColorSelect.grayColor,
-                          ),
-                        ),
+                    Text(
+                      _isDateActive
+                          ? '${AppLocalizations.of(context).due}: ${DateFormat('E, d MMMM').format(dateTime)}'
+                          : AppLocalizations.of(context).dueData,
+                      overflow: TextOverflow.fade,
+                      maxLines: 1,
+                      softWrap: false,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: _isDateActive ? ColorSelect.primaryColor : ColorSelect.grayColor,
                       ),
                     ),
+                    const Spacer(),
                     if (_isDateActive)
                       GestureDetector(
                         onTap: () {
                           debugPrint('deleted date');
-                          _toggleDateIconVisibility();
+                          setState(() {
+                            _isDateActive = false;
+                          });
                         },
                         child: Icon(Icons.close, color: ColorSelect.grayColor),
                       ),
@@ -218,7 +220,6 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                             style: TextStyle(fontSize: 14),
                           ),
                         ),
-                        const Spacer(),
                         GestureDetector(
                           onTap: () async {
                             bool isDeleted = await showDialog(
@@ -252,10 +253,22 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     );
   }
 
-  // If a deadline is set - show deleted button
-  void _toggleDateIconVisibility() {
-    setState(() {
-      _isDateActive = !_isDateActive;
+  void _showDatePicker(BuildContext context) {
+    Navigator.pop(context);
+
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2102),
+    ).then((value) {
+      if (value != null) {
+        dateTime = value;
+        setState(() {
+          _isDateActive = true;
+        });
+      }
+      debugPrint(value.toString());
     });
   }
 }
