@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/components/delete_dialog.dart';
+import 'package:todo/components/widgets.dart';
 import 'package:todo/models/task.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/splash_screen.dart';
@@ -21,18 +22,17 @@ class TaskInfoScreen extends StatefulWidget {
 }
 
 class _TaskInfoScreenState extends State<TaskInfoScreen> {
-  late bool isCompleted = widget.task.isCompleted; // checkbox flag
-  late bool isImportant = widget.task.isImportant; // important flag
-  bool isDateActive = false; // date market flag
-  Color dateTextColor = ColorSelect.grayColor; // date text color
+  late bool _isCompleted = widget.task.isCompleted; // checkbox flag
+  bool _isImportant = false; // important flag
+  bool _isDateActive = false; // date market flag
 
   final TextEditingController _controller = TextEditingController();
-  bool _isTextFieldEmpty = true;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _controller.addListener(_onTextFieldChange);
+    _focusNode.addListener(_onFocusChange);
     if (widget.task.description.isNotEmpty) {
       _controller.text = widget.task.description;
     }
@@ -40,11 +40,16 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
 
   @override
   void dispose() {
-    _controller.removeListener(_onTextFieldChange);
-    _controller.dispose();
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
     super.dispose();
   }
 
+  void _onFocusChange() {
+    setState(() {
+      debugPrint('Focused');
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TaskExtendedBloc>(
@@ -85,11 +90,11 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
               Row(
                 children: [
                   Checkbox(
-                    value: isCompleted,
+                    value: _isCompleted,
                     onChanged: (bool? value) {
                       BlocProvider.of<TaskExtendedBloc>(context).add(ToggleMark(widget.task.id));
                       setState(() {
-                        isCompleted = !isCompleted;
+                        _isCompleted = !_isCompleted;
                       });
                     },
                   ),
@@ -104,14 +109,8 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        isImportant = !isImportant;
-                      });
-
-                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleImportant(widget.task.id));
-                    },
-                    child: isImportant ? activeImportantIcon : disabledImportantIcon,
+                    onTap: _toggleImportantIconColor,
+                    child: _isImportant ? activeImportantIcon : disabledImportantIcon,
                   )
                 ],
               ),
@@ -122,7 +121,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: toggleDateIconVisibility,
+                onTap: _toggleDateIconVisibility,
                 child: Row(
                   children: [
                     Icon(
@@ -139,12 +138,11 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         style: const TextStyle(fontSize: 16),
                       ),
                     ),
-                    // const Spacer(),
-                    if (isDateActive)
+                    if (_isDateActive)
                       GestureDetector(
                         onTap: () {
                           debugPrint('deleted date');
-                          toggleDateIconVisibility();
+                          _toggleDateIconVisibility();
                         },
                         child: Icon(Icons.close, color: ColorSelect.grayColor),
                       ),
@@ -156,7 +154,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 height: 210,
                 child: Column(
                   children: [
-                    if (!_isTextFieldEmpty)
+                    if (_focusNode.hasFocus)
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -165,7 +163,8 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         ),
                       ),
                     TextFormField(
-                      textInputAction: TextInputAction.done,
+                      focusNode: _focusNode,
+                        textInputAction: TextInputAction.done,
                       onFieldSubmitted: (String value) {
                         if (value.trim().isNotEmpty) {
                           debugPrint(value);
@@ -184,7 +183,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 ),
               ),
               Divider(
-                color: _isTextFieldEmpty ? ColorSelect.lightGrayColor : ColorSelect.primaryColor,
+                color: _focusNode.hasFocus ? ColorSelect.primaryColor : ColorSelect.lightGrayColor,
               ),
               Expanded(
                 child: Column(
@@ -233,21 +232,15 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   }
 
   // If a deadline is set - show deleted button
-  void toggleDateIconVisibility() {
+  void _toggleDateIconVisibility() {
     setState(() {
-      isDateActive = !isDateActive;
+      _isDateActive = !_isDateActive;
     });
   }
 
-   toggleImportant(String taskId, BuildContext context) {
-
-
-  }
-
-  // Check if a text field is empty
-  void _onTextFieldChange() {
+  void _toggleImportantIconColor() {
     setState(() {
-      _isTextFieldEmpty = _controller.text.isEmpty;
+      _isImportant = !_isImportant;
     });
   }
 }
