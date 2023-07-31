@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/components/delete_dialog.dart';
+import 'package:todo/components/due_date_dialog.dart';
 import 'package:todo/components/widgets.dart';
 import 'package:todo/models/task.dart';
 import 'package:todo/repository/todo_repository.dart';
@@ -23,7 +24,7 @@ class TaskInfoScreen extends StatefulWidget {
 
 class _TaskInfoScreenState extends State<TaskInfoScreen> {
   late bool _isCompleted = widget.task.isCompleted; // checkbox flag
-  bool _isImportant = false; // important flag
+  late bool _isImportant = widget.task.isImportant; // important flag
   bool _isDateActive = false; // date market flag
 
   final TextEditingController _controller = TextEditingController();
@@ -50,6 +51,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
       debugPrint('Focused');
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TaskExtendedBloc>(
@@ -109,7 +111,13 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: _toggleImportantIconColor,
+                    onTap: () {
+                      setState(() {
+                        _isImportant = !_isImportant;
+                      });
+
+                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleImportant(widget.task.id));
+                    },
                     child: _isImportant ? activeImportantIcon : disabledImportantIcon,
                   )
                 ],
@@ -129,13 +137,26 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                       color: ColorSelect.grayColor,
                     ),
                     const SizedBox(width: 18),
-                    Expanded(
-                      child: Text(
-                        AppLocalizations.of(context).dueData,
-                        overflow: TextOverflow.fade,
-                        maxLines: 1,
-                        softWrap: false,
-                        style: const TextStyle(fontSize: 16),
+                    GestureDetector(
+                      // onTap: () {
+                      //   showDialog(
+                      //     context: context,
+                      //     builder: (dialogContext) {
+                      //       return const DueDate();
+                      //     },
+                      //   );
+                      // },
+                      child: Expanded(
+                        child: Text(
+                          AppLocalizations.of(context).dueData,
+                          overflow: TextOverflow.fade,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: _isDateActive ? ColorSelect.primaryColor : ColorSelect.grayColor,
+                          ),
+                        ),
                       ),
                     ),
                     if (_isDateActive)
@@ -164,7 +185,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                       ),
                     TextFormField(
                       focusNode: _focusNode,
-                        textInputAction: TextInputAction.done,
+                      textInputAction: TextInputAction.done,
                       onFieldSubmitted: (String value) {
                         if (value.trim().isNotEmpty) {
                           debugPrint(value);
@@ -235,12 +256,6 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   void _toggleDateIconVisibility() {
     setState(() {
       _isDateActive = !_isDateActive;
-    });
-  }
-
-  void _toggleImportantIconColor() {
-    setState(() {
-      _isImportant = !_isImportant;
     });
   }
 }
