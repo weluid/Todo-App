@@ -63,7 +63,7 @@ class ToDoRepository {
     _manager.toggleImportant(taskId);
   }
 
-  void addDate(String taskId, DateTime date) {
+  void addDate(String taskId, DateTime? date) {
     _manager.addDate(taskId, date);
   }
 }

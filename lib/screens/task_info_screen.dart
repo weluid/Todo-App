@@ -192,7 +192,8 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     if (_isDateActive)
                       GestureDetector(
                         onTap: () {
-                          debugPrint('deleted date');
+                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDate(widget.task.id, null));
+
                           setState(() {
                             _isDateActive = false;
                           });
