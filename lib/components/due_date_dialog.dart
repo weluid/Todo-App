@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 class DueDate extends StatelessWidget {
   final VoidCallback datePicker;
+  final VoidCallback dateToday;
+  final VoidCallback dateTomorrow;
 
-  const DueDate({required this.datePicker, super.key});
+  const DueDate({required this.datePicker, super.key, required this.dateToday, required this.dateTomorrow});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class DueDate extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                // first button
+                dateToday.call();
               },
               child: const Row(
                 children: [
@@ -39,7 +41,7 @@ class DueDate extends StatelessWidget {
             const SizedBox(height: 22),
             GestureDetector(
               onTap: () {
-                // second button
+                dateTomorrow.call();
               },
               child: const Row(
                 children: [

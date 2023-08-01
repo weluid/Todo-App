@@ -23,4 +23,6 @@ abstract class BaseDatabase {
 
   void toggleImportant(String taskId);
 
+  void addDate(String taskId, DateTime date);
+
 }

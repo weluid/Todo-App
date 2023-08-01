@@ -34,3 +34,11 @@ class ToggleImportant extends TaskExtendedEvent {
 
   ToggleImportant(this.taskId);
 }
+
+class AddDate extends TaskExtendedEvent {
+  final String taskId;
+  final DateTime date;
+
+  AddDate(this.taskId, this.date);
+}
+

@@ -81,6 +81,12 @@ class CacheManager extends BaseDatabase {
 
   }
 
+  @override
+  void addDate(String taskId, DateTime date) {
+    Task relevantTask = findRelevantTask(taskId);
+    relevantTask.dueDate = date;
+  }
+
   Task findRelevantTask(String taskId) {
     Task relevantTask = tasks.firstWhere((element) => element.id == taskId);
     return relevantTask;
