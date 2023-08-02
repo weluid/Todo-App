@@ -148,7 +148,6 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                             _isDateActive = true;
                           });
 
-
                           debugPrint(dateTime.toString());
                         },
                         dateTomorrow: () {
@@ -245,15 +244,18 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     const Spacer(),
                     Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Created on Mon, 20 April',
-                            style: TextStyle(fontSize: 14),
+                            DateTime.now().isAfter(widget.task.createdDate)
+                                ? AppLocalizations.of(context).createdToday
+                                : '${AppLocalizations.of(context).createdOn} ${DateFormat('E, d MMMM').format(widget.task.createdDate)}',
+                            // 'Created on Mon, 20 April',
+                            style: const TextStyle(fontSize: 14),
                           ),
                         ),
                         GestureDetector(
                           onTap: () async {
-                            bool isDeleted = await showDialog(
+                            bool? isDeleted = await showDialog(
                               context: context,
                               builder: (dialogContext) => DeletedDialog(
                                 deleteObject: (taskId) {
@@ -265,7 +267,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                               ),
                             );
 
-                            if (isDeleted) {
+                            if (isDeleted != null) {
                               if (!mounted) return;
                               Navigator.pop(context, true);
                             }

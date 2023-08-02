@@ -29,7 +29,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   FutureOr<void> _eventAddTask(AddTaskEvent e, Emitter<TaskState> emit) {
     _toDoRepository.addTask(
-      Task(id: GetId().genIDByDatetimeNow(), title: e.taskTitle, groupId: e.groupId),
+      Task(id: GetId().genIDByDatetimeNow(), title: e.taskTitle, groupId: e.groupId, createdDate: DateTime.now()),
     );
     emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
   }

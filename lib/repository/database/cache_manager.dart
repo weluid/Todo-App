@@ -12,9 +12,9 @@ class CacheManager extends BaseDatabase {
 
   // List with tasks
   List<Task> tasks = [
-    Task(id: '1', title: 'Read Holly Bible', isCompleted: false, groupId: 'Test'),
-    Task(id: '2', title: 'Call Verka', isCompleted: false, groupId: 'Test'),
-    Task(id: '3', title: 'See Pornhub', isCompleted: false, groupId: 'Test'),
+    Task(id: '1', title: 'Read Holly Bible', isCompleted: false, groupId: 'Test', createdDate: DateTime.now()),
+    Task(id: '2', title: 'Call Verka', isCompleted: false, groupId: 'Test', createdDate: DateTime.now()),
+    Task(id: '3', title: 'See Pornhub', isCompleted: false, groupId: 'Test', createdDate: DateTime.now()),
   ];
 
   @override

@@ -20,5 +20,8 @@
   "due": "Due",
   "today": "Today",
   "tomorrow": "Tomorrow",
-  "pickDate": "Pick a Date"
+  "pickDate": "Pick a Date",
+  "createdOn": "Created on",
+  "createdToday": "Created Today"
+
 }

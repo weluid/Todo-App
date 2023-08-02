@@ -6,6 +6,7 @@ class Task {
   bool isCompleted;
   String groupId;
   DateTime? dueDate;
+  DateTime createdDate;
 
   Task({
     required this.id,
@@ -15,10 +16,11 @@ class Task {
     this.isImportant = false,
     this.isCompleted = false,
     this.dueDate,
+    required this.createdDate,
   });
 
   @override
   String toString() {
-    return 'Task{id: $id, title: $title, description: $description, isImportant: $isImportant, isCompleted: $isCompleted, groupId: $groupId, dueDate: $dueDate}';
+    return 'Task{id: $id, title: $title, description: $description, isImportant: $isImportant, isCompleted: $isCompleted, groupId: $groupId, dueDate: $dueDate, createdDate: $createdDate}';
   }
 }
