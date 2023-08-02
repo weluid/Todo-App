@@ -223,7 +223,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         if (value.trim().isNotEmpty) {
                           debugPrint(value);
                           BlocProvider.of<TaskExtendedBloc>(context)
-                              .add(AddDescription(taskId: widget.task.id, description: value));
+                              .add(AddDescriptionEvent(taskId: widget.task.id, description: value));
                         }
                       },
                       controller: _controller,
@@ -258,7 +258,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                               builder: (dialogContext) => DeletedDialog(
                                 deleteObject: (taskId) {
                                   BlocProvider.of<TaskExtendedBloc>(context)
-                                      .add(RemoveTask(groupId: widget.groupId, taskId: widget.task.id));
+                                      .add(RemoveTaskEvent(groupId: widget.groupId, taskId: widget.task.id));
                                 },
                                 id: widget.task.id,
                                 desc: AppLocalizations.of(context).taskDelete,

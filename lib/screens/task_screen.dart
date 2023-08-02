@@ -67,7 +67,7 @@ class _TaskScreenState extends State<TaskScreen> {
                 context: context,
                 builder: (dialogContext) => DeletedDialog(
                   deleteObject: (groupId) {
-                    BlocProvider.of<TaskBloc>(context).add(RemoveGroup(widget.id));
+                    BlocProvider.of<TaskBloc>(context).add(RemoveGroupEvent(widget.id));
                   },
                   id: widget.id, desc: AppLocalizations.of(context).groupDelete,
                 ),
@@ -114,7 +114,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         task: state.taskList[index],
                         onCheckboxChanged: (id) {
                           BlocProvider.of<TaskBloc>(context).add(
-                            ToggleMark(id),
+                            ToggleMarkEvent(id),
                           );
                         },
                         onInfoScreen: () async {
@@ -171,7 +171,7 @@ class _TaskScreenState extends State<TaskScreen> {
             )),
           ),
           onTap: () => BlocProvider.of<TaskBloc>(context).add(
-            RemoveTask(widget.id, state.taskList[index].id),
+            RemoveTaskEvent(widget.id, state.taskList[index].id),
           ),
         ),
       ),
@@ -309,7 +309,7 @@ class _TaskScreenState extends State<TaskScreen> {
               GestureDetector(
                 onTap: () {
                   if (inputText.trim().isNotEmpty) {
-                    BlocProvider.of<TaskBloc>(blocContext).add(RenameGroup(id: widget.id, newName: inputText.trim()));
+                    BlocProvider.of<TaskBloc>(blocContext).add(RenameGroupEvent(id: widget.id, newName: inputText.trim()));
                     setState(() {
                       groupNameTitle = inputText.trim();
                     });
