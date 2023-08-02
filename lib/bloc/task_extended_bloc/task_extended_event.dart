@@ -23,22 +23,22 @@ class AddDescriptionEvent extends TaskExtendedEvent {
   AddDescriptionEvent({required this.taskId, required this.description});
 }
 
-class ToggleMark extends TaskExtendedEvent {
+class ToggleMarkEvent extends TaskExtendedEvent {
   final String taskId;
 
-  ToggleMark(this.taskId);
+  ToggleMarkEvent(this.taskId);
 }
 
-class ToggleImportant extends TaskExtendedEvent {
+class ToggleImportantEvent extends TaskExtendedEvent {
   final String taskId;
 
-  ToggleImportant(this.taskId);
+  ToggleImportantEvent(this.taskId);
 }
 
-class AddDate extends TaskExtendedEvent {
+class AddDateEvent extends TaskExtendedEvent {
   final String taskId;
   final DateTime? date;
 
-  AddDate(this.taskId, this.date);
+  AddDateEvent(this.taskId, this.date);
 }
 

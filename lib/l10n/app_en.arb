@@ -17,5 +17,8 @@
   "note": "Note",
   "addNote": "Add Note",
   "taskDelete": "Task will be permanently deleted",
-  "due": "Due"
+  "due": "Due",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "pickDate": "Pick a Date"
 }

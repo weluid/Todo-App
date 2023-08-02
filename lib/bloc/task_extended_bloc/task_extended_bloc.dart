@@ -16,9 +16,9 @@ class TaskExtendedBloc extends Bloc<TaskExtendedEvent, TaskExtendedState> {
     on<AddDescriptionEvent>(_eventAddDescription);
     on<RemoveTaskEvent>(_eventRemoveTask);
     on<GetTaskListEvent>(_eventGetTaskList);
-    on<ToggleMark>(_eventToggleMark);
-    on<ToggleImportant>(_eventToggleImportant);
-    on<AddDate>(_eventAddDate);
+    on<ToggleMarkEvent>(_eventToggleMark);
+    on<ToggleImportantEvent>(_eventToggleImportant);
+    on<AddDateEvent>(_eventAddDate);
   }
 
   FutureOr<void> _eventRemoveTask(RemoveTaskEvent e, Emitter emit) {
@@ -34,15 +34,15 @@ class TaskExtendedBloc extends Bloc<TaskExtendedEvent, TaskExtendedState> {
     emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
   }
 
-  FutureOr<void> _eventToggleMark(ToggleMark e, Emitter<TaskExtendedState> emit) {
-    toDoRepository.toggleMark(e.taskId);
+  FutureOr<void> _eventToggleMark(ToggleMarkEvent e, Emitter<TaskExtendedState> emit) {
+    _toDoRepository.toggleMark(e.taskId);
   }
 
-  FutureOr<void> _eventToggleImportant(ToggleImportant e, Emitter<TaskExtendedState> emit) {
-    toDoRepository.toggleImportant(e.taskId);
+  FutureOr<void> _eventToggleImportant(ToggleImportantEvent e, Emitter<TaskExtendedState> emit) {
+    _toDoRepository.toggleImportant(e.taskId);
   }
 
-  FutureOr<void> _eventAddDate(AddDate e, Emitter<TaskExtendedState> emit) {
-    toDoRepository.addDate(e.taskId, e.date);
+  FutureOr<void> _eventAddDate(AddDateEvent e, Emitter<TaskExtendedState> emit) {
+    _toDoRepository.addDate(e.taskId, e.date);
   }
 }

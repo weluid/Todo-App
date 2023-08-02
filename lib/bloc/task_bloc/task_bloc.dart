@@ -52,6 +52,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   FutureOr<void> _eventToggleImportant(ToggleImportant e, Emitter emit) {
-    toDoRepository.toggleImportant(e.taskId);
+    _toDoRepository.toggleImportant(e.taskId);
   }
 }

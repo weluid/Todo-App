@@ -96,7 +96,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                   Checkbox(
                     value: _isCompleted,
                     onChanged: (bool? value) {
-                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleMark(widget.task.id));
+                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleMarkEvent(widget.task.id));
                       setState(() {
                         _isCompleted = !_isCompleted;
                       });
@@ -118,7 +118,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         _isImportant = !_isImportant;
                       });
 
-                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleImportant(widget.task.id));
+                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleImportantEvent(widget.task.id));
                     },
                     child: _isImportant ? activeImportantIcon : disabledImportantIcon,
                   )
@@ -142,7 +142,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                           // current day date
                           DateTime now = DateTime.now();
                           dateTime = DateTime(now.year, now.month, now.day, 0, 0);
-                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDate(widget.task.id, dateTime));
+                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, dateTime));
 
                           setState(() {
                             _isDateActive = true;
@@ -157,7 +157,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                           DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
                           dateTime = DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 0, 0);
 
-                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDate(widget.task.id, dateTime));
+                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, dateTime));
 
                           setState(() {
                             _isDateActive = true;
@@ -192,7 +192,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     if (_isDateActive)
                       GestureDetector(
                         onTap: () {
-                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDate(widget.task.id, null));
+                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, null));
 
                           setState(() {
                             _isDateActive = false;
@@ -295,7 +295,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     ).then((value) {
       if (value != null) {
         dateTime = value;
-        BlocProvider.of<TaskExtendedBloc>(context).add(AddDate(widget.task.id, dateTime));
+        BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, dateTime));
 
         setState(() {
           _isDateActive = true;

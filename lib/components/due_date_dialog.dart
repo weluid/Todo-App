@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class DueDate extends StatelessWidget {
   final VoidCallback datePicker;
@@ -16,10 +18,10 @@ class DueDate extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Center(
+             Center(
               child: Text(
-                'Due',
-                style: TextStyle(fontSize: 22),
+                AppLocalizations.of(context).due,
+                style: const TextStyle(fontSize: 22),
               ),
             ),
             const Padding(
@@ -30,11 +32,11 @@ class DueDate extends StatelessWidget {
               onTap: () {
                 dateToday.call();
               },
-              child: const Row(
+              child:  Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 20),
-                  SizedBox(width: 18),
-                  Text('Today', style: TextStyle(fontSize: 14)),
+                  const Icon(Icons.calendar_today, size: 20),
+                  const SizedBox(width: 18),
+                  Text(AppLocalizations.of(context).today, style: const TextStyle(fontSize: 14)),
                 ],
               ),
             ),
@@ -43,11 +45,11 @@ class DueDate extends StatelessWidget {
               onTap: () {
                 dateTomorrow.call();
               },
-              child: const Row(
+              child:  Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 20),
-                  SizedBox(width: 18),
-                  Text('Tomorrow', style: TextStyle(fontSize: 14)),
+                  const Icon(Icons.calendar_today, size: 20),
+                  const SizedBox(width: 18),
+                  Text(AppLocalizations.of(context).tomorrow, style: const TextStyle(fontSize: 14)),
                 ],
               ),
             ),
@@ -56,13 +58,13 @@ class DueDate extends StatelessWidget {
               onTap: () {
                 datePicker();
               },
-              child: const Row(
+              child:  Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 20),
-                  SizedBox(width: 18),
-                  Text('Pick a Date', style: TextStyle(fontSize: 14)),
-                  Spacer(),
-                  Icon(Icons.chevron_right, size: 20),
+                  const Icon(Icons.calendar_today, size: 20),
+                  const SizedBox(width: 18),
+                  Text(AppLocalizations.of(context).pickDate, style: const TextStyle(fontSize: 14)),
+                  const Spacer(),
+                  const Icon(Icons.chevron_right, size: 20),
                 ],
               ),
             ),
