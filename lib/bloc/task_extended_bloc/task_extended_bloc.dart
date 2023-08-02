@@ -10,24 +10,24 @@ part 'task_extended_event.dart';
 part 'task_extended_state.dart';
 
 class TaskExtendedBloc extends Bloc<TaskExtendedEvent, TaskExtendedState> {
-  final ToDoRepository toDoRepository;
+  final ToDoRepository _toDoRepository;
 
-  TaskExtendedBloc(this.toDoRepository) : super(TaskExtendedInitial()) {
-    on<AddDescription>(_eventAddDescription);
-    on<RemoveTask>(_eventRemoveTask);
+  TaskExtendedBloc(this._toDoRepository) : super(TaskExtendedInitial()) {
+    on<AddDescriptionEvent>(_eventAddDescription);
+    on<RemoveTaskEvent>(_eventRemoveTask);
     on<GetTaskListEvent>(_eventGetTaskList);
   }
 
-  FutureOr<void> _eventRemoveTask(RemoveTask e, Emitter emit) {
-    toDoRepository.removeTask(e.taskId);
-    emit(GetTaskList(toDoRepository.getTaskList(e.groupId)));
+  FutureOr<void> _eventRemoveTask(RemoveTaskEvent e, Emitter emit) {
+    _toDoRepository.removeTask(e.taskId);
+    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
   }
 
-  FutureOr<void> _eventAddDescription(AddDescription e, Emitter emit) {
-    toDoRepository.addTaskDescription(e.taskId, e.description);
+  FutureOr<void> _eventAddDescription(AddDescriptionEvent e, Emitter emit) {
+    _toDoRepository.addTaskDescription(e.taskId, e.description);
   }
 
   void _eventGetTaskList(GetTaskListEvent e, Emitter emit) {
-    emit(GetTaskList(toDoRepository.getTaskList(e.groupId)));
+    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
   }
 }

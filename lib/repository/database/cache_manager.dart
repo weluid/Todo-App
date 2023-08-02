@@ -68,7 +68,5 @@ class CacheManager extends BaseDatabase {
   void addTaskDescription(String taskId, String description) {
     Task relevantTask = tasks.firstWhere((element) => element.id == taskId);
     relevantTask.description = description;
-
-    print(tasks);
   }
 }

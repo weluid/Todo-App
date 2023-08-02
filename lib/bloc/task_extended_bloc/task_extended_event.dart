@@ -9,16 +9,16 @@ class GetTaskListEvent extends TaskExtendedEvent {
   GetTaskListEvent(this.groupId);
 }
 
-class RemoveTask extends TaskExtendedEvent {
+class RemoveTaskEvent extends TaskExtendedEvent {
   final String groupId;
   final String taskId;
 
-  RemoveTask({required this.groupId, required this.taskId});
+  RemoveTaskEvent({required this.groupId, required this.taskId});
 }
 
-class AddDescription extends TaskExtendedEvent {
+class AddDescriptionEvent extends TaskExtendedEvent {
   final String taskId;
   final String description;
 
-  AddDescription({required this.taskId, required this.description});
+  AddDescriptionEvent({required this.taskId, required this.description});
 }
