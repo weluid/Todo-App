@@ -16,5 +16,12 @@
   "dueData": "Add Due Date",
   "note": "Note",
   "addNote": "Add Note",
-  "taskDelete": "Task will be permanently deleted"
+  "taskDelete": "Task will be permanently deleted",
+  "due": "Due",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "pickDate": "Pick a Date",
+  "createdOn": "Created on",
+  "createdToday": "Created Today"
+
 }

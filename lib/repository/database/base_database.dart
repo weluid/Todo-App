@@ -15,9 +15,14 @@ abstract class BaseDatabase {
 
   void removeTask(String taskId);
 
-  void toggleMark(String taskID);
+  void toggleMark(String taskId);
 
   void renameGroup(String id, String newName);
 
   void addTaskDescription(String taskId, String description);
-}
+
+  void toggleImportant(String taskId);
+
+  void addDate(String taskId, DateTime? date);
+
+  }

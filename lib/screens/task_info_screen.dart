@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:todo/components/delete_dialog.dart';
+import 'package:todo/components/due_date_dialog.dart';
 import 'package:todo/components/widgets.dart';
 import 'package:todo/models/task.dart';
 import 'package:todo/repository/todo_repository.dart';
@@ -23,8 +25,9 @@ class TaskInfoScreen extends StatefulWidget {
 
 class _TaskInfoScreenState extends State<TaskInfoScreen> {
   late bool _isCompleted = widget.task.isCompleted; // checkbox flag
-  bool _isImportant = false; // important flag
+  late bool _isImportant = widget.task.isImportant; // important flag
   bool _isDateActive = false; // date market flag
+  late DateTime dateTime;
 
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -73,7 +76,6 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   }
 
   _buildParentWidget(BuildContext context, GetTaskList state) {
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -94,6 +96,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                   Checkbox(
                     value: _isCompleted,
                     onChanged: (bool? value) {
+                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleMarkEvent(widget.task.id));
                       setState(() {
                         _isCompleted = !_isCompleted;
                       });
@@ -110,7 +113,13 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: _toggleImportantIconColor,
+                    onTap: () {
+                      setState(() {
+                        _isImportant = !_isImportant;
+                      });
+
+                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleImportantEvent(widget.task.id));
+                    },
                     child: _isImportant ? activeImportantIcon : disabledImportantIcon,
                   )
                 ],
@@ -122,7 +131,43 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: _toggleDateIconVisibility,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (dialogContext) {
+                      return DueDate(
+                        datePicker: () => _showDatePicker(context),
+                        dateToday: () {
+                          Navigator.pop(context);
+                          // current day date
+                          DateTime now = DateTime.now();
+                          dateTime = DateTime(now.year, now.month, now.day, 0, 0);
+                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, dateTime));
+
+                          setState(() {
+                            _isDateActive = true;
+                          });
+
+                          debugPrint(dateTime.toString());
+                        },
+                        dateTomorrow: () {
+                          Navigator.pop(context);
+                          // next day date
+                          DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
+                          dateTime = DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 0, 0);
+
+                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, dateTime));
+
+                          setState(() {
+                            _isDateActive = true;
+                          });
+
+                          debugPrint(dateTime.toString());
+                        },
+                      );
+                    },
+                  );
+                },
                 child: Row(
                   children: [
                     Icon(
@@ -130,20 +175,27 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                       color: ColorSelect.grayColor,
                     ),
                     const SizedBox(width: 18),
-                    Expanded(
-                      child: Text(
-                        AppLocalizations.of(context).dueData,
-                        overflow: TextOverflow.fade,
-                        maxLines: 1,
-                        softWrap: false,
-                        style: const TextStyle(fontSize: 16),
+                    Text(
+                      _isDateActive
+                          ? '${AppLocalizations.of(context).due}: ${DateFormat('E, d MMMM').format(dateTime)}'
+                          : AppLocalizations.of(context).dueData,
+                      overflow: TextOverflow.fade,
+                      maxLines: 1,
+                      softWrap: false,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: _isDateActive ? ColorSelect.primaryColor : ColorSelect.grayColor,
                       ),
                     ),
+                    const Spacer(),
                     if (_isDateActive)
                       GestureDetector(
                         onTap: () {
-                          debugPrint('deleted date');
-                          _toggleDateIconVisibility();
+                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, null));
+
+                          setState(() {
+                            _isDateActive = false;
+                          });
                         },
                         child: Icon(Icons.close, color: ColorSelect.grayColor),
                       ),
@@ -165,7 +217,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                       ),
                     TextFormField(
                       focusNode: _focusNode,
-                        textInputAction: TextInputAction.done,
+                      textInputAction: TextInputAction.done,
                       onFieldSubmitted: (String value) {
                         if (value.trim().isNotEmpty) {
                           debugPrint(value);
@@ -192,16 +244,18 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     const Spacer(),
                     Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Created on Mon, 20 April',
-                            style: TextStyle(fontSize: 14),
+                            DateTime.now().isAfter(widget.task.createdDate)
+                                ? AppLocalizations.of(context).createdToday
+                                : '${AppLocalizations.of(context).createdOn} ${DateFormat('E, d MMMM').format(widget.task.createdDate)}',
+                            // 'Created on Mon, 20 April',
+                            style: const TextStyle(fontSize: 14),
                           ),
                         ),
-                        const Spacer(),
                         GestureDetector(
                           onTap: () async {
-                            bool isDeleted = await showDialog(
+                            bool? isDeleted = await showDialog(
                               context: context,
                               builder: (dialogContext) => DeletedDialog(
                                 deleteObject: (taskId) {
@@ -213,7 +267,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                               ),
                             );
 
-                            if (isDeleted) {
+                            if (isDeleted != null) {
                               if (!mounted) return;
                               Navigator.pop(context, true);
                             }
@@ -232,16 +286,24 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     );
   }
 
-  // If a deadline is set - show deleted button
-  void _toggleDateIconVisibility() {
-    setState(() {
-      _isDateActive = !_isDateActive;
-    });
-  }
+  void _showDatePicker(BuildContext context) {
+    Navigator.pop(context);
 
-  void _toggleImportantIconColor() {
-    setState(() {
-      _isImportant = !_isImportant;
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2102),
+    ).then((value) {
+      if (value != null) {
+        dateTime = value;
+        BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, dateTime));
+
+        setState(() {
+          _isDateActive = true;
+        });
+      }
+      debugPrint(value.toString());
     });
   }
 }

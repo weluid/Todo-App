@@ -12,9 +12,9 @@ class CacheManager extends BaseDatabase {
 
   // List with tasks
   List<Task> tasks = [
-    Task(id: '1', title: 'Read Holly Bible', isCompleted: false, groupId: 'Test'),
-    Task(id: '2', title: 'Call Verka', isCompleted: false, groupId: 'Test'),
-    Task(id: '3', title: 'See Pornhub', isCompleted: false, groupId: 'Test'),
+    Task(id: '1', title: 'Read Holly Bible', isCompleted: false, groupId: 'Test', createdDate: DateTime.now()),
+    Task(id: '2', title: 'Call Verka', isCompleted: false, groupId: 'Test', createdDate: DateTime.now()),
+    Task(id: '3', title: 'See Pornhub', isCompleted: false, groupId: 'Test', createdDate: DateTime.now()),
   ];
 
   @override
@@ -53,10 +53,10 @@ class CacheManager extends BaseDatabase {
   }
 
   @override
-  void toggleMark(String taskID) {
-    debugPrint('Toggle Mark');
-    Task currentTask = tasks.firstWhere((element) => element.id == taskID);
-    currentTask.isCompleted = !currentTask.isCompleted;
+  void toggleMark(String taskId) {
+    Task relevantTask = findRelevantTask(taskId);
+    relevantTask.isCompleted = !relevantTask.isCompleted;
+    debugPrint('Toggle Mark${relevantTask.isCompleted}');
   }
 
   @override
@@ -66,7 +66,26 @@ class CacheManager extends BaseDatabase {
 
   @override
   void addTaskDescription(String taskId, String description) {
-    Task relevantTask = tasks.firstWhere((element) => element.id == taskId);
+    Task relevantTask = findRelevantTask(taskId);
     relevantTask.description = description;
+  }
+
+  @override
+  void toggleImportant(String taskId) {
+    Task relevantTask = findRelevantTask(taskId);
+    relevantTask.isImportant = !relevantTask.isImportant;
+    debugPrint('Important Mark: ${relevantTask.isImportant}');
+
+  }
+
+  @override
+  void addDate(String taskId, DateTime? date) {
+    Task relevantTask = findRelevantTask(taskId);
+    relevantTask.dueDate = date;
+  }
+
+  Task findRelevantTask(String taskId) {
+    Task relevantTask = tasks.firstWhere((element) => element.id == taskId);
+    return relevantTask;
   }
 }

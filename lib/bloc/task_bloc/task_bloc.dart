@@ -16,6 +16,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   TaskBloc(this._toDoRepository) : super(TaskInitial()) {
     on<GetTaskListEvent>(_eventGetTaskList);
     on<AddTaskEvent>(_eventAddTask);
+    on<ToggleImportant>(_eventToggleImportant);
     on<RemoveTaskEvent>(_eventRemoveTask);
     on<ToggleMarkEvent>(_eventToggleMark);
     on<RemoveGroupEvent>(_eventRemoveGroup);
@@ -28,7 +29,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   FutureOr<void> _eventAddTask(AddTaskEvent e, Emitter<TaskState> emit) {
     _toDoRepository.addTask(
-      Task(id: GetId().genIDByDatetimeNow(), title: e.taskTitle, groupId: e.groupId),
+      Task(id: GetId().genIDByDatetimeNow(), title: e.taskTitle, groupId: e.groupId, createdDate: DateTime.now()),
     );
     emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
   }
@@ -48,5 +49,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
 
   FutureOr<void> _eventRenameGroup(RenameGroupEvent e, Emitter emit) {
     _toDoRepository.renameGroup(e.id, e.newName);
+  }
+
+  FutureOr<void> _eventToggleImportant(ToggleImportant e, Emitter emit) {
+    _toDoRepository.toggleImportant(e.taskId);
   }
 }
