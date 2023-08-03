@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:todo/components/widgets.dart';
 import 'package:todo/models/task.dart';
-import 'package:todo/utilities/constants.dart';
 
 typedef IdCallback = void Function(String id);
 
 class TaskTile extends StatefulWidget {
   final IdCallback onCheckboxChanged;
+  final IdCallback onImportantChanged;
   final VoidCallback onInfoScreen;
   final Task task;
 
@@ -14,6 +15,7 @@ class TaskTile extends StatefulWidget {
     required this.task,
     required this.onCheckboxChanged,
     required this.onInfoScreen,
+    required this.onImportantChanged,
   });
 
   @override
@@ -21,7 +23,8 @@ class TaskTile extends StatefulWidget {
 }
 
 class _TaskTileState extends State<TaskTile> {
-  bool isCompleted = false;
+  late bool isImportant = widget.task.isImportant; // important flag
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +36,13 @@ class _TaskTileState extends State<TaskTile> {
       child: Row(
         children: [
           Checkbox(
-            value: isCompleted,
+            value: widget.task.isCompleted,
             onChanged: (bool? value) {
-              widget.onCheckboxChanged.call(widget.task.id);
-
               setState(() {
-                isCompleted = !isCompleted;
+                widget.task.isCompleted = !value!;
               });
+
+              widget.onCheckboxChanged.call(widget.task.id);
             },
           ),
           const SizedBox(width: 24),
@@ -57,9 +60,13 @@ class _TaskTileState extends State<TaskTile> {
           ),
           GestureDetector(
             onTap: () {
-              debugPrint('Important');
+              setState(() {
+                isImportant = !isImportant;
+              });
+
+              widget.onImportantChanged.call(widget.task.id);
             },
-            child: Icon(Icons.star_border, color: ColorSelect.grayColor),
+            child: isImportant ? activeImportantIcon : disabledImportantIcon,
           )
         ],
       ),

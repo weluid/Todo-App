@@ -10,32 +10,32 @@ part 'group_event.dart';
 part 'group_state.dart';
 
 class GroupBloc extends Bloc<GroupEvent, GroupState> {
-  final ToDoRepository toDoRepository;
+  final ToDoRepository _toDoRepository;
 
-  GroupBloc(this.toDoRepository) : super(GroupInitial()) {
+  GroupBloc(this._toDoRepository) : super(GroupInitial()) {
     on<InitializationEvent>(_eventStartApp);
     on<AddGroupEvent>(_eventAddGroup);
-    on<RemoveGroup>(_eventRemoveGroup);
-    on<RenameGroup>(_eventRenameGroup);
+    on<RemoveGroupEvent>(_eventRemoveGroup);
+    on<RenameGroupEvent>(_eventRenameGroup);
   }
 
   Future<void> _eventStartApp(GroupEvent e, Emitter emit) async {
-    emit(InitializationApp(toDoRepository.getGroupList()));
+    emit(InitializationApp(_toDoRepository.getGroupList()));
   }
 
   void _eventAddGroup(AddGroupEvent e, Emitter emit) {
-    toDoRepository.addGroup(e.title);
+    _toDoRepository.addGroup(e.title);
 
-    emit(InitializationApp(toDoRepository.getGroupList()));
+    emit(InitializationApp(_toDoRepository.getGroupList()));
   }
 
-  FutureOr<void> _eventRemoveGroup(RemoveGroup e, Emitter emit) {
-    toDoRepository.removeGroup(e.id);
-    emit(InitializationApp(toDoRepository.getGroupList()));
+  FutureOr<void> _eventRemoveGroup(RemoveGroupEvent e, Emitter emit) {
+    _toDoRepository.removeGroup(e.id);
+    emit(InitializationApp(_toDoRepository.getGroupList()));
   }
 
-  FutureOr<void> _eventRenameGroup(RenameGroup e, Emitter<GroupState> emit) {
-    toDoRepository.renameGroup(e.id, e.newName);
-    emit(InitializationApp(toDoRepository.getGroupList()));
+  FutureOr<void> _eventRenameGroup(RenameGroupEvent e, Emitter<GroupState> emit) {
+    _toDoRepository.renameGroup(e.id, e.newName);
+    emit(InitializationApp(_toDoRepository.getGroupList()));
   }
 }

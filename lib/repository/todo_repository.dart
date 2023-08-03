@@ -54,4 +54,16 @@ class ToDoRepository {
   void renameGroup(String id, String newName) {
     _manager.renameGroup(id, newName);
   }
+
+  void addTaskDescription(String taskId, String description) {
+    _manager.addTaskDescription(taskId, description);
+  }
+
+  void toggleImportant(String taskId) {
+    _manager.toggleImportant(taskId);
+  }
+
+  void addDate(String taskId, DateTime? date) {
+    _manager.addDate(taskId, date);
+  }
 }

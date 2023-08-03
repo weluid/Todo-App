@@ -11,42 +11,47 @@ part 'task_event.dart';
 part 'task_state.dart';
 
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
-  final ToDoRepository toDoRepository;
+  final ToDoRepository _toDoRepository;
 
-  TaskBloc(this.toDoRepository) : super(TaskInitial()) {
+  TaskBloc(this._toDoRepository) : super(TaskInitial()) {
     on<GetTaskListEvent>(_eventGetTaskList);
     on<AddTaskEvent>(_eventAddTask);
-    on<RemoveTask>(_eventRemoveTask);
-    on<ToggleMark>(_eventToggleMark);
-    on<RemoveGroup>(_eventRemoveGroup);
-    on<RenameGroup>(_eventRenameGroup);
+    on<ToggleImportant>(_eventToggleImportant);
+    on<RemoveTaskEvent>(_eventRemoveTask);
+    on<ToggleMarkEvent>(_eventToggleMark);
+    on<RemoveGroupEvent>(_eventRemoveGroup);
+    on<RenameGroupEvent>(_eventRenameGroup);
   }
 
   void _eventGetTaskList(GetTaskListEvent e, Emitter emit) {
-    emit(GetTaskList(toDoRepository.getTaskList(e.groupId)));
+    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
   }
 
   FutureOr<void> _eventAddTask(AddTaskEvent e, Emitter<TaskState> emit) {
-    toDoRepository.addTask(
-      Task(id: GetId().genIDByDatetimeNow(), title: e.taskTitle, groupId: e.groupId),
+    _toDoRepository.addTask(
+      Task(id: GetId().genIDByDatetimeNow(), title: e.taskTitle, groupId: e.groupId, createdDate: DateTime.now()),
     );
-    emit(GetTaskList(toDoRepository.getTaskList(e.groupId)));
+    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
   }
 
-  FutureOr<void> _eventRemoveTask(RemoveTask e, Emitter<TaskState> emit) {
-    toDoRepository.removeTask(e.taskId);
-    emit(GetTaskList(toDoRepository.getTaskList(e.groupId)));
+  FutureOr<void> _eventRemoveTask(RemoveTaskEvent e, Emitter<TaskState> emit) {
+    _toDoRepository.removeTask(e.taskId);
+    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
   }
 
-  FutureOr<void> _eventToggleMark(ToggleMark e, Emitter<TaskState> emit) {
-    toDoRepository.toggleMark(e.taskId);
+  FutureOr<void> _eventToggleMark(ToggleMarkEvent e, Emitter<TaskState> emit) {
+    _toDoRepository.toggleMark(e.taskId);
   }
 
-  FutureOr<void> _eventRemoveGroup(RemoveGroup e, Emitter emit) {
-    toDoRepository.removeGroup(e.id);
+  FutureOr<void> _eventRemoveGroup(RemoveGroupEvent e, Emitter emit) {
+    _toDoRepository.removeGroup(e.id);
   }
 
-  FutureOr<void> _eventRenameGroup(RenameGroup e, Emitter emit) {
-    toDoRepository.renameGroup(e.id, e.newName);
+  FutureOr<void> _eventRenameGroup(RenameGroupEvent e, Emitter emit) {
+    _toDoRepository.renameGroup(e.id, e.newName);
+  }
+
+  FutureOr<void> _eventToggleImportant(ToggleImportant e, Emitter emit) {
+    _toDoRepository.toggleImportant(e.taskId);
   }
 }
