@@ -45,8 +45,9 @@ class _TaskScreenState extends State<TaskScreen> {
 
   _buildParentWidget(BuildContext context, GetTaskList state) {
     return Scaffold(
-      backgroundColor: ColorSelect.lightPurpleBackground,
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       appBar: AppBar(
+
         // leading - back to home page button
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -82,7 +83,7 @@ class _TaskScreenState extends State<TaskScreen> {
           )
         ],
         iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: ColorSelect.lightPurpleBackground,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         title: Text(
           groupNameTitle,
           style: const TextStyle(color: Colors.white),
@@ -213,7 +214,7 @@ class _TaskScreenState extends State<TaskScreen> {
         onTap: () => _addTask(context),
         child: Container(
           padding: const EdgeInsets.only(left: 17, bottom: 12, top: 12),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: ColorSelect.darkPurple),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Theme.of(context).colorScheme.secondaryContainer),
           child: Row(
             children: [
               const Icon(

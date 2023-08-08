@@ -94,6 +94,9 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
               Row(
                 children: [
                   Checkbox(
+
+                    checkColor: Colors.white,
+                    activeColor: Theme.of(context).colorScheme.outlineVariant,
                     value: _isCompleted,
                     onChanged: (bool? value) {
                       BlocProvider.of<TaskExtendedBloc>(context).add(ToggleMarkEvent(widget.task.id));
@@ -127,7 +130,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 10, bottom: 10),
                 child: Divider(
-                  color: ColorSelect.lightGrayColor,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
               ),
               GestureDetector(
@@ -172,7 +175,8 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                   children: [
                     Icon(
                       Icons.event,
-                      color: ColorSelect.grayColor,
+                      color: _isDateActive ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
+                      // color: ColorSelect.grayColor,
                     ),
                     const SizedBox(width: 18),
                     Text(
@@ -184,7 +188,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                       softWrap: false,
                       style: TextStyle(
                         fontSize: 16,
-                        color: _isDateActive ? ColorSelect.primaryColor : ColorSelect.grayColor,
+                        color: _isDateActive ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
                       ),
                     ),
                     const Spacer(),
@@ -230,13 +234,14 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: AppLocalizations.of(context).addNote,
+                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.outline )
                       ),
                     ),
                   ],
                 ),
               ),
               Divider(
-                color: _focusNode.hasFocus ? ColorSelect.primaryColor : ColorSelect.lightGrayColor,
+                color: _focusNode.hasFocus ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
               ),
               Expanded(
                 child: Column(

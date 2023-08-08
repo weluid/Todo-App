@@ -6,6 +6,8 @@ import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/home_screen.dart';
 import 'package:todo/screens/splash_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:todo/theme/dark_theme.dart';
+import 'package:todo/theme/light_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,9 +23,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
-        theme: ThemeData(
-          useMaterial3: true,
-        ),
+        theme: lightTheme,
+        darkTheme: darkTheme,
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,

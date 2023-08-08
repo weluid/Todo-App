@@ -44,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _buildParentWidget(BuildContext context, InitializationApp state, GroupBloc bloc) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
