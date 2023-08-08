@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:todo/utilities/constants.dart';
 
 class GroupTile extends StatelessWidget {
   final String listName;
@@ -19,7 +18,7 @@ class GroupTile extends StatelessWidget {
           ),
       title: Text(listName),
       trailing: IconButton(
-        color: ColorSelect.grayColor,
+        color:Theme.of(context).colorScheme.outlineVariant,
         icon: const Icon(Icons.chevron_right),
         onPressed: onPressed,
       ),

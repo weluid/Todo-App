@@ -7,7 +7,6 @@ import 'package:todo/components/widgets.dart';
 import 'package:todo/models/task.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/splash_screen.dart';
-import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../bloc/task_extended_bloc/task_extended_bloc.dart';
@@ -95,7 +94,6 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
               Row(
                 children: [
                   Checkbox(
-
                     value: _isCompleted,
                     onChanged: (bool? value) {
                       BlocProvider.of<TaskExtendedBloc>(context).add(ToggleMarkEvent(widget.task.id));
@@ -175,7 +173,6 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     Icon(
                       Icons.event,
                       color: _isDateActive ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
-                      // color: ColorSelect.grayColor,
                     ),
                     const SizedBox(width: 18),
                     Text(
@@ -200,7 +197,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                             _isDateActive = false;
                           });
                         },
-                        child: Icon(Icons.close, color: ColorSelect.grayColor),
+                        child: Icon(Icons.close, color:  Theme.of(context).colorScheme.outline),
                       ),
                   ],
                 ),
@@ -276,7 +273,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                               Navigator.pop(context, true);
                             }
                           },
-                          child: Icon(Icons.delete_outline, color: ColorSelect.grayColor, size: 24),
+                          child: Icon(Icons.delete_outline, color:  Theme.of(context).colorScheme.outline, size: 24),
                         )
                       ],
                     ),

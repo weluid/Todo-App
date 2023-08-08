@@ -161,7 +161,7 @@ class _TaskScreenState extends State<TaskScreen> {
         child: GestureDetector(
           child: Container(
             decoration: BoxDecoration(
-              color: ColorSelect.importantColor,
+              color: Theme.of(context).colorScheme.outlineVariant,
               borderRadius: const BorderRadius.all(Radius.circular(10)),
             ),
             width: double.infinity,
@@ -181,7 +181,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
   _buildEmptyWidget(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorSelect.lightPurpleBackground,
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       appBar: AppBar(
         actions: [
           IconButton(
@@ -194,7 +194,7 @@ class _TaskScreenState extends State<TaskScreen> {
           )
         ],
         iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: ColorSelect.lightPurpleBackground,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         title: Text(
           groupNameTitle,
           style: const TextStyle(color: Colors.white),

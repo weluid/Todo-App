@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'package:todo/utilities/constants.dart';
-
 typedef IdCallback = void Function(String id);
 
 class DeletedDialog extends StatelessWidget {
@@ -43,7 +41,7 @@ class DeletedDialog extends StatelessWidget {
             width: 89,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              color: ColorSelect.importantColor,
+              color: Theme.of(context).colorScheme.outlineVariant,
             ),
             child: Center(
               child: Text(
