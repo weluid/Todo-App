@@ -9,7 +9,7 @@ import 'package:todo/screens/home_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:todo/theme/theme.dart';
 
-void main() async {
+void main() {
   runApp(const MyApp());
 }
 
