@@ -78,6 +78,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   _buildParentWidget(BuildContext context, GetTaskList state) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -95,8 +96,6 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 children: [
                   Checkbox(
 
-                    checkColor: Colors.white,
-                    activeColor: Theme.of(context).colorScheme.outlineVariant,
                     value: _isCompleted,
                     onChanged: (bool? value) {
                       BlocProvider.of<TaskExtendedBloc>(context).add(ToggleMarkEvent(widget.task.id));
@@ -216,7 +215,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           AppLocalizations.of(context).note,
-                          style: TextStyle(fontSize: 12, color: ColorSelect.primaryColor),
+                          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.outlineVariant),
                         ),
                       ),
                     TextFormField(
@@ -254,8 +253,8 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                             DateTime.now().isAfter(widget.task.createdDate)
                                 ? AppLocalizations.of(context).createdToday
                                 : '${AppLocalizations.of(context).createdOn} ${DateFormat('E, d MMMM').format(widget.task.createdDate)}',
-                            // 'Created on Mon, 20 April',
-                            style: const TextStyle(fontSize: 14),
+
+                            style:  TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.outline),
                           ),
                         ),
                         GestureDetector(

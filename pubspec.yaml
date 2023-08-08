@@ -19,6 +19,8 @@ dependencies:
     sdk: flutter
   intl: any
   flutter_slidable: ^3.0.0
+  animated_theme_switcher: ^2.0.8
+
 
 dev_dependencies:
   flutter_test:

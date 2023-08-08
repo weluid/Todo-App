@@ -284,6 +284,7 @@ class _TaskScreenState extends State<TaskScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            surfaceTintColor:  Theme.of(context).colorScheme.background,
             title: Text(
               AppLocalizations.of(context).renameGroup,
               style: const TextStyle(fontSize: 22),
@@ -303,7 +304,7 @@ class _TaskScreenState extends State<TaskScreen> {
                 },
                 child: Text(
                   AppLocalizations.of(context).cancel,
-                  style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: Theme.of(context).colorScheme.outlineVariant, fontWeight: FontWeight.w500),
                 ),
               ),
               const SizedBox(width: 10),
@@ -322,7 +323,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   width: 110,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: ColorSelect.primaryColor,
+                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                   child: Center(
                     child: Text(

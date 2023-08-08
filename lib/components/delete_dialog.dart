@@ -15,6 +15,7 @@ class DeletedDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      surfaceTintColor:  Theme.of(context).colorScheme.background,
       title: Text(
         AppLocalizations.of(context).youSure,
         style: const TextStyle(fontSize: 22),
@@ -27,7 +28,7 @@ class DeletedDialog extends StatelessWidget {
           },
           child: Text(
             AppLocalizations.of(context).cancel,
-            style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+            style: TextStyle(color: Theme.of(context).colorScheme.outlineVariant, fontWeight: FontWeight.w500),
           ),
         ),
         const SizedBox(width: 10),

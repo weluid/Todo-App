@@ -3,10 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/bloc/group_bloc/group_bloc.dart';
+import 'package:todo/bloc/theme_bloc/theme_bloc.dart';
 import 'package:todo/components/bottom_button.dart';
 import 'package:todo/components/group_tile.dart';
-import 'package:todo/main.dart';
 import 'package:todo/repository/todo_repository.dart';
+import 'package:todo/screens/splash_screen.dart';
 import 'package:todo/screens/task_screen.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -35,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (state is InitializationApp) {
             return _buildParentWidget(context, state, bloc);
           } else {
-            return const StartPage();
+            return const SplashScreen();
           }
         },
       ),
@@ -44,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _buildParentWidget(BuildContext context, InitializationApp state, GroupBloc bloc) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.background,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -94,22 +95,34 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         bottomNavigationBar: SizedBox(
           height: 40,
-          child: Center(
-            child: MyBottomButton(
-              text: AppLocalizations.of(context).addGroup,
-              icon: Icons.add,
-              onTap: () async {
-                final String? groupName = await _showDialog();
+          child: Row(
+            children: [
+              Center(
+                child: MyBottomButton(
+                  text: AppLocalizations.of(context).addGroup,
+                  icon: Icons.add,
+                  onTap: () async {
+                    final String? groupName = await _showDialog();
 
-                if (groupName!.trim().isNotEmpty) {
-                  if (!mounted) return;
-                  BlocProvider.of<GroupBloc>(context).add(
-                    AddGroupEvent(title: groupName),
-                  );
-                }
-                debugPrint('Group name: $groupName'); //test city
-              },
-            ),
+                    if (groupName!.trim().isNotEmpty) {
+                      if (!mounted) return;
+                      BlocProvider.of<GroupBloc>(context).add(
+                        AddGroupEvent(title: groupName),
+                      );
+                    }
+                    debugPrint('Group name: $groupName'); //test city
+                  },
+                ),
+              ),
+              const Spacer(),
+              Switch(
+                focusColor: Colors.white,
+                value: context.read<ThemeBloc>().state == ThemeMode.dark,
+                onChanged: (value) {
+                  context.read<ThemeBloc>().add(ThemeChanged(value));
+                },
+              )
+            ],
           ),
         ));
   }
@@ -140,6 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context) {
           String inputText = AppLocalizations.of(context).initialValue;
           return AlertDialog(
+            surfaceTintColor:  Theme.of(context).colorScheme.background,
+
             title: Text(AppLocalizations.of(context).newList),
             content: Form(
               key: formKey,
@@ -165,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   GestureDetector(
                     child: Text(
                       AppLocalizations.of(context).cancel,
-                      style: TextStyle(color: ColorSelect.primaryColor),
+                      style: TextStyle(color: Theme.of(context).colorScheme.outlineVariant),
                     ),
                     onTap: () {
                       Navigator.pop(context);
@@ -185,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 40,
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.all(Radius.circular(20)),
-                        color: ColorSelect.primaryColor,
+                        color: Theme.of(context).colorScheme.outlineVariant,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

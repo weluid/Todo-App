@@ -15,7 +15,7 @@ class GroupTile extends StatelessWidget {
       leading: iconValue ??
           Icon(
             Icons.list,
-            color: ColorSelect.primaryLightColor,
+            color: Theme.of(context).colorScheme.outlineVariant,
           ),
       title: Text(listName),
       trailing: IconButton(
