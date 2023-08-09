@@ -48,43 +48,12 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                GroupTile(
-                  listName: AppLocalizations.of(context).myDay,
-                  iconValue: Icon(
-                    Icons.sunny,
-                    color: ColorSelect.primaryColor,
-                  ),
-                  onPressed: () {},
-                ),
-                GroupTile(
-                  listName: AppLocalizations.of(context).important,
-                  iconValue: Icon(
-                    Icons.star,
-                    color: ColorSelect.importantColor,
-                  ),
-                  onPressed: () {},
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 5, bottom: 5),
-                  child: Divider(
-                    color: ColorSelect.grayColor,
-                    indent: 20, //spacing at the start of divider
-                    endIndent: 30, //spacing at the end of divider
-                  ),
-                ),
                 ListView.builder(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemCount: state.groups.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return GroupTile(
-                      listName: state.groups[index].groupName,
-                      onPressed: () => _goToTaskPage(
-                        state.groups[index].groupName,
-                        context,
-                        state.groups[index].id,
-                      ),
-                    );
+                    return drawLists(context, index, state.groups);
                   },
                 ),
               ],
@@ -208,5 +177,56 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         });
     return await completer.future;
+  }
+
+  Widget drawLists(BuildContext context, int index, List groups) {
+    if (index == 0) {
+      return GroupTile(
+        listName: AppLocalizations.of(context).myDay,
+        iconValue: Icon(
+          Icons.sunny,
+          color: ColorSelect.primaryColor,
+        ),
+        onPressed: () => _goToTaskPage(
+          groups[index].groupName,
+          context,
+          groups[index].id,
+        ),
+      );
+    } else if (index == 1) {
+      return Column(
+        children: [
+          GroupTile(
+            listName: AppLocalizations.of(context).important,
+            iconValue: Icon(
+              Icons.star,
+              color: ColorSelect.importantColor,
+            ),
+            onPressed: () => _goToTaskPage(
+              groups[index].groupName,
+              context,
+              groups[index].id,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 5, bottom: 5),
+            child: Divider(
+              color: ColorSelect.grayColor,
+              indent: 20, //spacing at the start of divider
+              endIndent: 30, //spacing at the end of divider
+            ),
+          ),
+        ],
+      );
+    } else {
+      return GroupTile(
+        listName: groups[index].groupName,
+        onPressed: () => _goToTaskPage(
+          groups[index].groupName,
+          context,
+          groups[index].id,
+        ),
+      );
+    }
   }
 }

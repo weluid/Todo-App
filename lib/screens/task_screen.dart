@@ -63,13 +63,14 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
           IconButton(
             onPressed: () async {
-              bool isDeleted =  await showDialog(
+              bool isDeleted = await showDialog(
                 context: context,
                 builder: (dialogContext) => DeletedDialog(
                   deleteObject: (groupId) {
                     BlocProvider.of<TaskBloc>(context).add(RemoveGroupEvent(widget.id));
                   },
-                  id: widget.id, desc: AppLocalizations.of(context).groupDelete,
+                  id: widget.id,
+                  desc: AppLocalizations.of(context).groupDelete,
                 ),
               );
 
@@ -136,7 +137,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         },
                         // important change
                         onImportantChanged: (id) {
-                          BlocProvider.of<TaskBloc>(context).add(ToggleImportant(state.taskList[index].id));
+                          BlocProvider.of<TaskBloc>(context).add(ToggleImportantEvent(state.taskList[index].id));
                           BlocProvider.of<TaskBloc>(context).add(GetTaskListEvent(widget.id));
                         },
                       ),
@@ -309,7 +310,8 @@ class _TaskScreenState extends State<TaskScreen> {
               GestureDetector(
                 onTap: () {
                   if (inputText.trim().isNotEmpty) {
-                    BlocProvider.of<TaskBloc>(blocContext).add(RenameGroupEvent(id: widget.id, newName: inputText.trim()));
+                    BlocProvider.of<TaskBloc>(blocContext)
+                        .add(RenameGroupEvent(id: widget.id, newName: inputText.trim()));
                     setState(() {
                       groupNameTitle = inputText.trim();
                     });
