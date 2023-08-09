@@ -11,17 +11,19 @@ class GroupTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: iconValue ??
-          Icon(
-            Icons.list,
-            color: ColorSelect.primaryLightColor,
-          ),
-      title: Text(listName),
-      trailing: IconButton(
-        color: ColorSelect.grayColor,
-        icon: const Icon(Icons.chevron_right),
-        onPressed: onPressed,
+    return GestureDetector(
+      onTap: onPressed,
+      child: ListTile(
+        leading: iconValue ??
+            Icon(
+              Icons.list,
+              color: ColorSelect.primaryLightColor,
+            ),
+        title: Text(listName),
+        trailing: Icon(
+          color: ColorSelect.grayColor,
+          Icons.chevron_right,
+        ),
       ),
     );
   }
