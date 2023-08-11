@@ -16,8 +16,9 @@ class TaskInfoScreen extends StatefulWidget {
   final Task task;
   final String groupName;
   final String groupId;
+  final bool selectedTab;
 
-  const TaskInfoScreen({super.key, required this.task, required this.groupName, required this.groupId});
+  const TaskInfoScreen({super.key, required this.task, required this.groupName, required this.groupId, required this.selectedTab});
 
   @override
   State<TaskInfoScreen> createState() => _TaskInfoScreenState();
@@ -81,7 +82,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context, true);
+            Navigator.pop(context, widget.selectedTab);
           },
         ),
         title: Text(widget.groupName),

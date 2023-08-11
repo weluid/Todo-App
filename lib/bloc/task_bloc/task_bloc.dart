@@ -14,17 +14,20 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final ToDoRepository _toDoRepository;
 
   TaskBloc(this._toDoRepository) : super(TaskInitial()) {
-    on<GetTaskListEvent>(_eventGetTaskList);
+    on<GetUncompletedTasksEvent>(_eventGetUncompletedTask);
     on<AddTaskEvent>(_eventAddTask);
-    on<ToggleImportant>(_eventToggleImportant);
+    on<ToggleImportantEvent>(_eventToggleImportant);
     on<RemoveTaskEvent>(_eventRemoveTask);
     on<ToggleMarkEvent>(_eventToggleMark);
     on<RemoveGroupEvent>(_eventRemoveGroup);
     on<RenameGroupEvent>(_eventRenameGroup);
+    on<GetCompletedTaskEvent>(_eventCompletedTasks);
   }
 
-  void _eventGetTaskList(GetTaskListEvent e, Emitter emit) {
-    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
+  void _eventGetUncompletedTask(GetUncompletedTasksEvent e, Emitter emit) async {
+    List<Task> allTasks = _toDoRepository.getTaskList(e.groupId);
+    List<Task> unCompletedTasks = allTasks.where((task) => !task.isCompleted).toList();
+    emit(GetTaskList(unCompletedTasks));
   }
 
   FutureOr<void> _eventAddTask(AddTaskEvent e, Emitter<TaskState> emit) {
@@ -51,7 +54,13 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     _toDoRepository.renameGroup(e.id, e.newName);
   }
 
-  FutureOr<void> _eventToggleImportant(ToggleImportant e, Emitter emit) {
+  FutureOr<void> _eventToggleImportant(ToggleImportantEvent e, Emitter emit) {
     _toDoRepository.toggleImportant(e.taskId);
+  }
+
+  FutureOr<void> _eventCompletedTasks(GetCompletedTaskEvent e, Emitter emit) {
+    List<Task> allTasks = _toDoRepository.getTaskList(e.groupId);
+    List<Task> completedTasks = allTasks.where((task) => task.isCompleted).toList();
+    emit(GetTaskList(completedTasks));
   }
 }

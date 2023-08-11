@@ -22,6 +22,8 @@
   "tomorrow": "Tomorrow",
   "pickDate": "Pick a Date",
   "createdOn": "Created on",
-  "createdToday": "Created Today"
+  "createdToday": "Created Today",
+  "toDo": "To Do",
+  "completed": "Completed"
 
 }
