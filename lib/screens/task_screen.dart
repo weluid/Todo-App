@@ -89,11 +89,12 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            SingleChildScrollView(
-              child: ListView.builder(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
                   padding: const EdgeInsets.only(left: 20, right: 20),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
@@ -142,8 +143,8 @@ class _TaskScreenState extends State<TaskScreen> {
                       ),
                     );
                   }),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: bottomButton(context),
@@ -208,7 +209,7 @@ class _TaskScreenState extends State<TaskScreen> {
   // bottom button for add task
   Padding bottomButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
       child: GestureDetector(
         onTap: () => _addTask(context),
         child: Container(
@@ -242,7 +243,7 @@ class _TaskScreenState extends State<TaskScreen> {
       ),
       context: blocContext,
       builder: (context2) => Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.fromLTRB(20, 10, 20, MediaQuery.of(context).viewInsets.bottom+20),
         child: SizedBox(
           height: 50,
           child: Column(
