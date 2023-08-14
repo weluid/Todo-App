@@ -188,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: ColorSelect.primaryColor,
         ),
         onPressed: () => _goToTaskPage(
-          groups[index].groupName,
+          AppLocalizations.of(context).myDay,
           context,
           groups[index].id,
         ),
@@ -203,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: ColorSelect.importantColor,
             ),
             onPressed: () => _goToTaskPage(
-              groups[index].groupName,
+              AppLocalizations.of(context).important,
               context,
               groups[index].id,
             ),
