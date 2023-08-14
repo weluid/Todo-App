@@ -133,75 +133,77 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
           ),
         ),
         body: SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              SingleChildScrollView(
-                child: ListView.builder(
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: state.taskList.length,
-                    itemBuilder: (context, index) {
-                      return Slidable(
-                        direction: Axis.horizontal,
-                        key: Key(state.taskList[index].toString()),
-                        endActionPane: ActionPane(
-                          extentRatio: 0.25,
-                          motion: const ScrollMotion(),
-                          children: [
-                            const SizedBox(width: 10),
-                            deletionCard(context, state, index),
-                          ],
-                        ),
-                        child: TaskTile(
-                          task: state.taskList[index],
-                          onCheckboxChanged: (id) {
-                            BlocProvider.of<TaskBloc>(context).add(ToggleMarkEvent(id));
-                            Future.delayed(const Duration(milliseconds: 500), () {
-                              state.taskList[index].isCompleted == true
-                                  ? BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id))
-                                  : BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
-                            });
-                          },
-                          onInfoScreen: () async {
-                            // flag for updating task list on page
-                            bool changeFlag = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TaskInfoScreen(
-                                  task: state.taskList[index],
-                                  groupName: groupNameTitle,
-                                  groupId: widget.id,
-                                  selectedTab: selectedTabMarker,
-                                ),
-                              ),
-                            );
-                            if (changeFlag == false) {
-                              if (!mounted) return;
-                              BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id));
-                            } else {
-                              if (!mounted) return;
-                              BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
-                            }
-                          },
-                          // important change
-                          onImportantChanged: (id) {
-                            BlocProvider.of<TaskBloc>(context).add(ToggleImportantEvent(state.taskList[index].id));
-                            if (selectedTabMarker == false) {
-                              if (!mounted) return;
-                              BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id));
-                            } else {
-                              if (!mounted) return;
-                              BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
-                            }
-                          },
-                        ),
-                      );
-                    }),
+          child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: state.taskList.length,
+                        itemBuilder: (context, index) {
+                          return Slidable(
+                            direction: Axis.horizontal,
+                            key: Key(state.taskList[index].toString()),
+                            endActionPane: ActionPane(
+                              extentRatio: 0.25,
+                              motion: const ScrollMotion(),
+                              children: [
+                                const SizedBox(width: 10),
+                                deletionCard(context, state, index),
+                              ],
+                            ),
+                            child: TaskTile(
+                              task: state.taskList[index],
+                              onCheckboxChanged: (id) {
+                                BlocProvider.of<TaskBloc>(context).add(ToggleMarkEvent(id));
+                                Future.delayed(const Duration(milliseconds: 500), () {
+                                  state.taskList[index].isCompleted == true
+                                      ? BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id))
+                                      : BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
+                                });
+                              },
+                              onInfoScreen: () async {
+                                // flag for updating task list on page
+                                bool changeFlag = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TaskInfoScreen(
+                                      task: state.taskList[index],
+                                      groupName: groupNameTitle,
+                                      groupId: widget.id,
+                                      selectedTab: selectedTabMarker,
+                                    ),
+                                  ),
+                                );
+                                if (changeFlag == false) {
+                                  if (!mounted) return;
+                                  BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id));
+                                } else {
+                                  if (!mounted) return;
+                                  BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
+                                }
+                              },
+                              // important change
+                              onImportantChanged: (id) {
+                                BlocProvider.of<TaskBloc>(context).add(ToggleImportantEvent(state.taskList[index].id));
+                                if (selectedTabMarker == false) {
+                                  if (!mounted) return;
+                                  BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id));
+                                } else {
+                                  if (!mounted) return;
+                                  BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
+                                }
+                              },
+                            ),
+                          );
+                        }),
+                  ],
+                ),
               ),
-            ],
-          ),
+
         ),
         bottomNavigationBar: bottomButton(context),
       ),
