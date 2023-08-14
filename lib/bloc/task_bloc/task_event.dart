@@ -43,9 +43,9 @@ class RenameGroupEvent extends TaskEvent {
   RenameGroupEvent({required this.id, required this.newName});
 }
 
-class ToggleImportant extends TaskEvent {
+class ToggleImportantEvent extends TaskEvent {
   final String taskId;
 
-  ToggleImportant(this.taskId);
+  ToggleImportantEvent(this.taskId);
 }
 

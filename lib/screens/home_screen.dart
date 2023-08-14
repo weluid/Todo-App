@@ -49,97 +49,67 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return ThemeSwitchingArea(
       child: Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  GroupTile(
-                    listName: AppLocalizations.of(context).myDay,
-                    iconValue: Icon(
-                      Icons.sunny,
-                      color: ColorSelect.primaryColor,
-                    ),
-                    onPressed: () {},
-                  ),
-                  GroupTile(
-                    listName: AppLocalizations.of(context).important,
-                    iconValue: Icon(
-                      Icons.star,
-                      color: ColorSelect.importantColor,
-                    ),
-                    onPressed: () {},
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5, bottom: 5),
-                    child: Divider(
-                      color: ColorSelect.grayColor,
-                      indent: 20, //spacing at the start of divider
-                      endIndent: 30, //spacing at the end of divider
-                    ),
-                  ),
-                  ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: state.groups.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GroupTile(
-                        listName: state.groups[index].groupName,
-                        onPressed: () => _goToTaskPage(
-                          state.groups[index].groupName,
-                          context,
-                          state.groups[index].id,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          bottomNavigationBar: SizedBox(
-            height: 40,
-            child: Row(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
               children: [
-                Center(
-                  child: MyBottomButton(
-                    text: AppLocalizations.of(context).addGroup,
-                    icon: Icons.add,
-                    onTap: () async {
-                      final String? groupName = await _showDialog();
-
-                      if (groupName!.trim().isNotEmpty) {
-                        if (!mounted) return;
-                        BlocProvider.of<GroupBloc>(context).add(
-                          AddGroupEvent(title: groupName),
-                        );
-                      }
-                      debugPrint('Group name: $groupName'); //test city
-                    },
-                  ),
-                ),
-                const Spacer(),
-                ThemeSwitcher(
-                  clipper: const ThemeSwitcherCircleClipper(),
-                  builder: (context) {
-                    return IconButton(
-                      onPressed: () {
-                        ThemeSwitcher.of(context).changeTheme(
-                          theme: isDark ? lightTheme : darkTheme,
-                        );
-                      },
-                      icon: isDark
-                          ? Icon(Icons.sunny, color: ColorSelect.outlinedPurple)
-                          : Icon(
-                              Icons.nightlight_rounded,
-                              color: ColorSelect.darkGrayColor,
-                            ),
-                    );
+                ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: state.groups.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return drawLists(context, index, state.groups);
                   },
-                )
+                ),
               ],
             ),
-          )),
+          ),
+        ),
+        bottomNavigationBar: SizedBox(
+          height: 40,
+          child: Row(
+            children: [
+              Center(
+                child: MyBottomButton(
+                  text: AppLocalizations.of(context).addGroup,
+                  icon: Icons.add,
+                  onTap: () async {
+                    final String? groupName = await _showDialog();
+
+                    if (groupName!.trim().isNotEmpty) {
+                      if (!mounted) return;
+                      BlocProvider.of<GroupBloc>(context).add(
+                        AddGroupEvent(title: groupName),
+                      );
+                    }
+                    debugPrint('Group name: $groupName'); //test city
+                  },
+                ),
+              ),
+              const Spacer(),
+              ThemeSwitcher(
+                clipper: const ThemeSwitcherCircleClipper(),
+                builder: (context) {
+                  return IconButton(
+                    onPressed: () {
+                      ThemeSwitcher.of(context).changeTheme(
+                        theme: isDark ? lightTheme : darkTheme,
+                      );
+                    },
+                    icon: isDark
+                        ? Icon(Icons.sunny, color: ColorSelect.outlinedPurple)
+                        : Icon(
+                            Icons.nightlight_rounded,
+                            color: ColorSelect.darkGrayColor,
+                          ),
+                  );
+                },
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -195,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   GestureDetector(
                     child: Text(
                       AppLocalizations.of(context).cancel,
-                      style: TextStyle(color: Theme.of(context).colorScheme.outlineVariant),
+                      style: TextStyle(color: ColorSelect.primaryColor),
                     ),
                     onTap: () {
                       Navigator.pop(context);
@@ -215,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 40,
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.all(Radius.circular(20)),
-                        color: Theme.of(context).colorScheme.outlineVariant,
+                        color: ColorSelect.primaryColor,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -239,5 +209,56 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         });
     return await completer.future;
+  }
+
+  Widget drawLists(BuildContext context, int index, List groups) {
+    if (index == 0) {
+      return GroupTile(
+        listName: AppLocalizations.of(context).myDay,
+        iconValue: Icon(
+          Icons.sunny,
+          color: ColorSelect.primaryColor,
+        ),
+        onPressed: () => _goToTaskPage(
+          AppLocalizations.of(context).myDay,
+          context,
+          groups[index].id,
+        ),
+      );
+    } else if (index == 1) {
+      return Column(
+        children: [
+          GroupTile(
+            listName: AppLocalizations.of(context).important,
+            iconValue: Icon(
+              Icons.star,
+              color: ColorSelect.importantColor,
+            ),
+            onPressed: () => _goToTaskPage(
+              AppLocalizations.of(context).important,
+              context,
+              groups[index].id,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 5, bottom: 5),
+            child: Divider(
+              color: ColorSelect.grayColor,
+              indent: 20, //spacing at the start of divider
+              endIndent: 30, //spacing at the end of divider
+            ),
+          ),
+        ],
+      );
+    } else {
+      return GroupTile(
+        listName: groups[index].groupName,
+        onPressed: () => _goToTaskPage(
+          groups[index].groupName,
+          context,
+          groups[index].id,
+        ),
+      );
+    }
   }
 }

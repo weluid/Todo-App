@@ -7,6 +7,8 @@ import 'package:todo/repository/get_id.dart';
 class CacheManager extends BaseDatabase {
   // List with groups
   List<Group> groupList = [
+    Group(id: '1', groupName: 'My Day'),
+    Group(id: '2', groupName: 'Important'),
     Group(id: 'Test', groupName: 'Test'),
   ];
 
@@ -87,5 +89,11 @@ class CacheManager extends BaseDatabase {
   Task findRelevantTask(String taskId) {
     Task relevantTask = tasks.firstWhere((element) => element.id == taskId);
     return relevantTask;
+  }
+
+  @override
+  List<Task> importantSampling() {
+    return tasks.where((task) => task.isImportant).toList();
+
   }
 }
