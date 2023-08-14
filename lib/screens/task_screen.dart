@@ -59,7 +59,6 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
   }
 
   _buildParentWidget(BuildContext context, GetTaskList state) {
-
     // management click on TavVar
     void clickManagement(int index) {
       setState(() {
@@ -119,6 +118,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
             groupNameTitle,
             style: const TextStyle(color: Colors.white),
           ),
+
           bottom: TabBar(
             controller: _tabController,
             onTap: clickManagement,
@@ -218,7 +218,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
         child: GestureDetector(
           child: Container(
             decoration: BoxDecoration(
-              color: ColorSelect.importantColor,
+              color: Theme.of(context).colorScheme.outlineVariant,
               borderRadius: const BorderRadius.all(Radius.circular(10)),
             ),
             width: double.infinity,
@@ -266,12 +266,13 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
   // bottom button for add task
   Padding bottomButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
       child: GestureDetector(
         onTap: () => _addTask(context),
         child: Container(
           padding: const EdgeInsets.only(left: 17, bottom: 12, top: 12),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: ColorSelect.darkPurple),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100), color: Theme.of(context).colorScheme.secondaryContainer),
           child: Row(
             children: [
               const Icon(
@@ -300,7 +301,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
       ),
       context: blocContext,
       builder: (context2) => Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.fromLTRB(20, 10, 20, MediaQuery.of(context).viewInsets.bottom + 20),
         child: SizedBox(
           height: 50,
           child: Column(
@@ -341,6 +342,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
         context: context,
         builder: (context) {
           return AlertDialog(
+            surfaceTintColor: Theme.of(context).colorScheme.background,
             title: Text(
               AppLocalizations.of(context).renameGroup,
               style: const TextStyle(fontSize: 22),
@@ -360,14 +362,15 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
                 },
                 child: Text(
                   AppLocalizations.of(context).cancel,
-                  style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: Theme.of(context).colorScheme.outlineVariant, fontWeight: FontWeight.w500),
                 ),
               ),
               const SizedBox(width: 10),
               GestureDetector(
                 onTap: () {
                   if (inputText.trim().isNotEmpty) {
-                    BlocProvider.of<TaskBloc>(blocContext).add(RenameGroupEvent(id: widget.id, newName: inputText.trim()));
+                    BlocProvider.of<TaskBloc>(blocContext)
+                        .add(RenameGroupEvent(id: widget.id, newName: inputText.trim()));
                     setState(() {
                       groupNameTitle = inputText.trim();
                     });
@@ -379,7 +382,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
                   width: 110,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: ColorSelect.primaryColor,
+                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                   child: Center(
                     child: Text(
