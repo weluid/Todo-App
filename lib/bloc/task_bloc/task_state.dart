@@ -14,3 +14,9 @@ class GetTaskList extends TaskState {
 
   GetTaskList(this.taskList);
 }
+
+class GetTasksList extends TaskState {
+  final List<Task> taskList;
+
+  GetTasksList(this.taskList);
+}

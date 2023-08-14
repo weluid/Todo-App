@@ -3,11 +3,18 @@ part of 'task_bloc.dart';
 @immutable
 abstract class TaskEvent {}
 
-class GetTaskListEvent extends TaskEvent {
+class GetUncompletedTasksEvent extends TaskEvent {
   final String groupId;
 
-  GetTaskListEvent(this.groupId);
+  GetUncompletedTasksEvent(this.groupId);
 }
+
+class GetCompletedTaskEvent extends TaskEvent {
+  final String groupId;
+
+  GetCompletedTaskEvent(this.groupId);
+}
+
 
 // Add task to list
 class AddTaskEvent extends TaskEvent {
