@@ -26,8 +26,8 @@ class TaskInfoScreen extends StatefulWidget {
 class _TaskInfoScreenState extends State<TaskInfoScreen> {
   late bool _isCompleted = widget.task.isCompleted; // checkbox flag
   late bool _isImportant = widget.task.isImportant; // important flag
-  bool _isDateActive = false; // date market flag
-  late DateTime dateTime;
+  late bool _isDateActive = widget.task.dueDate == null ? false : true; // date market flag
+  late DateTime? dateTime = widget.task.dueDate;
 
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -179,7 +179,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                       const SizedBox(width: 18),
                       Text(
                         _isDateActive
-                            ? '${AppLocalizations.of(context).due}: ${DateFormat('E, d MMMM').format(dateTime)}'
+                            ? '${AppLocalizations.of(context).due}: ${DateFormat('E, d MMMM').format(dateTime!)}'
                             : AppLocalizations.of(context).dueData,
                         overflow: TextOverflow.fade,
                         maxLines: 1,
@@ -300,7 +300,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2102),
     ).then((value) {
       if (value != null) {
