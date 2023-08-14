@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:todo/utilities/constants.dart';
 
 class GroupTile extends StatelessWidget {
   final String listName;
   final Icon? iconValue;
   final VoidCallback onPressed;
 
-  const GroupTile({Key? key, required this.listName,
-    this.iconValue, required this.onPressed}) : super(key: key);
+  const GroupTile({Key? key, required this.listName, this.iconValue, required this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,12 +15,12 @@ class GroupTile extends StatelessWidget {
         leading: iconValue ??
             Icon(
               Icons.list,
-              color: ColorSelect.primaryLightColor,
+              color: Theme.of(context).colorScheme.outlineVariant,
             ),
         title: Text(listName),
         trailing: Icon(
-          color: ColorSelect.grayColor,
           Icons.chevron_right,
+          color: Theme.of(context).colorScheme.outline,
         ),
       ),
     );

@@ -14,29 +14,54 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final ToDoRepository _toDoRepository;
 
   TaskBloc(this._toDoRepository) : super(TaskInitial()) {
-    on<GetTaskListEvent>(_eventGetTaskList);
+    on<GetUncompletedTasksEvent>(_eventGetUncompletedTask);
     on<AddTaskEvent>(_eventAddTask);
-    on<ToggleImportant>(_eventToggleImportant);
+    on<ToggleImportantEvent>(_eventToggleImportant);
     on<RemoveTaskEvent>(_eventRemoveTask);
     on<ToggleMarkEvent>(_eventToggleMark);
     on<RemoveGroupEvent>(_eventRemoveGroup);
     on<RenameGroupEvent>(_eventRenameGroup);
+    on<GetCompletedTaskEvent>(_eventCompletedTasks);
   }
 
-  void _eventGetTaskList(GetTaskListEvent e, Emitter emit) {
-    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
+  void _eventGetUncompletedTask(GetUncompletedTasksEvent e, Emitter emit) async {
+   if(e.groupId =='2'){
+     List<Task> allTasks = _toDoRepository.importantSampling();
+     List<Task> unCompletedTasks = allTasks.where((task) => !task.isCompleted).toList();
+     emit(GetTaskList(unCompletedTasks));
+   } else{
+     List<Task> allTasks = _toDoRepository.getTaskList(e.groupId);
+     List<Task> unCompletedTasks = allTasks.where((task) => !task.isCompleted).toList();
+     emit(GetTaskList(unCompletedTasks));
+   }
   }
 
   FutureOr<void> _eventAddTask(AddTaskEvent e, Emitter<TaskState> emit) {
-    _toDoRepository.addTask(
-      Task(id: GetId().genIDByDatetimeNow(), title: e.taskTitle, groupId: e.groupId, createdDate: DateTime.now()),
-    );
-    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
+    if (e.groupId == '2') {
+      _toDoRepository.addTask(
+        Task(
+            id: GetId().genIDByDatetimeNow(),
+            isImportant: true,
+            title: e.taskTitle,
+            groupId: e.groupId,
+            createdDate: DateTime.now()),
+      );
+      emit(GetTaskList(_toDoRepository.importantSampling()));
+    } else {
+      _toDoRepository.addTask(
+        Task(id: GetId().genIDByDatetimeNow(), title: e.taskTitle, groupId: e.groupId, createdDate: DateTime.now()),
+      );
+      emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
+    }
   }
 
   FutureOr<void> _eventRemoveTask(RemoveTaskEvent e, Emitter<TaskState> emit) {
     _toDoRepository.removeTask(e.taskId);
-    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
+    if (e.groupId == '2') {
+      emit(GetTaskList(_toDoRepository.importantSampling()));
+    } else {
+      emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
+    }
   }
 
   FutureOr<void> _eventToggleMark(ToggleMarkEvent e, Emitter<TaskState> emit) {
@@ -51,7 +76,20 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     _toDoRepository.renameGroup(e.id, e.newName);
   }
 
-  FutureOr<void> _eventToggleImportant(ToggleImportant e, Emitter emit) {
+  FutureOr<void> _eventToggleImportant(ToggleImportantEvent e, Emitter emit) {
     _toDoRepository.toggleImportant(e.taskId);
+  }
+
+  FutureOr<void> _eventCompletedTasks(GetCompletedTaskEvent e, Emitter emit) {
+    if(e.groupId =='2'){
+      List<Task> allTasks = _toDoRepository.importantSampling();
+      List<Task> completedTasks = allTasks.where((task) => task.isCompleted).toList();
+      emit(GetTaskList(completedTasks));
+    } else{
+      List<Task> allTasks = _toDoRepository.getTaskList(e.groupId);
+      List<Task> completedTasks = allTasks.where((task) => task.isCompleted).toList();
+      emit(GetTaskList(completedTasks));
+    }
+
   }
 }

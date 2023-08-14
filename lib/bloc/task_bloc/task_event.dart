@@ -3,11 +3,18 @@ part of 'task_bloc.dart';
 @immutable
 abstract class TaskEvent {}
 
-class GetTaskListEvent extends TaskEvent {
+class GetUncompletedTasksEvent extends TaskEvent {
   final String groupId;
 
-  GetTaskListEvent(this.groupId);
+  GetUncompletedTasksEvent(this.groupId);
 }
+
+class GetCompletedTaskEvent extends TaskEvent {
+  final String groupId;
+
+  GetCompletedTaskEvent(this.groupId);
+}
+
 
 // Add task to list
 class AddTaskEvent extends TaskEvent {
@@ -43,9 +50,9 @@ class RenameGroupEvent extends TaskEvent {
   RenameGroupEvent({required this.id, required this.newName});
 }
 
-class ToggleImportant extends TaskEvent {
+class ToggleImportantEvent extends TaskEvent {
   final String taskId;
 
-  ToggleImportant(this.taskId);
+  ToggleImportantEvent(this.taskId);
 }
 

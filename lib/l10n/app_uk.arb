@@ -22,7 +22,8 @@
   "tomorrow": "Завтра",
   "pickDate": "Виберіть дату",
   "createdOn": "Створено в",
-  "createdToday": "Створено сьогодні"
+  "createdToday": "Створено сьогодні",
+  "completed": "Завершені"
 
 
 }

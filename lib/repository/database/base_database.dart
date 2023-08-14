@@ -2,7 +2,6 @@ import 'package:todo/models/group.dart';
 import 'package:todo/models/task.dart';
 
 abstract class BaseDatabase {
-
   List<Group> getGroupList();
 
   List<Task> getTaskList(String groupId);
@@ -25,4 +24,5 @@ abstract class BaseDatabase {
 
   void addDate(String taskId, DateTime? date);
 
-  }
+  List<Task> importantSampling();
+}

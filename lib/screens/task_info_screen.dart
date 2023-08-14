@@ -7,7 +7,6 @@ import 'package:todo/components/widgets.dart';
 import 'package:todo/models/task.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/splash_screen.dart';
-import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../bloc/task_extended_bloc/task_extended_bloc.dart';
@@ -16,8 +15,9 @@ class TaskInfoScreen extends StatefulWidget {
   final Task task;
   final String groupName;
   final String groupId;
+  final bool selectedTab;
 
-  const TaskInfoScreen({super.key, required this.task, required this.groupName, required this.groupId});
+  const TaskInfoScreen({super.key, required this.task, required this.groupName, required this.groupId, required this.selectedTab});
 
   @override
   State<TaskInfoScreen> createState() => _TaskInfoScreenState();
@@ -79,10 +79,11 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     return Scaffold(
       bottomNavigationBar: bottomAppBar(context),
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context, true);
+            Navigator.pop(context, widget.selectedTab);
           },
         ),
         title: Text(widget.groupName),
@@ -129,7 +130,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 10, bottom: 10),
                   child: Divider(
-                    color: ColorSelect.lightGrayColor,
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
                 GestureDetector(
@@ -174,7 +175,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     children: [
                       Icon(
                         Icons.event,
-                        color: ColorSelect.grayColor,
+                        color: _isDateActive ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
                       ),
                       const SizedBox(width: 18),
                       Text(
@@ -186,7 +187,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         softWrap: false,
                         style: TextStyle(
                           fontSize: 16,
-                          color: _isDateActive ? ColorSelect.primaryColor : ColorSelect.grayColor,
+                          color: _isDateActive ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
                         ),
                       ),
                       const Spacer(),
@@ -199,7 +200,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                               _isDateActive = false;
                             });
                           },
-                          child: Icon(Icons.close, color: ColorSelect.grayColor),
+                          child: Icon(Icons.close, color:  Theme.of(context).colorScheme.outline),
                         ),
                     ],
                   ),
@@ -214,7 +215,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                           alignment: Alignment.centerLeft,
                           child: Text(
                             AppLocalizations.of(context).note,
-                            style: TextStyle(fontSize: 12, color: ColorSelect.primaryColor),
+                            style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.outlineVariant),
                           ),
                         ),
                       TextFormField(
@@ -232,13 +233,14 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: AppLocalizations.of(context).addNote,
+                          hintStyle: TextStyle(color: Theme.of(context).colorScheme.outline )
                         ),
                       ),
                     ],
                   ),
                 ),
                 Divider(
-                  color: _focusNode.hasFocus ? ColorSelect.primaryColor : ColorSelect.lightGrayColor,
+                  color: _focusNode.hasFocus ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
                 ),
               ],
             ),
@@ -248,13 +250,12 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     );
   }
 
-  BottomAppBar bottomAppBar(BuildContext context) {
+  BottomAppBar bottomAppBar(BuildContext context){
     return BottomAppBar(
       height: 50,
       elevation: 0,
       child: Column(
         children: [
-          // const Spacer(),
           Row(
             children: [
               Expanded(
@@ -262,8 +263,8 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                   DateTime.now().isAfter(widget.task.createdDate)
                       ? AppLocalizations.of(context).createdToday
                       : '${AppLocalizations.of(context).createdOn} ${DateFormat('E, d MMMM').format(widget.task.createdDate)}',
-                  // 'Created on Mon, 20 April',
-                  style: const TextStyle(fontSize: 14),
+
+                  style:  TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.outline),
                 ),
               ),
               GestureDetector(
@@ -285,7 +286,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     Navigator.pop(context, true);
                   }
                 },
-                child: Icon(Icons.delete_outline, color: ColorSelect.grayColor, size: 24),
+                child: Icon(Icons.delete_outline, color:  Theme.of(context).colorScheme.outline, size: 24),
               )
             ],
           ),
@@ -293,7 +294,6 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
       ),
     );
   }
-
   void _showDatePicker(BuildContext context) {
     Navigator.pop(context);
 
