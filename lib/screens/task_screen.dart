@@ -127,7 +127,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
             indicatorColor: ColorSelect.primaryColor,
             labelColor: ColorSelect.primaryColor,
             tabs: [
-              Tab(text: AppLocalizations.of(context).toDo),
+              const Tab(text: 'To Do'),
               Tab(text: AppLocalizations.of(context).completed),
             ],
           ),
