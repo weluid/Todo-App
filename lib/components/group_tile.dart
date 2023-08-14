@@ -18,7 +18,7 @@ class GroupTile extends StatelessWidget {
           ),
       title: Text(listName),
       trailing: IconButton(
-        color:Theme.of(context).colorScheme.outlineVariant,
+        color:Theme.of(context).colorScheme.outline,
         icon: const Icon(Icons.chevron_right),
         onPressed: onPressed,
       ),

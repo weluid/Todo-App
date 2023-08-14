@@ -8,12 +8,12 @@ class DeletedDialog extends StatelessWidget {
   final String id;
   final String desc;
 
-  const DeletedDialog({super.key, required this.deleteObject, required this.id,  required this.desc});
+  const DeletedDialog({super.key, required this.deleteObject, required this.id, required this.desc});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      surfaceTintColor:  Theme.of(context).colorScheme.background,
+      surfaceTintColor: Theme.of(context).colorScheme.background,
       title: Text(
         AppLocalizations.of(context).youSure,
         style: const TextStyle(fontSize: 22),
@@ -34,7 +34,6 @@ class DeletedDialog extends StatelessWidget {
           onTap: () {
             deleteObject.call(id);
             Navigator.pop(context, true);
-
           },
           child: Container(
             height: 40,
