@@ -16,16 +16,16 @@ class ToDoRepository {
   }
 
   // get the list of groups
-  List<Group> getGroupList() {
+  Future<List<Group>> getGroupList() {
     return _manager.getGroupList();
   }
 
-  void removeGroup(String groupId) {
+  void removeGroup(int groupId) {
     _manager.removeGroup(groupId);
   }
 
 // get the list of groups
-  List<Task> getTaskList(String id) {
+  Future<List<Task>> getTaskList(int id) {
     return _manager.getTaskList(id);
   }
 
@@ -41,29 +41,29 @@ class ToDoRepository {
   }
 
   // remove task
-  void removeTask(String taskId) {
+  void removeTask(int taskId) {
     _manager.removeTask(taskId);
   }
 
   // toggle the task checkbox
-  void toggleMark(String taskID) {
+  void toggleMark(int taskID) {
     _manager.toggleMark(taskID);
   }
 
   // rename group
-  void renameGroup(String id, String newName) {
+  void renameGroup(int id, String newName) {
     _manager.renameGroup(id, newName);
   }
 
-  void addTaskDescription(String taskId, String description) {
+  void addTaskDescription(int taskId, String description) {
     _manager.addTaskDescription(taskId, description);
   }
 
-  void toggleImportant(String taskId) {
+  void toggleImportant(int taskId) {
     _manager.toggleImportant(taskId);
   }
 
-  void addDate(String taskId, DateTime? date) {
+  void addDate(int taskId, DateTime? date) {
     _manager.addDate(taskId, date);
   }
 }

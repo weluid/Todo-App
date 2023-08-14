@@ -3,11 +3,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:todo/utilities/constants.dart';
 
-typedef IdCallback = void Function(String id);
+typedef IdCallback = void Function(int id);
 
 class DeletedDialog extends StatelessWidget {
   final IdCallback deleteObject;
-  final String id;
+  final int id;
   final String desc;
 
   const DeletedDialog({super.key, required this.deleteObject, required this.id,  required this.desc});

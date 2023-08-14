@@ -11,7 +11,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskScreen extends StatefulWidget {
   final String groupName;
-  final String id;
+  final int id;
 
   const TaskScreen({required this.groupName, required this.id, super.key});
 

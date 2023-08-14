@@ -15,7 +15,7 @@ import '../bloc/task_extended_bloc/task_extended_bloc.dart';
 class TaskInfoScreen extends StatefulWidget {
   final Task task;
   final String groupName;
-  final String groupId;
+  final int groupId;
 
   const TaskInfoScreen({super.key, required this.task, required this.groupName, required this.groupId});
 

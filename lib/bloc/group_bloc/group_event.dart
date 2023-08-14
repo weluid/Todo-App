@@ -14,14 +14,14 @@ class AddGroupEvent extends GroupEvent {
 
 // Remove group
 class RemoveGroupEvent extends GroupEvent {
-  final String id;
+  final int id;
 
   RemoveGroupEvent(this.id);
 }
 
 // Rename group
 class RenameGroupEvent extends GroupEvent {
-  final String id;
+  final int id;
   final String newName;
 
   RenameGroupEvent({required this.id, required this.newName});

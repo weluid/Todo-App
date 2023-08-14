@@ -23,20 +23,20 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<RenameGroupEvent>(_eventRenameGroup);
   }
 
-  void _eventGetTaskList(GetTaskListEvent e, Emitter emit) {
-    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
+  void _eventGetTaskList(GetTaskListEvent e, Emitter emit) async {
+    emit(GetTaskList(await _toDoRepository.getTaskList(e.groupId)));
   }
 
-  FutureOr<void> _eventAddTask(AddTaskEvent e, Emitter<TaskState> emit) {
+  FutureOr<void> _eventAddTask(AddTaskEvent e, Emitter<TaskState> emit) async {
     _toDoRepository.addTask(
       Task(id: GetId().genIDByDatetimeNow(), title: e.taskTitle, groupId: e.groupId, createdDate: DateTime.now()),
     );
-    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
+    emit(GetTaskList(await _toDoRepository.getTaskList(e.groupId)));
   }
 
-  FutureOr<void> _eventRemoveTask(RemoveTaskEvent e, Emitter<TaskState> emit) {
+  FutureOr<void> _eventRemoveTask(RemoveTaskEvent e, Emitter<TaskState> emit) async {
     _toDoRepository.removeTask(e.taskId);
-    emit(GetTaskList(_toDoRepository.getTaskList(e.groupId)));
+    emit(GetTaskList(await _toDoRepository.getTaskList(e.groupId)));
   }
 
   FutureOr<void> _eventToggleMark(ToggleMarkEvent e, Emitter<TaskState> emit) {

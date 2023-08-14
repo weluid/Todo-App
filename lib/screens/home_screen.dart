@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/bloc/group_bloc/group_bloc.dart';
 import 'package:todo/components/bottom_button.dart';
 import 'package:todo/components/group_tile.dart';
-import 'package:todo/main.dart';
 import 'package:todo/repository/todo_repository.dart';
+import 'package:todo/screens/splash_screen.dart';
 import 'package:todo/screens/task_screen.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (state is InitializationApp) {
             return _buildParentWidget(context, state, bloc);
           } else {
-            return const StartPage();
+            return const SplashScreen();
           }
         },
       ),
@@ -113,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
   }
 
-  _goToTaskPage(String groupName, BuildContext context, String id) async {
+  _goToTaskPage(String groupName, BuildContext context, int id) async {
     final changeFlag = await Navigator.push(
         context,
         MaterialPageRoute(
