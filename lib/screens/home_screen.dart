@@ -1,13 +1,15 @@
 import 'dart:async';
 
+import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/bloc/group_bloc/group_bloc.dart';
 import 'package:todo/components/bottom_button.dart';
 import 'package:todo/components/group_tile.dart';
-import 'package:todo/main.dart';
 import 'package:todo/repository/todo_repository.dart';
+import 'package:todo/screens/splash_screen.dart';
 import 'package:todo/screens/task_screen.dart';
+import 'package:todo/theme/theme.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -35,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (state is InitializationApp) {
             return _buildParentWidget(context, state, bloc);
           } else {
-            return const StartPage();
+            return const SplashScreen();
           }
         },
       ),
@@ -43,7 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _buildParentWidget(BuildContext context, InitializationApp state, GroupBloc bloc) {
-    return Scaffold(
+    bool isDark = ThemeModelInheritedNotifier.of(context).theme.brightness == Brightness.dark ? true : false;
+
+    return ThemeSwitchingArea(
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -62,24 +68,49 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         bottomNavigationBar: SizedBox(
           height: 40,
-          child: Center(
-            child: MyBottomButton(
-              text: AppLocalizations.of(context).addGroup,
-              icon: Icons.add,
-              onTap: () async {
-                final String? groupName = await _showDialog();
+          child: Row(
+            children: [
+              Center(
+                child: MyBottomButton(
+                  text: AppLocalizations.of(context).addGroup,
+                  icon: Icons.add,
+                  onTap: () async {
+                    final String? groupName = await _showDialog();
 
-                if (groupName!.trim().isNotEmpty) {
-                  if (!mounted) return;
-                  BlocProvider.of<GroupBloc>(context).add(
-                    AddGroupEvent(title: groupName),
+                    if (groupName!.trim().isNotEmpty) {
+                      if (!mounted) return;
+                      BlocProvider.of<GroupBloc>(context).add(
+                        AddGroupEvent(title: groupName),
+                      );
+                    }
+                    debugPrint('Group name: $groupName'); //test city
+                  },
+                ),
+              ),
+              const Spacer(),
+              ThemeSwitcher(
+                clipper: const ThemeSwitcherCircleClipper(),
+                builder: (context) {
+                  return IconButton(
+                    onPressed: () {
+                      ThemeSwitcher.of(context).changeTheme(
+                        theme: isDark ? lightTheme : darkTheme,
+                      );
+                    },
+                    icon: isDark
+                        ? Icon(Icons.sunny, color: ColorSelect.outlinedPurple)
+                        : Icon(
+                            Icons.nightlight_rounded,
+                            color: ColorSelect.darkGrayColor,
+                          ),
                   );
-                }
-                debugPrint('Group name: $groupName'); //test city
-              },
-            ),
+                },
+              )
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   _goToTaskPage(String groupName, BuildContext context, String id) async {
@@ -108,6 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context) {
           String inputText = AppLocalizations.of(context).initialValue;
           return AlertDialog(
+            surfaceTintColor: Theme.of(context).colorScheme.background,
             title: Text(AppLocalizations.of(context).newList),
             content: Form(
               key: formKey,

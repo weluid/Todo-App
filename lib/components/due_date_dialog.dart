@@ -12,6 +12,7 @@ class DueDate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      surfaceTintColor: Theme.of(context).colorScheme.background,
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -24,9 +25,9 @@ class DueDate extends StatelessWidget {
                 style: const TextStyle(fontSize: 22),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(bottom: 10, top: 10),
-              child: Divider(height: 1),
+             Padding(
+              padding: const EdgeInsets.only(bottom: 10, top: 10),
+              child: Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant,),
             ),
             GestureDetector(
               onTap: () {

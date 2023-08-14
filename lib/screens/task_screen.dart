@@ -45,8 +45,9 @@ class _TaskScreenState extends State<TaskScreen> {
 
   _buildParentWidget(BuildContext context, GetTaskList state) {
     return Scaffold(
-      backgroundColor: ColorSelect.lightPurpleBackground,
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       appBar: AppBar(
+
         // leading - back to home page button
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -83,18 +84,19 @@ class _TaskScreenState extends State<TaskScreen> {
           )
         ],
         iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: ColorSelect.lightPurpleBackground,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         title: Text(
           groupNameTitle,
           style: const TextStyle(color: Colors.white),
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            SingleChildScrollView(
-              child: ListView.builder(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
                   padding: const EdgeInsets.only(left: 20, right: 20),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
@@ -143,8 +145,8 @@ class _TaskScreenState extends State<TaskScreen> {
                       ),
                     );
                   }),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: bottomButton(context),
@@ -161,7 +163,7 @@ class _TaskScreenState extends State<TaskScreen> {
         child: GestureDetector(
           child: Container(
             decoration: BoxDecoration(
-              color: ColorSelect.importantColor,
+              color: Theme.of(context).colorScheme.outlineVariant,
               borderRadius: const BorderRadius.all(Radius.circular(10)),
             ),
             width: double.infinity,
@@ -181,7 +183,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
   _buildEmptyWidget(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorSelect.lightPurpleBackground,
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       appBar: AppBar(
         actions: [
           IconButton(
@@ -194,7 +196,7 @@ class _TaskScreenState extends State<TaskScreen> {
           )
         ],
         iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: ColorSelect.lightPurpleBackground,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         title: Text(
           groupNameTitle,
           style: const TextStyle(color: Colors.white),
@@ -209,12 +211,12 @@ class _TaskScreenState extends State<TaskScreen> {
   // bottom button for add task
   Padding bottomButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
       child: GestureDetector(
         onTap: () => _addTask(context),
         child: Container(
           padding: const EdgeInsets.only(left: 17, bottom: 12, top: 12),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: ColorSelect.darkPurple),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: Theme.of(context).colorScheme.secondaryContainer),
           child: Row(
             children: [
               const Icon(
@@ -243,7 +245,7 @@ class _TaskScreenState extends State<TaskScreen> {
       ),
       context: blocContext,
       builder: (context2) => Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.fromLTRB(20, 10, 20, MediaQuery.of(context).viewInsets.bottom+20),
         child: SizedBox(
           height: 50,
           child: Column(
@@ -284,6 +286,7 @@ class _TaskScreenState extends State<TaskScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            surfaceTintColor:  Theme.of(context).colorScheme.background,
             title: Text(
               AppLocalizations.of(context).renameGroup,
               style: const TextStyle(fontSize: 22),
@@ -303,7 +306,7 @@ class _TaskScreenState extends State<TaskScreen> {
                 },
                 child: Text(
                   AppLocalizations.of(context).cancel,
-                  style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: Theme.of(context).colorScheme.outlineVariant, fontWeight: FontWeight.w500),
                 ),
               ),
               const SizedBox(width: 10),
@@ -323,7 +326,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   width: 110,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: ColorSelect.primaryColor,
+                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                   child: Center(
                     child: Text(
