@@ -88,4 +88,10 @@ class CacheManager extends BaseDatabase {
     Task relevantTask = tasks.firstWhere((element) => element.id == taskId);
     return relevantTask;
   }
+
+  @override
+  List<Task> importantSampling() {
+    return tasks.where((task) => task.isImportant).toList();
+
+  }
 }

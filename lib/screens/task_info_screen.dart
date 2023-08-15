@@ -7,7 +7,6 @@ import 'package:todo/components/widgets.dart';
 import 'package:todo/models/task.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/splash_screen.dart';
-import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../bloc/task_extended_bloc/task_extended_bloc.dart';
@@ -16,8 +15,9 @@ class TaskInfoScreen extends StatefulWidget {
   final Task task;
   final String groupName;
   final int groupId;
+  final bool selectedTab;
 
-  const TaskInfoScreen({super.key, required this.task, required this.groupName, required this.groupId});
+  const TaskInfoScreen({super.key, required this.task, required this.groupName, required this.groupId, required this.selectedTab});
 
   @override
   State<TaskInfoScreen> createState() => _TaskInfoScreenState();
@@ -26,8 +26,8 @@ class TaskInfoScreen extends StatefulWidget {
 class _TaskInfoScreenState extends State<TaskInfoScreen> {
   late bool _isCompleted = widget.task.isCompleted; // checkbox flag
   late bool _isImportant = widget.task.isImportant; // important flag
-  bool _isDateActive = false; // date market flag
-  late DateTime dateTime;
+  late bool _isDateActive = widget.task.dueDate == null ? false : true; // date market flag
+  late DateTime? dateTime = widget.task.dueDate;
 
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -77,211 +77,221 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
 
   _buildParentWidget(BuildContext context, GetTaskList state) {
     return Scaffold(
+      bottomNavigationBar: bottomAppBar(context),
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context, true);
+            Navigator.pop(context, widget.selectedTab);
           },
         ),
         title: Text(widget.groupName),
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(left: 15, right: 20, top: 10),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Checkbox(
-                    value: _isCompleted,
-                    onChanged: (bool? value) {
-                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleMarkEvent(widget.task.id));
-                      setState(() {
-                        _isCompleted = !_isCompleted;
-                      });
-                    },
-                  ),
-                  const SizedBox(width: 18),
-                  Expanded(
-                    child: Text(
-                      widget.task.title,
-                      overflow: TextOverflow.fade,
-                      maxLines: 1,
-                      softWrap: false,
-                      style: const TextStyle(fontSize: 22),
+          padding: const EdgeInsets.only(left: 15, right: 20, top: 10, bottom: 10),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _isCompleted,
+                      onChanged: (bool? value) {
+                        BlocProvider.of<TaskExtendedBloc>(context).add(ToggleMarkEvent(widget.task.id));
+                        setState(() {
+                          _isCompleted = !_isCompleted;
+                        });
+                      },
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isImportant = !_isImportant;
-                      });
+                    const SizedBox(width: 18),
+                    Expanded(
+                      child: Text(
+                        widget.task.title,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        softWrap: false,
+                        style: const TextStyle(fontSize: 22),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isImportant = !_isImportant;
+                        });
 
-                      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleImportantEvent(widget.task.id));
-                    },
-                    child: _isImportant ? activeImportantIcon : disabledImportantIcon,
-                  )
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 10),
-                child: Divider(
-                  color: ColorSelect.lightGrayColor,
+                        BlocProvider.of<TaskExtendedBloc>(context).add(ToggleImportantEvent(widget.task.id));
+                      },
+                      child: _isImportant ? activeImportantIcon : disabledImportantIcon,
+                    )
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: Divider(
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) {
+                        return DueDate(
+                          datePicker: () => _showDatePicker(context),
+                          dateToday: () {
+                            Navigator.pop(context);
+                            // current day date
+                            DateTime now = DateTime.now();
+                            dateTime = DateTime(now.year, now.month, now.day, 0, 0);
+                            BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, dateTime));
+
+                            setState(() {
+                              _isDateActive = true;
+                            });
+
+                            debugPrint(dateTime.toString());
+                          },
+                          dateTomorrow: () {
+                            Navigator.pop(context);
+                            // next day date
+                            DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
+                            dateTime = DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 0, 0);
+
+                            BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, dateTime));
+
+                            setState(() {
+                              _isDateActive = true;
+                            });
+
+                            debugPrint(dateTime.toString());
+                          },
+                        );
+                      },
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.event,
+                        color: _isDateActive ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
+                      ),
+                      const SizedBox(width: 18),
+                      Text(
+                        _isDateActive
+                            ? '${AppLocalizations.of(context).due}: ${DateFormat('E, d MMMM').format(dateTime!)}'
+                            : AppLocalizations.of(context).dueData,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        softWrap: false,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: _isDateActive ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
+                        ),
+                      ),
+                      const Spacer(),
+                      if (_isDateActive)
+                        GestureDetector(
+                          onTap: () {
+                            BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, null));
+
+                            setState(() {
+                              _isDateActive = false;
+                            });
+                          },
+                          child: Icon(Icons.close, color:  Theme.of(context).colorScheme.outline),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 210,
+                  child: Column(
+                    children: [
+                      if (_focusNode.hasFocus)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            AppLocalizations.of(context).note,
+                            style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.outlineVariant),
+                          ),
+                        ),
+                      TextFormField(
+                        focusNode: _focusNode,
+                        textInputAction: TextInputAction.done,
+                        onFieldSubmitted: (String value) {
+                          if (value.trim().isNotEmpty) {
+                            debugPrint(value);
+                            BlocProvider.of<TaskExtendedBloc>(context)
+                                .add(AddDescriptionEvent(taskId: widget.task.id, description: value));
+                          }
+                        },
+                        controller: _controller,
+                        maxLines: 7,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: AppLocalizations.of(context).addNote,
+                          hintStyle: TextStyle(color: Theme.of(context).colorScheme.outline )
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: _focusNode.hasFocus ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  BottomAppBar bottomAppBar(BuildContext context){
+    return BottomAppBar(
+      color: Theme.of(context).colorScheme.background,
+      height: 50,
+      elevation: 0,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  DateTime.now().isAfter(widget.task.createdDate)
+                      ? AppLocalizations.of(context).createdToday
+                      : '${AppLocalizations.of(context).createdOn} ${DateFormat('E, d MMMM').format(widget.task.createdDate)}',
+
+                  style:  TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.outline),
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  showDialog(
+                onTap: () async {
+                  bool? isDeleted = await showDialog(
                     context: context,
-                    builder: (dialogContext) {
-                      return DueDate(
-                        datePicker: () => _showDatePicker(context),
-                        dateToday: () {
-                          Navigator.pop(context);
-                          // current day date
-                          DateTime now = DateTime.now();
-                          dateTime = DateTime(now.year, now.month, now.day, 0, 0);
-                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, dateTime));
-
-                          setState(() {
-                            _isDateActive = true;
-                          });
-
-                          debugPrint(dateTime.toString());
-                        },
-                        dateTomorrow: () {
-                          Navigator.pop(context);
-                          // next day date
-                          DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
-                          dateTime = DateTime(tomorrow.year, tomorrow.month, tomorrow.day, 0, 0);
-
-                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, dateTime));
-
-                          setState(() {
-                            _isDateActive = true;
-                          });
-
-                          debugPrint(dateTime.toString());
-                        },
-                      );
-                    },
-                  );
-                },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.event,
-                      color: ColorSelect.grayColor,
-                    ),
-                    const SizedBox(width: 18),
-                    Text(
-                      _isDateActive
-                          ? '${AppLocalizations.of(context).due}: ${DateFormat('E, d MMMM').format(dateTime)}'
-                          : AppLocalizations.of(context).dueData,
-                      overflow: TextOverflow.fade,
-                      maxLines: 1,
-                      softWrap: false,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: _isDateActive ? ColorSelect.primaryColor : ColorSelect.grayColor,
-                      ),
-                    ),
-                    const Spacer(),
-                    if (_isDateActive)
-                      GestureDetector(
-                        onTap: () {
-                          BlocProvider.of<TaskExtendedBloc>(context).add(AddDateEvent(widget.task.id, null));
-
-                          setState(() {
-                            _isDateActive = false;
-                          });
-                        },
-                        child: Icon(Icons.close, color: ColorSelect.grayColor),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                height: 210,
-                child: Column(
-                  children: [
-                    if (_focusNode.hasFocus)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          AppLocalizations.of(context).note,
-                          style: TextStyle(fontSize: 12, color: ColorSelect.primaryColor),
-                        ),
-                      ),
-                    TextFormField(
-                      focusNode: _focusNode,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (String value) {
-                        if (value.trim().isNotEmpty) {
-                          debugPrint(value);
-                          BlocProvider.of<TaskExtendedBloc>(context)
-                              .add(AddDescriptionEvent(taskId: widget.task.id, description: value));
-                        }
+                    builder: (dialogContext) => DeletedDialog(
+                      deleteObject: (taskId) {
+                        BlocProvider.of<TaskExtendedBloc>(context)
+                            .add(RemoveTaskEvent(groupId: widget.groupId, taskId: widget.task.id));
                       },
-                      controller: _controller,
-                      maxLines: 7,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: AppLocalizations.of(context).addNote,
-                      ),
+                      id: widget.task.id,
+                      desc: AppLocalizations.of(context).taskDelete,
                     ),
-                  ],
-                ),
-              ),
-              Divider(
-                color: _focusNode.hasFocus ? ColorSelect.primaryColor : ColorSelect.lightGrayColor,
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    const Spacer(),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            DateTime.now().isAfter(widget.task.createdDate)
-                                ? AppLocalizations.of(context).createdToday
-                                : '${AppLocalizations.of(context).createdOn} ${DateFormat('E, d MMMM').format(widget.task.createdDate)}',
-                            // 'Created on Mon, 20 April',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () async {
-                            bool? isDeleted = await showDialog(
-                              context: context,
-                              builder: (dialogContext) => DeletedDialog(
-                                deleteObject: (taskId) {
-                                  BlocProvider.of<TaskExtendedBloc>(context)
-                                      .add(RemoveTaskEvent(groupId: widget.groupId, taskId: widget.task.id));
-                                },
-                                id: widget.task.id,
-                                desc: AppLocalizations.of(context).taskDelete,
-                              ),
-                            );
+                  );
 
-                            if (isDeleted != null) {
-                              if (!mounted) return;
-                              Navigator.pop(context, true);
-                            }
-                          },
-                          child: Icon(Icons.delete_outline, color: ColorSelect.grayColor, size: 24),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+                  if (isDeleted != null) {
+                    if (!mounted) return;
+                    Navigator.pop(context, true);
+                  }
+                },
+                child: Icon(Icons.delete_outline, color:  Theme.of(context).colorScheme.outline, size: 24),
+              )
             ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -292,7 +302,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2102),
     ).then((value) {
       if (value != null) {

@@ -25,14 +25,16 @@ class TaskTile extends StatefulWidget {
 class _TaskTileState extends State<TaskTile> {
   late bool isImportant = widget.task.isImportant; // important flag
 
-
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 60,
       margin: const EdgeInsets.symmetric(vertical: 4),
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.background,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Row(
         children: [
           Checkbox(

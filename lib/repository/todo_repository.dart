@@ -66,4 +66,8 @@ class ToDoRepository {
   void addDate(int taskId, DateTime? date) {
     _manager.addDate(taskId, date);
   }
+
+  List<Task> importantSampling() {
+  return _manager.importantSampling();
+  }
 }

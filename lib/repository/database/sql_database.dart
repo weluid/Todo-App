@@ -145,4 +145,10 @@ class SqlDatabase extends BaseDatabase {
     final id = await db.insert("group", group.toJson());
     return group.copy(id: id);
   }
+
+  @override
+  List<Task> importantSampling() {
+    // TODO: implement importantSampling
+    throw UnimplementedError();
+  }
 }

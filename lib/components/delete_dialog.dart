@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'package:todo/utilities/constants.dart';
-
 typedef IdCallback = void Function(int id);
 
 class DeletedDialog extends StatelessWidget {
@@ -15,6 +13,7 @@ class DeletedDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      surfaceTintColor: Theme.of(context).colorScheme.background,
       title: Text(
         AppLocalizations.of(context).youSure,
         style: const TextStyle(fontSize: 22),
@@ -27,7 +26,7 @@ class DeletedDialog extends StatelessWidget {
           },
           child: Text(
             AppLocalizations.of(context).cancel,
-            style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+            style: TextStyle(color: Theme.of(context).colorScheme.outlineVariant, fontWeight: FontWeight.w500),
           ),
         ),
         const SizedBox(width: 10),
@@ -42,7 +41,7 @@ class DeletedDialog extends StatelessWidget {
             width: 89,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              color: ColorSelect.importantColor,
+              color: Theme.of(context).colorScheme.outlineVariant,
             ),
             child: Center(
               child: Text(

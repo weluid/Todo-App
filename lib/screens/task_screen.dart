@@ -6,7 +6,6 @@ import 'package:todo/components/delete_dialog.dart';
 import 'package:todo/components/task_tile.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/task_info_screen.dart';
-import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskScreen extends StatefulWidget {
@@ -19,15 +18,30 @@ class TaskScreen extends StatefulWidget {
   State<TaskScreen> createState() => _TaskScreenState();
 }
 
-class _TaskScreenState extends State<TaskScreen> {
+class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateMixin {
   late String groupNameTitle = widget.groupName;
+
+  late TabController _tabController;
+  bool selectedTabMarker = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TaskBloc>(
       create: (BuildContext context) {
         TaskBloc taskBloc = TaskBloc(context.read<ToDoRepository>());
-        taskBloc.add(GetTaskListEvent(widget.id));
+        taskBloc.add(GetUncompletedTasksEvent(widget.id));
 
         return taskBloc;
       },
@@ -44,114 +58,159 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   _buildParentWidget(BuildContext context, GetTaskList state) {
-    return Scaffold(
-      backgroundColor: ColorSelect.lightPurpleBackground,
-      appBar: AppBar(
-        // leading - back to home page button
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context, true);
-          },
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              _showRenameDialog(context);
-            },
-            icon: const Icon(Icons.drive_file_rename_outline),
-          ),
-          IconButton(
-            onPressed: () async {
-              bool isDeleted =  await showDialog(
-                context: context,
-                builder: (dialogContext) => DeletedDialog(
-                  deleteObject: (groupId) {
-                    BlocProvider.of<TaskBloc>(context).add(RemoveGroupEvent(widget.id));
-                  },
-                  id: widget.id, desc: AppLocalizations.of(context).groupDelete,
-                ),
-              );
+    // management click on TavVar
+    void clickManagement(int index) {
+      setState(() {
+        if (index == 0) {
+          BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id));
+          selectedTabMarker = false;
+        } else {
+          BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
+          selectedTabMarker = true;
+        }
+      });
+    }
 
-              if (isDeleted) {
-                if (!mounted) return;
-                Navigator.pop(context, true);
-              }
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        appBar: AppBar(
+          // leading - back to home page button
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context, true);
             },
-            icon: const Icon(Icons.delete_outline),
-          )
-        ],
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: ColorSelect.lightPurpleBackground,
-        title: Text(
-          groupNameTitle,
-          style: const TextStyle(color: Colors.white),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                _showRenameDialog(context);
+              },
+              icon: const Icon(Icons.drive_file_rename_outline),
+            ),
+            IconButton(
+              onPressed: () async {
+                bool isDeleted = await showDialog(
+                  context: context,
+                  builder: (dialogContext) => DeletedDialog(
+                    deleteObject: (groupId) {
+                      BlocProvider.of<TaskBloc>(context).add(RemoveGroupEvent(widget.id));
+                    },
+                    id: widget.id,
+                    desc: AppLocalizations.of(context).groupDelete,
+                  ),
+                );
+
+                if (isDeleted) {
+                  if (!mounted) return;
+                  Navigator.pop(context, true);
+                }
+              },
+              icon: const Icon(Icons.delete_outline),
+            )
+          ],
+          iconTheme: const IconThemeData(color: Colors.white),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          title: Text(
+            groupNameTitle,
+            style: const TextStyle(color: Colors.white),
+          ),
+
+          bottom: TabBar(
+            controller: _tabController,
+            onTap: clickManagement,
+            indicatorSize: TabBarIndicatorSize.tab,
+            splashFactory: NoSplash.splashFactory,
+            indicatorColor: Theme.of(context).colorScheme.outlineVariant,
+            labelColor: Theme.of(context).colorScheme.outlineVariant,
+            tabs: [
+              const Tab(text: 'To Do'),
+              Tab(text: AppLocalizations.of(context).completed),
+            ],
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            SingleChildScrollView(
-              child: ListView.builder(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: state.taskList.length,
-                  itemBuilder: (context, index) {
-                    return Slidable(
-                      direction: Axis.horizontal,
-                      key: Key(state.taskList[index].toString()),
-                      endActionPane: ActionPane(
-                        extentRatio: 0.25,
-                        motion: const ScrollMotion(),
-                        children: [
-                          const SizedBox(width: 10),
-                          deletionCard(context, state, index),
-                        ],
-                      ),
-                      child: TaskTile(
-                        task: state.taskList[index],
-                        onCheckboxChanged: (id) {
-                          BlocProvider.of<TaskBloc>(context).add(
-                            ToggleMarkEvent(id),
-                          );
-                        },
-                        onInfoScreen: () async {
-                          // flag for updating task list on page
-                          bool changeFlag = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TaskInfoScreen(
-                                task: state.taskList[index],
-                                groupName: groupNameTitle,
-                                groupId: widget.id,
-                              ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: state.taskList.length,
+                        itemBuilder: (context, index) {
+                          return Slidable(
+                            direction: Axis.horizontal,
+                            key: Key(state.taskList[index].toString()),
+                            endActionPane: ActionPane(
+                              extentRatio: 0.25,
+                              motion: const ScrollMotion(),
+                              children: [
+                                const SizedBox(width: 10),
+                                deletionCard(context, state, index),
+                              ],
+                            ),
+                            child: TaskTile(
+                              task: state.taskList[index],
+                              onCheckboxChanged: (id) {
+                                BlocProvider.of<TaskBloc>(context).add(ToggleMarkEvent(id));
+                                Future.delayed(const Duration(milliseconds: 500), () {
+                                  state.taskList[index].isCompleted == true
+                                      ? BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id))
+                                      : BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
+                                });
+                              },
+                              onInfoScreen: () async {
+                                // flag for updating task list on page
+                                bool changeFlag = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TaskInfoScreen(
+                                      task: state.taskList[index],
+                                      groupName: groupNameTitle,
+                                      groupId: widget.id,
+                                      selectedTab: selectedTabMarker,
+                                    ),
+                                  ),
+                                );
+                                if (changeFlag == false) {
+                                  if (!mounted) return;
+                                  BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id));
+                                } else {
+                                  if (!mounted) return;
+                                  BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
+                                }
+                              },
+                              // important change
+                              onImportantChanged: (id) {
+                                BlocProvider.of<TaskBloc>(context).add(ToggleImportantEvent(state.taskList[index].id));
+                                if (selectedTabMarker == false) {
+                                  if (!mounted) return;
+                                  BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id));
+                                } else {
+                                  if (!mounted) return;
+                                  BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
+                                }
+                              },
                             ),
                           );
-                          if (changeFlag == true) {
-                            if (!mounted) return;
-                            BlocProvider.of<TaskBloc>(context).add(GetTaskListEvent(widget.id));
-                          }
-                        },
-                        // important change
-                        onImportantChanged: (id) {
-                          BlocProvider.of<TaskBloc>(context).add(ToggleImportant(state.taskList[index].id));
-                          BlocProvider.of<TaskBloc>(context).add(GetTaskListEvent(widget.id));
-                        },
-                      ),
-                    );
-                  }),
-            ),
-          ],
+                        }),
+                  ],
+                ),
+              ),
+
         ),
+        bottomNavigationBar: bottomButton(context),
       ),
-      bottomNavigationBar: bottomButton(context),
     );
   }
 
   // deletion card by left swipe
-  Expanded deletionCard(BuildContext context, GetTaskList state, int index) {
+  Expanded deletionCard(BuildContext context, state, int index) {
     return Expanded(
       flex: 1,
       child: Card(
@@ -160,7 +219,7 @@ class _TaskScreenState extends State<TaskScreen> {
         child: GestureDetector(
           child: Container(
             decoration: BoxDecoration(
-              color: ColorSelect.importantColor,
+              color: Theme.of(context).colorScheme.outlineVariant,
               borderRadius: const BorderRadius.all(Radius.circular(10)),
             ),
             width: double.infinity,
@@ -180,7 +239,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
   _buildEmptyWidget(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorSelect.lightPurpleBackground,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         actions: [
           IconButton(
@@ -193,7 +252,7 @@ class _TaskScreenState extends State<TaskScreen> {
           )
         ],
         iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: ColorSelect.lightPurpleBackground,
+        backgroundColor: Theme.of(context).colorScheme.background,
         title: Text(
           groupNameTitle,
           style: const TextStyle(color: Colors.white),
@@ -208,12 +267,13 @@ class _TaskScreenState extends State<TaskScreen> {
   // bottom button for add task
   Padding bottomButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 5, 20, 20),
       child: GestureDetector(
         onTap: () => _addTask(context),
         child: Container(
           padding: const EdgeInsets.only(left: 17, bottom: 12, top: 12),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(100), color: ColorSelect.darkPurple),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100), color: Theme.of(context).colorScheme.secondaryContainer),
           child: Row(
             children: [
               const Icon(
@@ -242,7 +302,7 @@ class _TaskScreenState extends State<TaskScreen> {
       ),
       context: blocContext,
       builder: (context2) => Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.fromLTRB(20, 10, 20, MediaQuery.of(context).viewInsets.bottom + 20),
         child: SizedBox(
           height: 50,
           child: Column(
@@ -267,7 +327,7 @@ class _TaskScreenState extends State<TaskScreen> {
               ),
               Divider(
                 height: 2,
-                color: ColorSelect.grayColor,
+                color: Theme.of(context).colorScheme.outline,
               ),
             ],
           ),
@@ -283,6 +343,7 @@ class _TaskScreenState extends State<TaskScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            surfaceTintColor: Theme.of(context).colorScheme.background,
             title: Text(
               AppLocalizations.of(context).renameGroup,
               style: const TextStyle(fontSize: 22),
@@ -302,14 +363,15 @@ class _TaskScreenState extends State<TaskScreen> {
                 },
                 child: Text(
                   AppLocalizations.of(context).cancel,
-                  style: TextStyle(color: ColorSelect.primaryColor, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: Theme.of(context).colorScheme.outlineVariant, fontWeight: FontWeight.w500),
                 ),
               ),
               const SizedBox(width: 10),
               GestureDetector(
                 onTap: () {
                   if (inputText.trim().isNotEmpty) {
-                    BlocProvider.of<TaskBloc>(blocContext).add(RenameGroupEvent(id: widget.id, newName: inputText.trim()));
+                    BlocProvider.of<TaskBloc>(blocContext)
+                        .add(RenameGroupEvent(id: widget.id, newName: inputText.trim()));
                     setState(() {
                       groupNameTitle = inputText.trim();
                     });
@@ -321,7 +383,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   width: 110,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: ColorSelect.primaryColor,
+                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                   child: Center(
                     child: Text(

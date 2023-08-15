@@ -25,4 +25,5 @@ abstract class BaseDatabase {
 
   void addDate(int taskId, DateTime? date);
 
-  }
+  List<Task> importantSampling();
+}

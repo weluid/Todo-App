@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:todo/utilities/constants.dart';
 
 class MyBottomButton extends StatelessWidget {
   final String text;
@@ -23,11 +22,11 @@ class MyBottomButton extends StatelessWidget {
           alignment: Alignment.bottomLeft,
           child: Row(
             children: [
-              Icon(icon, color: ColorSelect.primaryColor),
+              Icon(icon, color: Theme.of(context).colorScheme.outlineVariant),
               const SizedBox(width: 8),
               Text(
                 text,
-                style: TextStyle(color: ColorSelect.primaryColor, fontSize: 14, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Theme.of(context).colorScheme.outlineVariant, fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ],
           ),
