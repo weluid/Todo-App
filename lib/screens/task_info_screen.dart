@@ -14,7 +14,7 @@ import '../bloc/task_extended_bloc/task_extended_bloc.dart';
 class TaskInfoScreen extends StatefulWidget {
   final Task task;
   final String groupName;
-  final String groupId;
+  final int groupId;
   final bool selectedTab;
 
   const TaskInfoScreen({super.key, required this.task, required this.groupName, required this.groupId, required this.selectedTab});
@@ -252,6 +252,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
 
   BottomAppBar bottomAppBar(BuildContext context){
     return BottomAppBar(
+      color: Theme.of(context).colorScheme.background,
       height: 50,
       elevation: 0,
       child: Column(
@@ -294,6 +295,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
       ),
     );
   }
+
   void _showDatePicker(BuildContext context) {
     Navigator.pop(context);
 

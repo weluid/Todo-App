@@ -6,12 +6,12 @@ import 'package:todo/components/delete_dialog.dart';
 import 'package:todo/components/task_tile.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/task_info_screen.dart';
-import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:todo/utilities/constants.dart';
 
 class TaskScreen extends StatefulWidget {
   final String groupName;
-  final String id;
+  final int id;
 
   const TaskScreen({required this.groupName, required this.id, super.key});
 
@@ -75,7 +75,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: ColorSelect.lightPurpleBackground,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         appBar: AppBar(
           // leading - back to home page button
           leading: IconButton(
@@ -84,7 +84,8 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
               Navigator.pop(context, true);
             },
           ),
-          actions: [
+          actions: widget.id == 1 || widget.id ==2 ? null :
+          [
             IconButton(
               onPressed: () {
                 _showRenameDialog(context);
@@ -93,7 +94,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
             ),
             IconButton(
               onPressed: () async {
-                bool isDeleted = await showDialog(
+                bool? isDeleted = await showDialog(
                   context: context,
                   builder: (dialogContext) => DeletedDialog(
                     deleteObject: (groupId) {
@@ -104,7 +105,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
                   ),
                 );
 
-                if (isDeleted) {
+                if (isDeleted !=null) {
                   if (!mounted) return;
                   Navigator.pop(context, true);
                 }
@@ -113,7 +114,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
             )
           ],
           iconTheme: const IconThemeData(color: Colors.white),
-          backgroundColor: ColorSelect.lightPurpleBackground,
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           title: Text(
             groupNameTitle,
             style: const TextStyle(color: Colors.white),
@@ -124,8 +125,8 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
             onTap: clickManagement,
             indicatorSize: TabBarIndicatorSize.tab,
             splashFactory: NoSplash.splashFactory,
-            indicatorColor: ColorSelect.primaryColor,
-            labelColor: ColorSelect.primaryColor,
+            indicatorColor: Theme.of(context).colorScheme.outlineVariant,
+            labelColor: Theme.of(context).colorScheme.outlineVariant,
             tabs: [
               const Tab(text: 'To Do'),
               Tab(text: AppLocalizations.of(context).completed),
@@ -159,8 +160,9 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
                               task: state.taskList[index],
                               onCheckboxChanged: (id) {
                                 BlocProvider.of<TaskBloc>(context).add(ToggleMarkEvent(id));
-                                Future.delayed(const Duration(milliseconds: 500), () {
-                                  state.taskList[index].isCompleted == true
+
+                                Future.delayed(const Duration(milliseconds:500), () {
+                                  selectedTabMarker == false
                                       ? BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id))
                                       : BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
                                 });
@@ -220,7 +222,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
         child: GestureDetector(
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outlineVariant,
+              color: ColorSelect.importantColor,
               borderRadius: const BorderRadius.all(Radius.circular(10)),
             ),
             width: double.infinity,
@@ -240,7 +242,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
 
   _buildEmptyWidget(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorSelect.lightPurpleBackground,
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         actions: [
           IconButton(
@@ -253,7 +255,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
           )
         ],
         iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: ColorSelect.lightPurpleBackground,
+        backgroundColor: Theme.of(context).colorScheme.background,
         title: Text(
           groupNameTitle,
           style: const TextStyle(color: Colors.white),
@@ -298,15 +300,17 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
     TextEditingController titleController = TextEditingController();
 
     showModalBottomSheet(
+      isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(0),
       ),
       context: blocContext,
-      builder: (context2) => Padding(
-        padding: EdgeInsets.fromLTRB(20, 10, 20, MediaQuery.of(context).viewInsets.bottom + 20),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: MediaQuery.of(context).viewInsets.bottom),
         child: SizedBox(
-          height: 50,
+          height: 60,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 autofocus: true,
@@ -319,6 +323,10 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
                   if (value.trim().isNotEmpty) {
                     debugPrint(value);
                     BlocProvider.of<TaskBloc>(blocContext).add(AddTaskEvent(taskTitle: value, groupId: widget.id));
+                    // fixing a bug with incorrect display of tasks
+                    selectedTabMarker == false
+                        ? BlocProvider.of<TaskBloc>(blocContext).add(GetUncompletedTasksEvent(widget.id))
+                        : BlocProvider.of<TaskBloc>(blocContext).add(GetCompletedTaskEvent(widget.id));
                     Navigator.pop(blocContext);
                   } else {
                     debugPrint('Empty value');
@@ -328,7 +336,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
               ),
               Divider(
                 height: 2,
-                color: ColorSelect.grayColor,
+                color: Theme.of(context).colorScheme.outline,
               ),
             ],
           ),

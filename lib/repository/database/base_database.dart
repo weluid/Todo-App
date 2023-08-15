@@ -2,27 +2,27 @@ import 'package:todo/models/group.dart';
 import 'package:todo/models/task.dart';
 
 abstract class BaseDatabase {
-  List<Group> getGroupList();
+  Future<List<Group>> getGroupList();
 
-  List<Task> getTaskList(String groupId);
+  Future<List<Task>> getTaskList(int groupId);
 
   void addGroup(String title);
 
   void addTask(Task task);
 
-  void removeGroup(String id);
+  void removeGroup(int id);
 
-  void removeTask(String taskId);
+  void removeTask(int taskId);
 
-  void toggleMark(String taskId);
+  void toggleMark(int taskId);
 
-  void renameGroup(String id, String newName);
+  void renameGroup(int id, String newName);
 
-  void addTaskDescription(String taskId, String description);
+  void addTaskDescription(int taskId, String description);
 
-  void toggleImportant(String taskId);
+  void toggleImportant(int taskId);
 
-  void addDate(String taskId, DateTime? date);
+  void addDate(int taskId, DateTime? date);
 
-  List<Task> importantSampling();
+  Future<List<Task>> importantSampling();
 }

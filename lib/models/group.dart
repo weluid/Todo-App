@@ -1,7 +1,5 @@
-
-
 class Group {
-  String id;
+  int id;
   String groupName;
 
   Group({
@@ -12,5 +10,19 @@ class Group {
   @override
   String toString() {
     return 'Group{id: $id, groupName: $groupName}';
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'id': id,
+      'groupName': groupName,
+    };
+  }
+
+  factory Group.fromJson(Map<String, dynamic> json) {
+    return Group(
+      id: json['id'],
+      groupName: json['groupName'],
+    );
   }
 }

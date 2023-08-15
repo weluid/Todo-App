@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:todo/repository/database/cache_manager.dart';
+import 'package:todo/repository/database/sql_database.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/home_screen.dart';
-
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:todo/theme/theme.dart';
 
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     final initTheme = (isPlatformDark == Brightness.dark) ? darkTheme : lightTheme;
 
     return RepositoryProvider(
-      create: (context) => ToDoRepository.getInstance(CacheManager()),
+      create: (context) => ToDoRepository.getInstance(SqlDatabase()),
       child: ThemeProvider(
         initTheme: initTheme,
         builder: (_, lightTheme) {
