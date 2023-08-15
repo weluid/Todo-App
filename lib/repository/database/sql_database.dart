@@ -80,12 +80,15 @@ class SqlDatabase extends BaseDatabase {
   @override
   void removeGroup(int id) async {
     final db = await database;
+
     await db.delete('Group', where: 'id = ?', whereArgs: [id]);
+    await db.rawDelete('''DELETE FROM Task WHERE groupId = ?''', [id]);
   }
 
   @override
   void removeTask(int taskId) async {
     final db = await database;
+
     await db.delete('Task', where: 'id = ?', whereArgs: [taskId]);
   }
 
