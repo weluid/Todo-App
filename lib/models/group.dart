@@ -7,12 +7,6 @@ class Group {
     required this.groupName,
   });
 
-  Group copy({
-    int? id,
-    String? groupName,
-  }) =>
-      Group(id: id ?? this.id, groupName: groupName ?? this.groupName);
-
   @override
   String toString() {
     return 'Group{id: $id, groupName: $groupName}';
