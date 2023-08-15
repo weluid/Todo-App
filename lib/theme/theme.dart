@@ -6,11 +6,12 @@ ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     unselectedWidgetColor: ColorSelect.darkSecondaryGrayColor,
     colorScheme: ColorScheme.dark(
-        background: ColorSelect.darkGrayColor,
-        secondary: ColorSelect.darkSecondaryColor,
-        secondaryContainer: ColorSelect.darkSecondaryContainerColor,
-        outline: ColorSelect.darkSecondaryGrayColor,
-        outlineVariant: ColorSelect.outlinedPurple,
+      background: ColorSelect.darkGrayColor,
+      secondary: ColorSelect.darkSecondaryColor,
+      secondaryContainer: ColorSelect.darkSecondaryContainerColor,
+      outline: ColorSelect.darkSecondaryGrayColor,
+      outlineVariant: ColorSelect.outlinedPurple,
+      primary: ColorSelect.primaryColor,
     ));
 
 ThemeData lightTheme = ThemeData(
@@ -18,8 +19,10 @@ ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     unselectedWidgetColor: ColorSelect.grayColor,
     colorScheme: ColorScheme.light(
-        background: Colors.white,
-        secondary: ColorSelect.lightPurpleBackground,
-        secondaryContainer: ColorSelect.darkPurple,
-        outline: ColorSelect.darkSecondaryGrayColor,
-        outlineVariant: ColorSelect.primaryColor));
+      background: Colors.white,
+      secondary: ColorSelect.lightPurpleBackground,
+      secondaryContainer: ColorSelect.darkPurple,
+      outline: ColorSelect.darkSecondaryGrayColor,
+      outlineVariant: ColorSelect.primaryColor,
+      primary: ColorSelect.primaryColor,
+    ));

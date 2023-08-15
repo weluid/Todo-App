@@ -17,8 +17,16 @@ class SqlDatabase extends BaseDatabase {
   }
 
   @override
-  void addDate(int taskId, DateTime? date) {
-    // TODO: implement addDate
+  void addDate(int taskId, DateTime? date) async {
+    final db = await database;
+
+    String? time = date?.millisecondsSinceEpoch.toString().substring(0, 10);
+
+    await db.rawUpdate('''
+    UPDATE Task
+    SET dueDate = ?
+    WHERE id = ?
+    ''', [time, taskId]);
   }
 
   @override
@@ -39,8 +47,13 @@ class SqlDatabase extends BaseDatabase {
   }
 
   @override
-  void addTaskDescription(int taskId, String description) {
-    // TODO: implement addTaskDescription
+  void addTaskDescription(int taskId, String description) async {
+    final db = await database;
+
+    await db.rawUpdate('''
+    UPDATE Task
+    SET description = ?
+    WHERE id = ? ''', [description, taskId]);
   }
 
   @override
@@ -48,8 +61,6 @@ class SqlDatabase extends BaseDatabase {
     final db = await database;
 
     final List<Map<String, dynamic>> groups = await db.query('Group');
-    print("aaaaaaa$groups");
-
     return groups.map((map) => Group.fromJson(map)).toList();
   }
 
@@ -79,18 +90,43 @@ class SqlDatabase extends BaseDatabase {
   }
 
   @override
-  void renameGroup(int id, String newName) {
-    // TODO: implement renameGroup
+  void renameGroup(int id, String newName) async {
+    final db = await database;
+
+    await db.update(
+      'Group',
+      {'groupName': newName},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   @override
-  void toggleImportant(int taskId) {
-    // TODO: implement toggleImportant
+  void toggleImportant(int taskId) async {
+    final db = await database;
+
+    await db.rawUpdate('''
+    UPDATE Task
+    SET isImportant = CASE
+    WHEN isImportant = 1 THEN 0
+    ELSE 1
+    END
+    WHERE id = ?
+    ''', [taskId]);
   }
 
   @override
-  void toggleMark(int taskId) {
-    // TODO: implement toggleMark
+  void toggleMark(int taskId) async {
+    final db = await database;
+
+    await db.rawUpdate('''
+    UPDATE Task
+    SET isCompleted = CASE
+    WHEN isCompleted = 1 THEN 0
+    ELSE 1
+    END
+    WHERE id = ?
+    ''', [taskId]);
   }
 
   Future<String> get fullPath async {
@@ -129,26 +165,21 @@ class SqlDatabase extends BaseDatabase {
     )
   ''');
 
+    // Insert initial groups
     await db.insert('Group', {'groupName': 'My Day'});
     await db.insert('Group', {'groupName': 'Important'});
   }
 
-  Future close() async {
-    final db = await database;
-
-    db.close();
-  }
-
-  Future<Group> create(Group group) async {
-    final db = await database;
-
-    final id = await db.insert("group", group.toJson());
-    return group.copy(id: id);
-  }
-
   @override
-  List<Task> importantSampling() {
-    // TODO: implement importantSampling
-    throw UnimplementedError();
+  Future<List<Task>> importantSampling() async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> tasks = await db.query(
+      'Task',
+      where: 'isImportant = ?',
+      whereArgs: [1],
+    );
+
+    return tasks.map((map) => Task.fromJson(map)).toList();
   }
 }

@@ -7,14 +7,16 @@ import 'package:todo/repository/get_id.dart';
 class CacheManager extends BaseDatabase {
   // List with groups
   List<Group> groupList = [
-    Group(id: 1, groupName: 'Test'),
+    Group(id: 1, groupName: 'My Day'),
+    Group(id: 2, groupName: 'Important'),
+    Group(id: 3, groupName: 'Test'),
   ];
 
   // List with tasks
   List<Task> tasks = [
-    Task(id: 1, title: 'Read Holly Bible', isCompleted: false, groupId: 1, createdDate: DateTime.now()),
-    Task(id: 2, title: 'Call Verka', isCompleted: false, groupId: 1, createdDate: DateTime.now()),
-    Task(id: 3, title: 'See Pornhub', isCompleted: false, groupId: 1, createdDate: DateTime.now()),
+    Task(id: 1, title: 'Read Holly Bible', isCompleted: false, groupId: 3, createdDate: DateTime.now()),
+    Task(id: 2, title: 'Call Verka', isCompleted: false, groupId: 3, createdDate: DateTime.now()),
+    Task(id: 3, title: 'See Pornhub', isCompleted: false, groupId: 3, createdDate: DateTime.now()),
   ];
 
   @override
@@ -31,8 +33,8 @@ class CacheManager extends BaseDatabase {
   }
 
   @override
-  Future<List<Group>> getGroupList() async{
-    return  groupList;
+  Future<List<Group>> getGroupList() async {
+    return groupList;
   }
 
 // get length of a tasks in group
@@ -56,7 +58,8 @@ class CacheManager extends BaseDatabase {
   void toggleMark(int taskId) {
     Task relevantTask = findRelevantTask(taskId);
     relevantTask.isCompleted = !relevantTask.isCompleted;
-    debugPrint('Toggle Mark${relevantTask.isCompleted}');
+
+    debugPrint('Toggle Mark ${relevantTask.isCompleted}');
   }
 
   @override
@@ -75,7 +78,6 @@ class CacheManager extends BaseDatabase {
     Task relevantTask = findRelevantTask(taskId);
     relevantTask.isImportant = !relevantTask.isImportant;
     debugPrint('Important Mark: ${relevantTask.isImportant}');
-
   }
 
   @override
@@ -90,8 +92,7 @@ class CacheManager extends BaseDatabase {
   }
 
   @override
-  List<Task> importantSampling() {
+  Future<List<Task>> importantSampling() async {
     return tasks.where((task) => task.isImportant).toList();
-
   }
 }

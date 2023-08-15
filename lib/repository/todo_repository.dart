@@ -67,7 +67,8 @@ class ToDoRepository {
     _manager.addDate(taskId, date);
   }
 
-  List<Task> importantSampling() {
+  Future<List<Task>> importantSampling() {
   return _manager.importantSampling();
   }
+
 }
