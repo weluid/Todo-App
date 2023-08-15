@@ -298,15 +298,17 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
     TextEditingController titleController = TextEditingController();
 
     showModalBottomSheet(
+      isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(0),
       ),
       context: blocContext,
-      builder: (context2) => Padding(
-        padding: EdgeInsets.fromLTRB(20, 10, 20, MediaQuery.of(context).viewInsets.bottom + 20),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: MediaQuery.of(context).viewInsets.bottom),
         child: SizedBox(
-          height: 50,
+          height: 60,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 autofocus: true,
