@@ -20,22 +20,22 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   }
 
   Future<void> _eventStartApp(GroupEvent e, Emitter emit) async {
-    emit(InitializationApp(_toDoRepository.getGroupList()));
+    emit(InitializationApp(await _toDoRepository.getGroupList()));
   }
 
-  void _eventAddGroup(AddGroupEvent e, Emitter emit) {
+  void _eventAddGroup(AddGroupEvent e, Emitter emit) async {
     _toDoRepository.addGroup(e.title);
 
-    emit(InitializationApp(_toDoRepository.getGroupList()));
+    emit(InitializationApp(await _toDoRepository.getGroupList()));
   }
 
-  FutureOr<void> _eventRemoveGroup(RemoveGroupEvent e, Emitter emit) {
+  FutureOr<void> _eventRemoveGroup(RemoveGroupEvent e, Emitter emit)async {
     _toDoRepository.removeGroup(e.id);
-    emit(InitializationApp(_toDoRepository.getGroupList()));
+    emit(InitializationApp(await _toDoRepository.getGroupList()));
   }
 
-  FutureOr<void> _eventRenameGroup(RenameGroupEvent e, Emitter<GroupState> emit) {
+  FutureOr<void> _eventRenameGroup(RenameGroupEvent e, Emitter<GroupState> emit) async {
     _toDoRepository.renameGroup(e.id, e.newName);
-    emit(InitializationApp(_toDoRepository.getGroupList()));
+    emit(InitializationApp(await _toDoRepository.getGroupList()));
   }
 }

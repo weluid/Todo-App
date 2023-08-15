@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo/components/widgets.dart';
 import 'package:todo/models/task.dart';
 
-typedef IdCallback = void Function(String id);
+typedef IdCallback = void Function(int id);
 
 class TaskTile extends StatefulWidget {
   final IdCallback onCheckboxChanged;
@@ -24,7 +24,6 @@ class TaskTile extends StatefulWidget {
 
 class _TaskTileState extends State<TaskTile> {
   late bool isImportant = widget.task.isImportant; // important flag
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -38,6 +37,7 @@ class _TaskTileState extends State<TaskTile> {
       child: Row(
         children: [
           Checkbox(
+            activeColor: Theme.of(context).colorScheme.outlineVariant ,
             value: widget.task.isCompleted,
             onChanged: (bool? value) {
               setState(() {

@@ -113,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _goToTaskPage(String groupName, BuildContext context, String id) async {
+  _goToTaskPage(String groupName, BuildContext context, int id) async {
     final changeFlag = await Navigator.push(
         context,
         MaterialPageRoute(
