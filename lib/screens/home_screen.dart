@@ -55,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: [
                 ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemCount: state.groups.length,
