@@ -46,6 +46,7 @@ class CacheManager extends BaseDatabase {
   @override
   void removeGroup(int id) {
     groupList.removeWhere((element) => element.id == id);
+    tasks.removeWhere((task) => task.groupId == id);
   }
 
   @override
