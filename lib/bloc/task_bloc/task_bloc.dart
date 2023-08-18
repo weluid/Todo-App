@@ -56,9 +56,21 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   FutureOr<void> _eventRemoveTask(RemoveTaskEvent e, Emitter<TaskState> emit) async {
     _toDoRepository.removeTask(e.taskId);
     if (e.groupId == 2) {
-      emit(GetTaskList(await _toDoRepository.importantSampling()));
+      List<Task> allImportantTasks = await _toDoRepository.importantSampling();
+      _returnRelevantList(e, emit, allImportantTasks);
     } else {
-      emit(GetTaskList(await _toDoRepository.getTaskList(e.groupId)));
+      List<Task> allTasks = await _toDoRepository.getTaskList(e.groupId);
+      _returnRelevantList(e, emit, allTasks);
+    }
+  }
+
+  void _returnRelevantList(RemoveTaskEvent e, Emitter<TaskState> emit, List<Task> listTasks) async {
+    if (e.whichList == false) {
+      List<Task> unCompletedTasks = listTasks.where((task) => !task.isCompleted).toList();
+      emit(GetTaskList(unCompletedTasks));
+    } else {
+      List<Task> completedTasks = listTasks.where((task) => task.isCompleted).toList();
+      emit(GetTaskList(completedTasks));
     }
   }
 

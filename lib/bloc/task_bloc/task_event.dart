@@ -15,7 +15,6 @@ class GetCompletedTaskEvent extends TaskEvent {
   GetCompletedTaskEvent(this.groupId);
 }
 
-
 // Add task to list
 class AddTaskEvent extends TaskEvent {
   final String taskTitle;
@@ -27,8 +26,9 @@ class AddTaskEvent extends TaskEvent {
 class RemoveTaskEvent extends TaskEvent {
   final int groupId;
   final int taskId;
+  final bool whichList;
 
-  RemoveTaskEvent(this.groupId, this.taskId);
+  RemoveTaskEvent(this.groupId, this.taskId, this.whichList);
 }
 
 class ToggleMarkEvent extends TaskEvent {
@@ -55,4 +55,3 @@ class ToggleImportantEvent extends TaskEvent {
 
   ToggleImportantEvent(this.taskId);
 }
-
