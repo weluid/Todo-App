@@ -233,7 +233,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
             )),
           ),
           onTap: () => BlocProvider.of<TaskBloc>(context).add(
-            RemoveTaskEvent(widget.id, state.taskList[index].id),
+            RemoveTaskEvent(widget.id, state.taskList[index].id, selectedTabMarker),
           ),
         ),
       ),

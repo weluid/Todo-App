@@ -284,7 +284,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
 
                   if (isDeleted != null) {
                     if (!mounted) return;
-                    Navigator.pop(context, true);
+                    Navigator.pop(context, widget.selectedTab);
                   }
                 },
                 child: Icon(Icons.delete_outline, color:  Theme.of(context).colorScheme.outline, size: 24),
