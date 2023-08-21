@@ -24,7 +24,6 @@ dependencies:
   firebase_core: ^2.15.1
   firebase_crashlytics: ^3.3.5
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
