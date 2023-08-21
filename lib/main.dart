@@ -13,7 +13,7 @@ import 'package:todo/screens/home_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:todo/theme/theme.dart';
 
-Future main() async {
+ main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
