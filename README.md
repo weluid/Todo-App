@@ -1,8 +1,10 @@
 # To Do 
 ---
 "To Do" App using Flutter with advanced features. 🌟
-Built using BloC architecture and SQLite to store data.:
+Built using BloC architecture and SQLite to store data.
 
+You can [download] the latest version of Todo for Android.\
+[<img src="https://github.com/weluid/Todo-App/assets/124319560/68097b68-3540-42d4-85dc-ead0e4c7e404" width ="300"/>](https://play.google.com/store/apps/details?id=com.dekovalov.todo)
 #### Functionality:
 
 Basic:\
@@ -44,6 +46,8 @@ For example, you can switch to cache using the `CacheManager()` value instead of
  ToDoRepository.getInstance(SqlDatabase())
 ```
 
+![video](https://github.com/weluid/Todo-App/assets/124319560/d762b654-fb4a-44ed-8355-51544bfad21d)
+
 
 
 
@@ -57,3 +61,4 @@ For example, you can switch to cache using the `CacheManager()` value instead of
    [Flutter Localization]: <https://pub.dev/packages/flutter_localization>
    [Firebase Core]: <https://pub.dev/packages/firebase_core>
    [Firebase Crashlytics]: <https://pub.dev/packages/firebase_crashlytics>
+   [download]: <(https://play.google.com/store/apps/details?id=com.dekovalov.todo>
