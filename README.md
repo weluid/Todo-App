@@ -6,11 +6,11 @@ Built using BloC architecture and SQLite to store data.:
 #### Functionality:
 
 Basic
- ☑ Add, Edit and Delete Task
- ☑ Add, Edit and Delete Category
- ☑ Mark as Done, Later and Important
- ☑ Add due date
- ☑ Light/Dark mode
+ ☑ Add, Edit and Delete Task\
+ ☑ Add, Edit and Delete Category\
+ ☑ Mark as Done, Later and Important\
+ ☑ Add due date\
+ ☑ Light/Dark mode\
  
 ## How to start 
 ---
