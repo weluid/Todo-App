@@ -5,7 +5,7 @@ Built using BloC architecture and SQLite to store data.:
 
 #### Functionality:
 
-Basic
+Basic\
  ☑ Add, Edit and Delete Task\
  ☑ Add, Edit and Delete Category\
  ☑ Mark as Done, Later and Important\
