@@ -11,7 +11,7 @@ import 'package:todo/repository/database/sql_database.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/home_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:todo/theme/theme.dart';
+import 'package:todo/theme/theme_service.dart';
 
  main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,21 +27,26 @@ import 'package:todo/theme/theme.dart';
     return true;
   };
 
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  final themeService = await ThemeService.instance;
+  var initTheme = themeService.initial;
+  runApp(MyApp(theme: initTheme));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({
+    Key? key,
+    required this.theme,
+  }) : super(key: key);
+  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {
-    final Brightness isPlatformDark = WidgetsBinding.instance.platformDispatcher.platformBrightness;
-    final initTheme = (isPlatformDark == Brightness.dark) ? darkTheme : lightTheme;
 
     return RepositoryProvider(
       create: (context) => ToDoRepository.getInstance(SqlDatabase()),
       child: ThemeProvider(
-        initTheme: initTheme,
+        initTheme: theme,
         builder: (_, lightTheme) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,

@@ -9,7 +9,7 @@ import 'package:todo/components/group_tile.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/splash_screen.dart';
 import 'package:todo/screens/task_screen.dart';
-import 'package:todo/theme/theme.dart';
+import 'package:todo/theme/theme_service.dart';
 import 'package:todo/utilities/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -45,8 +45,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _buildParentWidget(BuildContext context, InitializationApp state, GroupBloc bloc) {
-    bool isDark = ThemeModelInheritedNotifier.of(context).theme.brightness == Brightness.dark ? true : false;
-
+    final themeName = ThemeModelInheritedNotifier.of(context).theme.brightness == Brightness.light
+        ? 'dark'
+        : 'light';
     return ThemeSwitchingArea(
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -90,23 +91,25 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const Spacer(),
               ThemeSwitcher(
-                clipper: const ThemeSwitcherCircleClipper(),
                 builder: (context) {
                   return IconButton(
-                    onPressed: () {
-                      ThemeSwitcher.of(context).changeTheme(
-                        theme: isDark ? lightTheme : darkTheme,
-                      );
+                    onPressed: () async {
+                      final themeSwitcher = ThemeSwitcher.of(context);
+
+                      final service = await ThemeService.instance;
+                      service.save(themeName);
+                      final theme = service.getByName(themeName);
+                      themeSwitcher.changeTheme(theme: theme);
                     },
-                    icon: isDark
-                        ? Icon(Icons.sunny, color: ColorSelect.outlinedPurple)
-                        : Icon(
-                            Icons.nightlight_rounded,
-                            color: ColorSelect.darkGrayColor,
-                          ),
+                      icon: themeName == 'light'
+                          ? Icon(Icons.sunny, color: ColorSelect.outlinedPurple)
+                          : Icon(
+                        Icons.nightlight_rounded,
+                        color: ColorSelect.darkGrayColor,
+                      ),
                   );
                 },
-              )
+              ),
             ],
           ),
         ),
