@@ -180,7 +180,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                       const SizedBox(width: 18),
                       Text(
                         _isDateActive
-                            ? '${AppLocalizations.of(context).due}: ${DateFormat('E, d MMMM').format(dateTime!)}'
+                            ? '${AppLocalizations.of(context).due}: ${date(dateTime!, context)}'
                             : AppLocalizations.of(context).dueData,
                         overflow: TextOverflow.fade,
                         maxLines: 1,
@@ -263,7 +263,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 child: Text(
                   DateTime.now().isAfter(widget.task.createdDate)
                       ? AppLocalizations.of(context).createdToday
-                      : '${AppLocalizations.of(context).createdOn} ${DateFormat('E, d MMMM').format(widget.task.createdDate)}',
+                      : '${AppLocalizations.of(context).createdOn} ${ date(widget.task.createdDate, context)}',
 
                   style:  TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.outline),
                 ),
@@ -315,5 +315,10 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
       }
       debugPrint(value.toString());
     });
+  }
+
+  date(DateTime format, BuildContext context) {
+    String locale = Localizations.localeOf(context).languageCode;
+    return DateFormat('E, d MMMM', locale).format(dateTime!);
   }
 }

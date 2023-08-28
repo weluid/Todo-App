@@ -20,13 +20,11 @@ class SqlDatabase extends BaseDatabase {
   void addDate(int taskId, DateTime? date) async {
     final db = await database;
 
-    String? time = date?.millisecondsSinceEpoch.toString().substring(0, 10);
-
     await db.rawUpdate('''
     UPDATE Task
     SET dueDate = ?
     WHERE id = ?
-    ''', [time, taskId]);
+    ''', [date?.toIso8601String(), taskId]);
   }
 
   @override
