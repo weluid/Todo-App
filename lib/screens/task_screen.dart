@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo/bloc/task_bloc/task_bloc.dart';
 import 'package:todo/components/delete_dialog.dart';
 import 'package:todo/components/task_tile.dart';
+import 'package:todo/models/task.dart';
 import 'package:todo/repository/todo_repository.dart';
 import 'package:todo/screens/task_info_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -84,35 +85,35 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
               Navigator.pop(context, true);
             },
           ),
-          actions: widget.id == 1 || widget.id ==2 ? null :
+          actions: widget.id == 1 || widget.id == 2 ? null :
           [
-            IconButton(
-              onPressed: () {
-                _showRenameDialog(context);
-              },
-              icon: const Icon(Icons.drive_file_rename_outline),
-            ),
-            IconButton(
-              onPressed: () async {
-                bool? isDeleted = await showDialog(
-                  context: context,
-                  builder: (dialogContext) => DeletedDialog(
-                    deleteObject: (groupId) {
-                      BlocProvider.of<TaskBloc>(context).add(RemoveGroupEvent(widget.id));
+                  IconButton(
+                    onPressed: () {
+                      _showRenameDialog(context);
                     },
-                    id: widget.id,
-                    desc: AppLocalizations.of(context).groupDelete,
+                    icon: const Icon(Icons.drive_file_rename_outline),
                   ),
-                );
+                  IconButton(
+                    onPressed: () async {
+                      bool? isDeleted = await showDialog(
+                        context: context,
+                        builder: (dialogContext) => DeletedDialog(
+                          deleteObject: (groupId) {
+                            BlocProvider.of<TaskBloc>(context).add(RemoveGroupEvent(widget.id));
+                          },
+                          id: widget.id,
+                          desc: AppLocalizations.of(context).groupDelete,
+                        ),
+                      );
 
-                if (isDeleted !=null) {
-                  if (!mounted) return;
-                  Navigator.pop(context, true);
-                }
-              },
-              icon: const Icon(Icons.delete_outline),
-            )
-          ],
+                      if (isDeleted != null) {
+                        if (!mounted) return;
+                        Navigator.pop(context, true);
+                      }
+                    },
+                    icon: const Icon(Icons.delete_outline),
+                  )
+                ],
           iconTheme: const IconThemeData(color: Colors.white),
           backgroundColor: Theme.of(context).colorScheme.secondary,
           title: Text(
@@ -135,81 +136,103 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
         ),
         body: SafeArea(
           child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: const EdgeInsets.only(left: 20, right: 20),
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: state.taskList.length,
-                        itemBuilder: (context, index) {
-                          return Slidable(
-                            direction: Axis.horizontal,
-                            key: Key(state.taskList[index].toString()),
-                            endActionPane: ActionPane(
-                              extentRatio: 0.25,
-                              motion: const ScrollMotion(),
-                              children: [
-                                const SizedBox(width: 10),
-                                deletionCard(context, state, index),
-                              ],
-                            ),
-                            child: TaskTile(
-                              task: state.taskList[index],
-                              onCheckboxChanged: (id) {
-                                BlocProvider.of<TaskBloc>(context).add(ToggleMarkEvent(id));
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: state.taskList.length,
+                    itemBuilder: (context, index) {
+                      return Slidable(
+                        direction: Axis.horizontal,
+                        key: Key(state.taskList[index].toString()),
+                        endActionPane: ActionPane(
+                          extentRatio: 0.25,
+                          motion: const ScrollMotion(),
+                          children: [
+                            const SizedBox(width: 10),
+                            deletionCard(context, state, index),
+                          ],
+                        ),
+                        child: TaskTile(
+                          task: state.taskList[index],
+                          onCheckboxChanged: (id) {
+                            BlocProvider.of<TaskBloc>(context).add(ToggleMarkEvent(id));
 
-                                Future.delayed(const Duration(milliseconds:500), () {
-                                  selectedTabMarker == false
-                                      ? BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id))
-                                      : BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
-                                });
-                              },
-                              onInfoScreen: () async {
-                                // flag for updating task list on page
-                                bool changeFlag = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TaskInfoScreen(
-                                      task: state.taskList[index],
-                                      groupName: groupNameTitle,
-                                      groupId: widget.id,
-                                      selectedTab: selectedTabMarker,
-                                    ),
-                                  ),
-                                );
-                                if (changeFlag == false) {
-                                  if (!mounted) return;
-                                  BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id));
-                                } else {
-                                  if (!mounted) return;
-                                  BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
-                                }
-                              },
-                              // important change
-                              onImportantChanged: (id) {
-                                BlocProvider.of<TaskBloc>(context).add(ToggleImportantEvent(state.taskList[index].id));
-                                if (selectedTabMarker == false) {
-                                  if (!mounted) return;
-                                  BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id));
-                                } else {
-                                  if (!mounted) return;
-                                  BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
-                                }
-                              },
-                            ),
-                          );
-                        }),
-                  ],
-                ),
-              ),
-
+                            Future.delayed(const Duration(milliseconds: 500), () {
+                              selectedTabMarker == false
+                                  ? BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id))
+                                  : BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
+                            });
+                          },
+                          onInfoScreen: () async {
+                            // flag for updating task list on page
+                            bool changeFlag = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TaskInfoScreen(
+                                  task: state.taskList[index],
+                                  groupName: groupNameTitle,
+                                  groupId: widget.id,
+                                  selectedTab: selectedTabMarker,
+                                ),
+                              ),
+                            );
+                            if (changeFlag == false) {
+                              if (!mounted) return;
+                              BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id));
+                            } else {
+                              if (!mounted) return;
+                              BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
+                            }
+                          },
+                          // important change
+                          onImportantChanged: (id) {
+                            importantLogic(state.taskList[index], context);
+                          },
+                        ),
+                      );
+                    }),
+              ],
+            ),
+          ),
         ),
         bottomNavigationBar: bottomButton(context),
       ),
     );
+  }
+
+  void importantLogic(Task taskList, BuildContext context) async {
+    // If task parent group is Important
+    if (taskList.groupId == 2) {
+      bool? isDeleted = await showDialog(
+        context: context,
+        builder: (dialogContext) => DeletedDialog(
+          deleteObject: (taskId) {},
+          id: 2,
+          desc: AppLocalizations.of(context).taskDelete,
+        ),
+      );
+
+      if (isDeleted != true) {
+        return;
+      } else {
+        if (!mounted) return;
+        BlocProvider.of<TaskBloc>(context).add(RemoveTaskEvent(2, taskList.id, selectedTabMarker));
+      }
+    } else {
+      BlocProvider.of<TaskBloc>(context).add(ToggleImportantEvent(taskList.id));
+      if (selectedTabMarker == false) {
+        if (!mounted) return;
+        BlocProvider.of<TaskBloc>(context).add(GetUncompletedTasksEvent(widget.id));
+      } else {
+        if (!mounted) return;
+        BlocProvider.of<TaskBloc>(context).add(GetCompletedTaskEvent(widget.id));
+      }
+    }
   }
 
   // deletion card by left swipe
