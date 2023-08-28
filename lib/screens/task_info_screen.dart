@@ -17,7 +17,8 @@ class TaskInfoScreen extends StatefulWidget {
   final int groupId;
   final bool selectedTab;
 
-  const TaskInfoScreen({super.key, required this.task, required this.groupName, required this.groupId, required this.selectedTab});
+  const TaskInfoScreen(
+      {super.key, required this.task, required this.groupName, required this.groupId, required this.selectedTab});
 
   @override
   State<TaskInfoScreen> createState() => _TaskInfoScreenState();
@@ -117,11 +118,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        setState(() {
-                          _isImportant = !_isImportant;
-                        });
-
-                        BlocProvider.of<TaskExtendedBloc>(context).add(ToggleImportantEvent(widget.task.id));
+                       importantLogic(context);
                       },
                       child: _isImportant ? activeImportantIcon : disabledImportantIcon,
                     )
@@ -175,7 +172,9 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     children: [
                       Icon(
                         Icons.event,
-                        color: _isDateActive ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
+                        color: _isDateActive
+                            ? Theme.of(context).colorScheme.outlineVariant
+                            : Theme.of(context).colorScheme.outline,
                       ),
                       const SizedBox(width: 18),
                       Text(
@@ -187,7 +186,9 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         softWrap: false,
                         style: TextStyle(
                           fontSize: 16,
-                          color: _isDateActive ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
+                          color: _isDateActive
+                              ? Theme.of(context).colorScheme.outlineVariant
+                              : Theme.of(context).colorScheme.outline,
                         ),
                       ),
                       const Spacer(),
@@ -200,7 +201,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                               _isDateActive = false;
                             });
                           },
-                          child: Icon(Icons.close, color:  Theme.of(context).colorScheme.outline),
+                          child: Icon(Icons.close, color: Theme.of(context).colorScheme.outline),
                         ),
                     ],
                   ),
@@ -231,16 +232,17 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                         controller: _controller,
                         maxLines: 7,
                         decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: AppLocalizations.of(context).addNote,
-                          hintStyle: TextStyle(color: Theme.of(context).colorScheme.outline )
-                        ),
+                            border: InputBorder.none,
+                            hintText: AppLocalizations.of(context).addNote,
+                            hintStyle: TextStyle(color: Theme.of(context).colorScheme.outline)),
                       ),
                     ],
                   ),
                 ),
                 Divider(
-                  color: _focusNode.hasFocus ? Theme.of(context).colorScheme.outlineVariant : Theme.of(context).colorScheme.outline,
+                  color: _focusNode.hasFocus
+                      ? Theme.of(context).colorScheme.outlineVariant
+                      : Theme.of(context).colorScheme.outline,
                 ),
               ],
             ),
@@ -250,7 +252,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
     );
   }
 
-  BottomAppBar bottomAppBar(BuildContext context){
+  BottomAppBar bottomAppBar(BuildContext context) {
     return BottomAppBar(
       color: Theme.of(context).colorScheme.background,
       height: 50,
@@ -263,9 +265,8 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                 child: Text(
                   DateTime.now().isAfter(widget.task.createdDate)
                       ? AppLocalizations.of(context).createdToday
-                      : '${AppLocalizations.of(context).createdOn} ${ date(widget.task.createdDate, context)}',
-
-                  style:  TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.outline),
+                      : '${AppLocalizations.of(context).createdOn} ${date(widget.task.createdDate, context)}',
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.outline),
                 ),
               ),
               GestureDetector(
@@ -287,7 +288,7 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                     Navigator.pop(context, widget.selectedTab);
                   }
                 },
-                child: Icon(Icons.delete_outline, color:  Theme.of(context).colorScheme.outline, size: 24),
+                child: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.outline, size: 24),
               )
             ],
           ),
@@ -320,5 +321,35 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   date(DateTime format, BuildContext context) {
     String locale = Localizations.localeOf(context).languageCode;
     return DateFormat('E, d MMMM', locale).format(dateTime!);
+  }
+
+  void importantLogic(BuildContext context) async{
+    // If task parent group is Important
+    if (widget.task.groupId == 2) {
+      bool? isDeleted = await showDialog(
+        context: context,
+        builder: (dialogContext) => DeletedDialog(
+          deleteObject: (taskId) {},
+          id: 2,
+          desc: AppLocalizations.of(context).taskDelete,
+        ),
+      );
+
+      if (isDeleted != true) {
+        return;
+      } else {
+        if (!mounted) return;
+        BlocProvider.of<TaskExtendedBloc>(context)
+            .add(RemoveTaskEvent(groupId: 2, taskId: widget.task.id));
+
+        Navigator.pop(context, widget.selectedTab);
+      }
+    } else {
+      setState(() {
+        _isImportant = !_isImportant;
+      });
+
+      BlocProvider.of<TaskExtendedBloc>(context).add(ToggleImportantEvent(widget.task.id));
+    }
   }
 }

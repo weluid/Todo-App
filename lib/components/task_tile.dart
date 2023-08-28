@@ -37,7 +37,7 @@ class _TaskTileState extends State<TaskTile> {
       child: Row(
         children: [
           Checkbox(
-            activeColor: Theme.of(context).colorScheme.outlineVariant ,
+            activeColor: Theme.of(context).colorScheme.outlineVariant,
             value: widget.task.isCompleted,
             onChanged: (bool? value) {
               setState(() {
@@ -63,7 +63,11 @@ class _TaskTileState extends State<TaskTile> {
           GestureDetector(
             onTap: () {
               setState(() {
-                isImportant = !isImportant;
+                if (widget.task.groupId == 2) {
+                  return;
+                } else {
+                  isImportant = !isImportant;
+                }
               });
 
               widget.onImportantChanged.call(widget.task.id);
