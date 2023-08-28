@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:todo/firebase_options.dart';
 import 'package:todo/repository/database/cache_manager.dart';
 import 'package:todo/repository/database/sql_database.dart';
@@ -15,6 +16,9 @@ import 'package:todo/theme/theme_service.dart';
 
  main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  MobileAds.instance.initialize();
+
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
