@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo/admob/AppLifecycleReactor.dart';
-import 'package:todo/admob/AppOpenAdManager.dart';
 import 'package:todo/bloc/group_bloc/group_bloc.dart';
 import 'package:todo/components/bottom_button.dart';
 import 'package:todo/components/group_tile.dart';
@@ -24,16 +22,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late GroupBloc bloc;
-  late AppLifecycleReactor _appLifecycleReactor;
 
-  @override
-  void initState() {
-    super.initState();
-
-    AppOpenAdManager appOpenAdManager = AppOpenAdManager()..loadAd();
-    _appLifecycleReactor = AppLifecycleReactor(
-        appOpenAdManager: appOpenAdManager);
-  }
   @override
   Widget build(BuildContext context) {
     return BlocProvider<GroupBloc>(

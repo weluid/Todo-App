@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:todo/bloc/task_bloc/task_bloc.dart';
 import 'package:todo/components/delete_dialog.dart';
 import 'package:todo/components/task_tile.dart';
@@ -25,16 +26,20 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
 
   late TabController _tabController;
   bool selectedTabMarker = false;
+  InterstitialAd? _interstitialAd;
+  final String _adUnitId = 'ca-app-pub-3770586561398599/4491195842';
 
   @override
   void initState() {
     super.initState();
+    _loadAd();
     _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
@@ -72,6 +77,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
         }
       });
     }
+
 
     return DefaultTabController(
       length: 2,
@@ -203,6 +209,41 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
         bottomNavigationBar: bottomButton(context),
       ),
     );
+  }
+
+  /// Loads an interstitial ad.
+  void _loadAd() {
+    InterstitialAd.load(
+        adUnitId: _adUnitId,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          // Called when an ad is successfully received.
+          onAdLoaded: (InterstitialAd ad) {
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+              // Called when the ad showed the full screen content.
+                onAdShowedFullScreenContent: (ad) {},
+                // Called when an impression occurs on the ad.
+                onAdImpression: (ad) {},
+                // Called when the ad failed to show full screen content.
+                onAdFailedToShowFullScreenContent: (ad, err) {
+                  ad.dispose();
+                },
+                // Called when the ad dismissed full screen content.
+                onAdDismissedFullScreenContent: (ad) {
+                  ad.dispose();
+                },
+                // Called when a click is recorded for an ad.
+                onAdClicked: (ad) {});
+
+            // Keep a reference to the ad so you can show it later.
+              _interstitialAd = ad;
+          },
+          // Called when an ad request failed.
+          onAdFailedToLoad: (LoadAdError error) {
+            // ignore: avoid_print
+            debugPrint('InterstitialAd failed to load: $error');
+          },
+        ));
   }
 
   void importantLogic(Task taskList, BuildContext context) async {
@@ -351,6 +392,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
                         ? BlocProvider.of<TaskBloc>(blocContext).add(GetUncompletedTasksEvent(widget.id))
                         : BlocProvider.of<TaskBloc>(blocContext).add(GetCompletedTaskEvent(widget.id));
                     Navigator.pop(blocContext);
+                    _interstitialAd?.show();
                   } else {
                     debugPrint('Empty value');
                     Navigator.pop(blocContext);
